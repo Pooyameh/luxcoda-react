@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import Lenis from '@studio-freight/lenis'
 import Cursor from './components/Cursor'
+import LoadingScreen from './components/LoadingScreen'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Difference from './components/Difference'
 import Process from './components/Process'
 import Pricing from './components/Pricing'
+import TechStack from './components/TechStack'
 import Cta from './components/Cta'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import MockupModal from './components/MockupModal'
 
 export default function App() {
+  const [loading, setLoading] = useState(true)
+  const [isLoaded, setIsLoaded] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
@@ -34,20 +39,33 @@ export default function App() {
     }
   }, [])
 
+  const handleLoadingComplete = () => {
+    setLoading(false)
+    // Small delay so the exit animation starts before hero animates in
+    setTimeout(() => setIsLoaded(true), 200)
+  }
+
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
 
   return (
     <div style={{ background: '#050508', color: '#fff', overflowX: 'hidden', minHeight: '100vh' }}>
       <Cursor />
+
+      <AnimatePresence>
+        {loading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      </AnimatePresence>
+
       <Navbar onOpenModal={openModal} />
-      <Hero onOpenModal={openModal} />
+      <Hero onOpenModal={openModal} isLoaded={isLoaded} />
       <Difference />
       <Process />
       <Pricing onOpenModal={openModal} />
+      <TechStack />
       <Cta onOpenModal={openModal} />
       <Contact />
       <Footer />
+
       <MockupModal isOpen={modalOpen} onClose={closeModal} />
     </div>
   )

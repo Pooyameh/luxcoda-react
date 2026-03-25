@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 const items = [
   {
@@ -19,112 +20,105 @@ const items = [
   {
     num: '04',
     title: 'Ongoing & Local',
-    body: 'Monthly hosting, maintenance, and updates are included. We\'re a Brisbane studio — same time zone, same city, always available when you need us.',
+    body: "Monthly hosting, maintenance, and updates included. We're a Brisbane studio — same city, same time zone, always available.",
   },
 ]
 
-const rowVar = {
-  hidden: { opacity: 0, y: 36 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: i * 0.1 },
-  }),
-}
+// Scroll budget: 350vh container → 250vh of scroll
+// 4 items each start revealing at 0, 0.22, 0.44, 0.66 and finish at +0.18
+const RANGES = [
+  [0,    0.18],
+  [0.22, 0.40],
+  [0.44, 0.62],
+  [0.66, 0.84],
+]
 
 export default function Difference() {
+  const containerRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  })
+
+  // One useTransform pair per item (React rules — no hooks in loops)
+  const op0 = useTransform(scrollYProgress, RANGES[0], [0, 1])
+  const y0  = useTransform(scrollYProgress, RANGES[0], [36, 0])
+  const op1 = useTransform(scrollYProgress, RANGES[1], [0, 1])
+  const y1  = useTransform(scrollYProgress, RANGES[1], [36, 0])
+  const op2 = useTransform(scrollYProgress, RANGES[2], [0, 1])
+  const y2  = useTransform(scrollYProgress, RANGES[2], [36, 0])
+  const op3 = useTransform(scrollYProgress, RANGES[3], [0, 1])
+  const y3  = useTransform(scrollYProgress, RANGES[3], [36, 0])
+
+  const opacities = [op0, op1, op2, op3]
+  const ys        = [y0,  y1,  y2,  y3]
+
   return (
-    <section style={{
-      padding: 'clamp(5rem, 10vw, 9rem) clamp(1.25rem, 4vw, 4rem)',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+    // Outer scroll track — dark navy background
+    <div ref={containerRef} style={{ height: '350vh', background: '#06091a' }}>
 
-        {/* Section Label */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: 'clamp(3rem, 6vw, 5rem)' }}
-        >
-          <span style={{
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.45)',
-          }}>
-            The Difference
-          </span>
-        </motion.div>
+      {/* Sticky viewport */}
+      <div style={{
+        position: 'sticky', top: 0,
+        height: '100vh', overflow: 'hidden',
+        display: 'flex', alignItems: 'center',
+      }}>
+        <div style={{
+          maxWidth: 1400, margin: '0 auto', width: '100%',
+          padding: '0 clamp(1.25rem, 4vw, 4rem)',
+        }}>
 
-        {/* Rows */}
-        <div>
+          {/* Section label */}
+          <div style={{ marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+            <span style={{
+              fontSize: '0.72rem', fontWeight: 600,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.38)',
+            }}>
+              The Difference
+            </span>
+          </div>
+
           {/* Top rule */}
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              height: 1,
-              background: 'rgba(255,255,255,0.08)',
-              transformOrigin: 'left',
-            }}
-          />
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 0 }} />
 
+          {/* Rows */}
           {items.map((item, i) => (
-            <motion.div
-              key={item.num}
-              custom={i}
-              variants={rowVar}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-60px' }}
-            >
+            <motion.div key={item.num} style={{ opacity: opacities[i], y: ys[i] }}>
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'clamp(3rem,6vw,6rem) 1fr 1fr',
-                gap: 'clamp(1rem, 3vw, 3rem)',
+                gridTemplateColumns: 'clamp(2.5rem, 5vw, 5rem) 1fr 1fr',
+                gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
                 alignItems: 'start',
-                padding: 'clamp(2rem, 4vw, 3.5rem) 0',
+                padding: 'clamp(1.1rem, 2.2vw, 1.8rem) 0',
               }}
-              className="flex-col-mobile"
+              className="diff-row"
               >
-                {/* Number */}
                 <span className="gradient-text" style={{
-                  fontSize: 'clamp(0.85rem, 1.5vw, 1rem)',
-                  fontWeight: 700,
-                  letterSpacing: '0.05em',
-                  paddingTop: '0.2em',
+                  fontSize: '0.8rem', fontWeight: 700,
+                  letterSpacing: '0.05em', paddingTop: '0.15em',
                 }}>
                   {item.num}
                 </span>
 
-                {/* Title */}
                 <h3 style={{
-                  fontSize: 'clamp(1.5rem, 3.5vw, 2.8rem)',
-                  fontWeight: 700,
-                  letterSpacing: '-0.03em',
-                  lineHeight: 1.1,
-                  color: '#fff',
+                  fontSize: 'clamp(1.3rem, 2.8vw, 2.4rem)',
+                  fontWeight: 700, letterSpacing: '-0.03em',
+                  lineHeight: 1.1, color: '#fff',
                 }}>
                   {item.title}
                 </h3>
 
-                {/* Body */}
                 <p style={{
-                  fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)',
-                  color: 'rgba(255,255,255,0.72)',
-                  lineHeight: 1.7,
-                  paddingTop: '0.35em',
+                  fontSize: 'clamp(0.88rem, 1.2vw, 1rem)',
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.7, paddingTop: '0.25em',
                 }}>
                   {item.body}
                 </p>
               </div>
 
-              {/* Divider */}
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
             </motion.div>
           ))}
         </div>
@@ -132,12 +126,9 @@ export default function Difference() {
 
       <style>{`
         @media (max-width: 768px) {
-          .flex-col-mobile {
-            grid-template-columns: 1fr !important;
-            gap: 0.75rem !important;
-          }
+          .diff-row { grid-template-columns: 1fr !important; gap: 0.5rem !important; }
         }
       `}</style>
-    </section>
+    </div>
   )
 }

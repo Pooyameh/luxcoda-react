@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { Check } from 'lucide-react'
 
 const plans = [
@@ -7,327 +8,213 @@ const plans = [
     upfront: '$999',
     monthly: '$69/mo',
     tagline: 'Everything you need to get online and be found.',
-    features: [
-      'Custom-designed website',
-      'Fully mobile responsive',
-      'SEO-ready structure',
-      'Contact forms',
-      'Monthly hosting & maintenance',
-    ],
-    featured: false,
+    features: ['Custom-designed website', 'Fully mobile responsive', 'SEO-ready structure', 'Contact forms', 'Monthly hosting & maintenance'],
   },
   {
     name: 'Growth',
     upfront: '$1,499',
     monthly: '$149/mo',
     tagline: 'Built to rank higher and earn more trust.',
-    features: [
-      'Everything in Starter',
-      'Premium animations',
-      'Active SEO management',
-      'Google Business setup & management',
-      'Monthly performance reports',
-    ],
-    featured: false,
+    features: ['Everything in Starter', 'Premium animations', 'Active SEO management', 'Google Business setup & management', 'Monthly performance reports'],
   },
   {
     name: 'Accelerate',
     upfront: '$1,999',
     monthly: '$249/mo',
     tagline: 'The complete growth system for serious businesses.',
-    features: [
-      'Everything in Growth',
-      'Facebook & Instagram ad setup',
-      'Google Ads management',
-      'Social media content calendar',
-      'Review generation strategy',
-    ],
+    features: ['Everything in Growth', 'Facebook & Instagram ad setup', 'Google Ads management', 'Social media content calendar', 'Review generation strategy'],
     featured: true,
-    recommended: true,
   },
   {
     name: 'Premium',
-    upfront: 'Let\'s Talk',
+    upfront: "Let's Talk",
     monthly: null,
     tagline: 'A fully managed presence — done entirely for you.',
-    features: [
-      'Everything in Accelerate',
-      'Professional photography',
-      'Booking systems & paywalls',
-      'Email newsletters',
-      'Full social media management',
-    ],
-    featured: false,
+    features: ['Everything in Accelerate', 'Professional photography', 'Booking systems & paywalls', 'Email newsletters', 'Full social media management'],
     custom: true,
   },
 ]
 
+// 320vh container → 220vh budget
+// Plans stagger in: 0, 0.22, 0.44, 0.66
+const RANGES = [[0, 0.18], [0.22, 0.40], [0.44, 0.62], [0.66, 0.84]]
+
 export default function Pricing({ onOpenModal }) {
+  const containerRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  })
+
+  const op0 = useTransform(scrollYProgress, RANGES[0], [0, 1])
+  const y0  = useTransform(scrollYProgress, RANGES[0], [28, 0])
+  const op1 = useTransform(scrollYProgress, RANGES[1], [0, 1])
+  const y1  = useTransform(scrollYProgress, RANGES[1], [28, 0])
+  const op2 = useTransform(scrollYProgress, RANGES[2], [0, 1])
+  const y2  = useTransform(scrollYProgress, RANGES[2], [28, 0])
+  const op3 = useTransform(scrollYProgress, RANGES[3], [0, 1])
+  const y3  = useTransform(scrollYProgress, RANGES[3], [28, 0])
+
+  const ops = [op0, op1, op2, op3]
+  const ys  = [y0, y1, y2, y3]
+
   return (
-    <section id="pricing" style={{
-      padding: 'clamp(5rem, 10vw, 9rem) clamp(1.25rem, 4vw, 4rem)',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+    <div ref={containerRef} id="pricing" style={{ height: '320vh', background: '#050e0c' }}>
 
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ marginBottom: 'clamp(3rem, 7vw, 6rem)', maxWidth: 640 }}
-        >
-          <span style={{
-            fontSize: '0.75rem', fontWeight: 600,
-            letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.45)',
-            display: 'block', marginBottom: '0.75rem',
-          }}>
-            Transparent Pricing
-          </span>
-          <h2 style={{
-            fontSize: 'clamp(2.2rem, 5vw, 4.5rem)',
-            fontWeight: 800,
-            letterSpacing: '-0.04em',
-            lineHeight: 1.05,
-          }}>
-            No surprises.
-            <br />
-            <span className="gradient-text">Just results.</span>
-          </h2>
-        </motion.div>
+      <div style={{
+        position: 'sticky', top: 0,
+        height: '100vh', overflow: 'hidden',
+        display: 'flex', alignItems: 'center',
+      }}>
+        <div style={{
+          maxWidth: 1400, margin: '0 auto', width: '100%',
+          padding: '0 clamp(1.25rem, 4vw, 4rem)',
+        }}>
 
-        {/* Pricing Bands */}
-        <div>
-          {/* Column headers (desktop) */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1.2fr 2fr 1fr',
-              gap: 'clamp(1rem, 3vw, 3rem)',
-              padding: '0 0 1rem',
-              marginBottom: '0.5rem',
-            }}
-            className="pricing-header"
+          {/* Header */}
+          <div style={{ marginBottom: 'clamp(1.2rem, 2.5vw, 2rem)' }}>
+            <span style={{
+              fontSize: '0.72rem', fontWeight: 600,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.35)',
+              display: 'block', marginBottom: '0.5rem',
+            }}>
+              Transparent Pricing
+            </span>
+            <h2 style={{
+              fontSize: 'clamp(1.6rem, 3.5vw, 3.2rem)',
+              fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05,
+            }}>
+              No surprises.{' '}
+              <span className="gradient-text">Just results.</span>
+            </h2>
+          </div>
+
+          {/* Column labels */}
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: '0.1rem' }} />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1.1fr 1.8fr 0.9fr',
+            gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
+            padding: '0.6rem 0',
+            marginBottom: '0.1rem',
+          }}
+          className="pricing-header"
           >
-            <span style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>Plan</span>
-            <span style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>What's included</span>
-            <span style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', textAlign: 'right' }}>Investment</span>
-          </motion.div>
+            {['Plan', "What's included", 'Investment'].map(h => (
+              <span key={h} style={{ fontSize: '0.68rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase',
+                ...(h === 'Investment' ? { textAlign: 'right' } : {}),
+              }}>{h}</span>
+            ))}
+          </div>
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
 
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 0 }} />
-
+          {/* Plan rows */}
           {plans.map((plan, i) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 }}
-            >
-              {/* Featured wrapper */}
+            <motion.div key={plan.name} style={{ opacity: ops[i], y: ys[i] }}>
+              {plan.featured && (
+                <div style={{ height: 2, background: 'linear-gradient(90deg, #5eaeff, #a855f7)', borderRadius: '2px 2px 0 0' }} />
+              )}
               <div style={{
-                position: 'relative',
-                ...(plan.featured ? {
-                  background: 'rgba(94,174,255,0.04)',
-                  margin: '0 -1.5rem',
-                  padding: '0 1.5rem',
-                } : {}),
+                ...(plan.featured ? { background: 'rgba(94,174,255,0.04)', margin: '0 -0.75rem', padding: '0 0.75rem' } : {}),
               }}>
-                {/* Recommended badge */}
-                {plan.recommended && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 2,
-                    background: 'linear-gradient(90deg, #5eaeff, #a855f7)',
-                    borderRadius: '2px 2px 0 0',
-                  }} />
-                )}
-
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1.2fr 2fr 1fr',
-                    gap: 'clamp(1rem, 3vw, 3rem)',
-                    alignItems: 'start',
-                    padding: plan.featured
-                      ? 'clamp(2rem, 4vw, 3rem) 0'
-                      : 'clamp(1.75rem, 3.5vw, 2.75rem) 0',
-                  }}
-                  className="pricing-row"
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.1fr 1.8fr 0.9fr',
+                  gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
+                  alignItems: 'start',
+                  padding: plan.featured
+                    ? 'clamp(0.9rem, 1.8vw, 1.4rem) 0'
+                    : 'clamp(0.7rem, 1.4vw, 1.1rem) 0',
+                }}
+                className="pricing-row"
                 >
-                  {/* Plan name */}
+                  {/* Name col */}
                   <div>
-                    {plan.recommended && (
+                    {plan.featured && (
                       <div style={{
                         display: 'inline-block',
-                        fontSize: '0.65rem',
-                        fontWeight: 700,
-                        letterSpacing: '0.12em',
-                        textTransform: 'uppercase',
-                        padding: '0.25rem 0.65rem',
-                        borderRadius: 100,
+                        fontSize: '0.6rem', fontWeight: 700,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        padding: '0.22rem 0.6rem', borderRadius: 100,
                         background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
-                        color: '#fff',
-                        marginBottom: '0.65rem',
-                      }}>
-                        Recommended
-                      </div>
+                        color: '#fff', marginBottom: '0.5rem',
+                      }}>Recommended</div>
                     )}
-                    <h3 style={{
+                    <div style={{
                       fontSize: plan.featured
-                        ? 'clamp(1.4rem, 2.8vw, 2.2rem)'
-                        : 'clamp(1.2rem, 2.2vw, 1.8rem)',
-                      fontWeight: 800,
-                      letterSpacing: '-0.03em',
-                      color: '#fff',
-                      marginBottom: '0.4rem',
-                    }}>
-                      {plan.name}
-                    </h3>
-                    <p style={{
-                      fontSize: 'clamp(0.82rem, 1.2vw, 0.9rem)',
-                      color: 'rgba(255,255,255,0.55)',
-                      lineHeight: 1.5,
-                    }}>
-                      {plan.tagline}
-                    </p>
+                        ? 'clamp(1.1rem, 2vw, 1.7rem)'
+                        : 'clamp(0.95rem, 1.6vw, 1.4rem)',
+                      fontWeight: 800, letterSpacing: '-0.03em', color: '#fff', marginBottom: '0.25rem',
+                    }}>{plan.name}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.48)', lineHeight: 1.4 }}>{plan.tagline}</div>
                   </div>
 
-                  {/* Features */}
-                  <ul style={{
-                    listStyle: 'none',
-                    padding: 0,
-                    margin: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.5rem',
-                  }}>
-                    {plan.features.map(feat => (
-                      <li key={feat} style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '0.5rem',
-                        fontSize: 'clamp(0.85rem, 1.2vw, 0.95rem)',
-                        color: 'rgba(255,255,255,0.8)',
-                        lineHeight: 1.5,
-                      }}>
-                        <span style={{ color: plan.featured ? '#5eaeff' : 'rgba(94,174,255,0.7)', marginTop: '0.18em', flexShrink: 0 }}>
-                          <Check size={13} strokeWidth={2.5} />
+                  {/* Features col */}
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                    {plan.features.map(f => (
+                      <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem',
+                        fontSize: 'clamp(0.78rem, 1.1vw, 0.88rem)', color: 'rgba(255,255,255,0.78)', lineHeight: 1.45 }}>
+                        <span style={{ color: plan.featured ? '#5eaeff' : 'rgba(94,174,255,0.65)', marginTop: '0.14em', flexShrink: 0 }}>
+                          <Check size={12} strokeWidth={2.5} />
                         </span>
-                        {feat}
+                        {f}
                       </li>
                     ))}
                   </ul>
 
-                  {/* Price */}
+                  {/* Price col */}
                   <div style={{ textAlign: 'right' }}>
                     <div style={{
                       fontSize: plan.featured
-                        ? 'clamp(1.5rem, 3vw, 2.5rem)'
-                        : 'clamp(1.3rem, 2.5vw, 2rem)',
-                      fontWeight: 800,
-                      letterSpacing: '-0.03em',
+                        ? 'clamp(1.3rem, 2.4vw, 2.1rem)'
+                        : 'clamp(1.1rem, 1.9vw, 1.7rem)',
+                      fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1,
                       ...(plan.featured ? {
                         background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                       } : { color: '#fff' }),
-                      lineHeight: 1.1,
-                    }}>
-                      {plan.upfront}
-                    </div>
+                    }}>{plan.upfront}</div>
                     {plan.monthly && (
-                      <div style={{
-                        fontSize: 'clamp(0.78rem, 1.1vw, 0.88rem)',
-                        color: 'rgba(255,255,255,0.5)',
-                        marginTop: '0.25rem',
-                      }}>
+                      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.42)', marginTop: '0.2rem' }}>
                         + {plan.monthly}
                       </div>
                     )}
                     {plan.custom && (
-                      <button
-                        onClick={onOpenModal}
-                        style={{
-                          marginTop: '0.75rem',
-                          fontSize: '0.78rem',
-                          color: 'rgba(255,255,255,0.65)',
-                          background: 'none',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          borderRadius: 100,
-                          padding: '0.4rem 0.9rem',
-                          cursor: 'pointer',
-                          fontFamily: 'inherit',
-                          transition: 'border-color 0.2s, color 0.2s',
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; e.currentTarget.style.color = '#fff' }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)' }}
-                      >
-                        Get a quote
-                      </button>
+                      <button onClick={onOpenModal} style={{
+                        marginTop: '0.5rem', fontSize: '0.72rem',
+                        color: 'rgba(255,255,255,0.58)', background: 'none',
+                        border: '1px solid rgba(255,255,255,0.13)', borderRadius: 100,
+                        padding: '0.35rem 0.8rem', cursor: 'pointer', fontFamily: 'inherit',
+                        transition: 'border-color 0.2s, color 0.2s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; e.currentTarget.style.color = '#fff' }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.13)'; e.currentTarget.style.color = 'rgba(255,255,255,0.58)' }}
+                      >Get a quote</button>
                     )}
                   </div>
                 </div>
               </div>
-
-              {/* Divider */}
-              {i < plans.length - 1 && (
-                <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
-              )}
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
             </motion.div>
           ))}
 
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)' }} />
+          <p style={{
+            marginTop: 'clamp(0.75rem, 1.5vw, 1.2rem)',
+            fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', textAlign: 'center',
+          }}>
+            Claim a free mock-up and we'll recommend the best fit for your business.
+          </p>
         </div>
-
-        {/* Bottom note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          style={{
-            marginTop: 'clamp(1.5rem, 3vw, 2.5rem)',
-            fontSize: '0.85rem',
-            color: 'rgba(255,255,255,0.4)',
-            textAlign: 'center',
-          }}
-        >
-          Not sure which plan is right for you? Claim your free mock-up and we'll recommend the best fit.
-        </motion.p>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          .pricing-header { display: none !important; }
-          .pricing-row {
-            grid-template-columns: 1fr !important;
-            gap: 1.5rem !important;
-          }
-          .pricing-row > div:last-child {
-            text-align: left !important;
-          }
-        }
         @media (max-width: 900px) {
-          .pricing-header {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .pricing-header > span:nth-child(2) { display: none; }
-          .pricing-row {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .pricing-row > ul { display: none !important; }
+          .pricing-header { display: none !important; }
+          .pricing-row { grid-template-columns: 1fr !important; gap: 1rem !important; }
+          .pricing-row > div:last-child { text-align: left !important; }
         }
       `}</style>
-    </section>
+    </div>
   )
 }
