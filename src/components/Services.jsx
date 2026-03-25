@@ -8,40 +8,41 @@ gsap.registerPlugin(ScrollTrigger)
 const services = [
   {
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
       </svg>
     ),
     title: 'Web Design',
     tag: '01',
-    desc: 'Bespoke, pixel-perfect websites built from scratch that reflect your brand and convert visitors into customers.',
+    desc: 'Bespoke, pixel-perfect websites built from scratch — designed to reflect your brand and convert visitors into paying customers.',
     color: '#5eaeff',
   },
   {
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
       </svg>
     ),
     title: 'E-Commerce',
     tag: '02',
-    desc: 'Online stores with seamless checkout, inventory management, and payment integrations that sell 24/7.',
+    desc: 'Online stores with seamless checkout, inventory management, and payment integrations that sell for you around the clock.',
     color: '#a78bfa',
   },
   {
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
     ),
     title: 'SEO & Google',
     tag: '03',
-    desc: 'Built to rank. Every site we build is optimised for Google from day one — structured data, speed, and local SEO.',
+    desc: 'Built to rank from day one. Structured data, speed optimisation, and local SEO strategies that get your business found on Google.',
     color: '#34d399',
   },
   {
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
       </svg>
     ),
@@ -52,24 +53,24 @@ const services = [
   },
   {
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
       </svg>
     ),
     title: 'Landing Pages',
     tag: '05',
-    desc: 'High-converting single pages for ads, campaigns, and promotions — designed to turn clicks into enquiries.',
+    desc: 'High-converting single pages for ads, campaigns, and promotions — designed to turn clicks into enquiries fast.',
     color: '#fbbf24',
   },
   {
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
       </svg>
     ),
     title: 'Ongoing Care',
     tag: '06',
-    desc: 'Monthly maintenance, hosting, updates, and priority support so your site stays fast, secure, and up to date.',
+    desc: 'Monthly maintenance, hosting, updates, and priority support so your site stays fast, secure, and up to date always.',
     color: '#a855f7',
   },
 ]
@@ -77,7 +78,6 @@ const services = [
 export default function Services() {
   const sectionRef = useRef(null)
   const trackRef = useRef(null)
-  const headingRef = useRef(null)
 
   useEffect(() => {
     const mm = gsap.matchMedia()
@@ -112,13 +112,9 @@ export default function Services() {
     <section
       id="services"
       ref={sectionRef}
-      style={{
-        position: 'relative',
-        background: '#0a0a1a',
-        overflow: 'hidden',
-      }}
+      style={{ position: 'relative', background: '#0a0a1a', overflow: 'hidden' }}
     >
-      {/* Section header — visible while pinned */}
+      {/* Section header — shown while pinned on desktop */}
       <div
         style={{
           position: 'absolute',
@@ -126,24 +122,31 @@ export default function Services() {
           left: 0,
           right: 0,
           zIndex: 10,
-          padding: '60px 48px 0',
+          padding: '64px 52px 0',
           pointerEvents: 'none',
         }}
         className="lg:block hidden"
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-          <span style={{ display: 'inline-block', width: 32, height: 2, background: 'linear-gradient(90deg, #5eaeff, #a855f7)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+          <span
+            style={{
+              display: 'inline-block',
+              width: 36,
+              height: 1.5,
+              background: 'linear-gradient(90deg, #5eaeff, #a855f7)',
+              borderRadius: 2,
+            }}
+          />
           <span className="section-label">What We Build</span>
         </div>
         <h2
-          ref={headingRef}
           style={{
             fontFamily: "'Syne', sans-serif",
-            fontSize: 'clamp(2rem, 4vw, 3.5rem)',
+            fontSize: 'clamp(2rem, 3.8vw, 3.4rem)',
             fontWeight: 800,
             color: '#f0f0ff',
             margin: 0,
-            lineHeight: 1.1,
+            lineHeight: 1.05,
           }}
         >
           Services that{' '}
@@ -161,31 +164,54 @@ export default function Services() {
       </div>
 
       {/* Mobile heading */}
-      <div className="lg:hidden block" style={{ padding: '60px 24px 32px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-          <span style={{ display: 'inline-block', width: 32, height: 2, background: 'linear-gradient(90deg, #5eaeff, #a855f7)' }} />
+      <div className="lg:hidden block" style={{ padding: '64px 24px 36px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+          <span
+            style={{
+              display: 'inline-block',
+              width: 36,
+              height: 1.5,
+              background: 'linear-gradient(90deg, #5eaeff, #a855f7)',
+              borderRadius: 2,
+            }}
+          />
           <span className="section-label">What We Build</span>
         </div>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1.8rem, 6vw, 3rem)', fontWeight: 800, color: '#f0f0ff', margin: 0 }}>
+        <h2
+          style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 'clamp(1.8rem, 6vw, 2.8rem)',
+            fontWeight: 800,
+            color: '#f0f0ff',
+            margin: 0,
+          }}
+        >
           Services that{' '}
-          <span style={{ background: 'linear-gradient(135deg, #5eaeff, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <span
+            style={{
+              background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             drive results
           </span>
         </h2>
       </div>
 
-      {/* Horizontal scroll track — desktop */}
+      {/* Desktop horizontal scroll track */}
       <div
         className="lg:block hidden"
-        style={{ paddingTop: 160, paddingBottom: 60, overflow: 'hidden' }}
+        style={{ paddingTop: 168, paddingBottom: 64, overflow: 'hidden' }}
       >
         <div
           ref={trackRef}
           style={{
             display: 'flex',
-            gap: 24,
-            paddingLeft: 48,
-            paddingRight: 48,
+            gap: 22,
+            paddingLeft: 52,
+            paddingRight: 52,
             width: 'max-content',
             alignItems: 'stretch',
           }}
@@ -196,13 +222,13 @@ export default function Services() {
         </div>
       </div>
 
-      {/* Vertical grid — mobile */}
+      {/* Mobile grid */}
       <div
         className="lg:hidden grid"
         style={{
           gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: 20,
-          padding: '0 24px 60px',
+          gap: 18,
+          padding: '0 24px 64px',
         }}
       >
         {services.map((service, i) => (
@@ -218,29 +244,33 @@ function ServiceCard({ service, index, mobile }) {
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6, delay: mobile ? index * 0.08 : 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.6, delay: mobile ? index * 0.07 : 0 }}
       whileHover={{ y: -8, transition: { duration: 0.3 } }}
       style={{
         width: mobile ? 'auto' : 360,
         flexShrink: 0,
-        background: 'rgba(255,255,255,0.035)',
+        background: 'rgba(255,255,255,0.03)',
         border: '1px solid rgba(255,255,255,0.08)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderRadius: 20,
+        borderRadius: 22,
         padding: '36px 32px',
         display: 'flex',
         flexDirection: 'column',
         gap: 20,
         cursor: 'default',
-        transition: 'border-color 0.3s',
+        transition: 'border-color 0.3s, box-shadow 0.3s',
+        position: 'relative',
+        overflow: 'hidden',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = `${service.color}33`
+        e.currentTarget.style.borderColor = `${service.color}35`
+        e.currentTarget.style.boxShadow = `0 20px 60px ${service.color}10`
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
+        e.currentTarget.style.boxShadow = 'none'
       }}
     >
       {/* Tag + Icon row */}
@@ -248,10 +278,11 @@ function ServiceCard({ service, index, mobile }) {
         <span
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '3.5rem',
+            fontSize: '4rem',
             lineHeight: 1,
             color: 'rgba(255,255,255,0.04)',
             letterSpacing: '0.05em',
+            userSelect: 'none',
           }}
         >
           {service.tag}
@@ -261,12 +292,13 @@ function ServiceCard({ service, index, mobile }) {
             width: 52,
             height: 52,
             borderRadius: 14,
-            background: `${service.color}15`,
-            border: `1px solid ${service.color}30`,
+            background: `${service.color}14`,
+            border: `1px solid ${service.color}28`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: service.color,
+            flexShrink: 0,
           }}
         >
           {service.icon}
@@ -277,7 +309,7 @@ function ServiceCard({ service, index, mobile }) {
       <h3
         style={{
           fontFamily: "'Syne', sans-serif",
-          fontSize: '1.25rem',
+          fontSize: '1.2rem',
           fontWeight: 700,
           color: '#f0f0ff',
           margin: 0,
@@ -290,11 +322,11 @@ function ServiceCard({ service, index, mobile }) {
       <p
         style={{
           fontFamily: "'Barlow', sans-serif",
-          fontSize: '0.925rem',
+          fontSize: '0.9rem',
           fontWeight: 400,
-          color: 'rgba(240,240,255,0.65)',
+          color: 'rgba(240,240,255,0.82)',
           margin: 0,
-          lineHeight: 1.65,
+          lineHeight: 1.7,
           flex: 1,
         }}
       >
@@ -306,7 +338,7 @@ function ServiceCard({ service, index, mobile }) {
         style={{
           height: 2,
           borderRadius: 2,
-          background: `linear-gradient(90deg, ${service.color}60, transparent)`,
+          background: `linear-gradient(90deg, ${service.color}55, transparent)`,
         }}
       />
     </motion.div>

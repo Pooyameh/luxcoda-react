@@ -52,11 +52,10 @@
   --lux-dark-3: #141430;
   --lux-glass: rgba(255, 255, 255, 0.04);
   --lux-glass-border: rgba(255, 255, 255, 0.08);
-  --lux-muted: #6b7ca4;
+  --lux-muted: #8892b0;
   --lux-gradient: linear-gradient(135deg, #5eaeff 0%, #a855f7 100%);
   --lux-gradient-text: linear-gradient(135deg, #5eaeff 0%, #c084fc 50%, #a855f7 100%);
 
-  /* shadcn light (unused — kept for reference) */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -86,7 +85,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* ─── Luxcoda Dark Theme (active) ─── */
+/* ─── Luxcoda Dark Theme ─── */
 .dark {
   --background: #0a0a1a;
   --foreground: #f0f0ff;
@@ -124,7 +123,7 @@
   }
 
   html {
-    scroll-behavior: auto; /* Lenis handles smooth scroll */
+    scroll-behavior: auto;
     background: var(--lux-dark);
   }
 
@@ -151,18 +150,14 @@
 }
 
 /* ─── Custom Scrollbar ─── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--lux-dark);
-}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--lux-dark); }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #5eaeff, #a855f7);
   border-radius: 3px;
 }
 
-/* ─── Gradient Text Utility ─── */
+/* ─── Gradient Text ─── */
 .gradient-text {
   background: var(--lux-gradient-text);
   -webkit-background-clip: text;
@@ -179,49 +174,56 @@
   font-weight: 700;
   letter-spacing: 0.03em;
   transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 0 24px rgba(94, 174, 255, 0.25);
+  box-shadow: 0 0 28px rgba(94, 174, 255, 0.2);
 }
 .gradient-btn:hover {
-  opacity: 0.9;
+  opacity: 0.92;
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.35);
+  box-shadow: 0 10px 36px rgba(168, 85, 247, 0.4);
 }
-.gradient-btn:active {
-  transform: translateY(0);
-}
+.gradient-btn:active { transform: translateY(0); }
 
 /* ─── Ghost Button ─── */
 .ghost-btn {
   background: transparent;
   color: #f0f0ff !important;
-  border: 1px solid rgba(255,255,255,0.2) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
   font-family: 'Syne', sans-serif;
   font-weight: 600;
   letter-spacing: 0.03em;
   transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
 .ghost-btn:hover {
-  border-color: rgba(94, 174, 255, 0.6) !important;
-  background: rgba(94, 174, 255, 0.08) !important;
+  border-color: rgba(94, 174, 255, 0.55) !important;
+  background: rgba(94, 174, 255, 0.07) !important;
   transform: translateY(-2px);
 }
 
-/* ─── Marquee Animation ─── */
-@keyframes marquee-scroll {
+/* ─── Marquee Animations ─── */
+@keyframes marquee-forward {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
+}
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
 }
 
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 28s linear infinite;
+  animation: marquee-forward 30s linear infinite;
   will-change: transform;
 }
+.marquee-track:hover { animation-play-state: paused; }
 
-.marquee-track:hover {
-  animation-play-state: paused;
+.marquee-track-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-reverse 28s linear infinite;
+  will-change: transform;
 }
+.marquee-track-reverse:hover { animation-play-state: paused; }
 
 /* ─── Glass Card ─── */
 .glass-card {
@@ -231,27 +233,27 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
-/* ─── Section heading style ─── */
+/* ─── Section Label ─── */
 .section-label {
   font-family: 'Syne', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--lux-blue);
 }
 
-/* ─── Noise overlay ─── */
+/* ─── Noise Overlay ─── */
 .noise-overlay::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 1;
 }
 
-/* ─── Orb glow ─── */
+/* ─── Orb ─── */
 .orb {
   position: absolute;
   border-radius: 50%;
@@ -259,20 +261,15 @@
   pointer-events: none;
 }
 
-/* ─── Word split animations (GSAP targets) ─── */
-.word {
+/* ─── Split word wrappers ─── */
+.word, .split-word {
   display: inline-block;
   overflow: hidden;
 }
 
 /* ─── Portfolio drag cursor ─── */
-.portfolio-drag {
-  cursor: grab;
-  user-select: none;
-}
-.portfolio-drag:active {
-  cursor: grabbing;
-}
+.portfolio-drag { cursor: grab; user-select: none; }
+.portfolio-drag:active { cursor: grabbing; }
 
 /* ─── Spinner ─── */
 @keyframes spin {
@@ -280,8 +277,22 @@
   to   { transform: rotate(360deg); }
 }
 
-/* ─── Split word wrapper (GSAP SplitType) ─── */
-.split-word {
-  display: inline-block;
-  overflow: hidden;
+/* ─── Pricing card hover ─── */
+.pricing-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+.pricing-card:hover {
+  transform: translateY(-6px);
+}
+
+/* ─── Stat card float animation ─── */
+@keyframes float-up-down {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes float-down-up {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(10px); }
+}
+.float-a { animation: float-up-down 5s ease-in-out infinite; }
+.float-b { animation: float-down-up 6s ease-in-out infinite 0.5s; }
