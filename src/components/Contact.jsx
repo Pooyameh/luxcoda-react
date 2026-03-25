@@ -1,5 +1,9 @@
-import { motion } from 'framer-motion'
+import { useRef, useLayoutEffect } from 'react'
 import { Phone, Mail } from 'lucide-react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 function InstagramIcon({ size = 18, color = '#5eaeff' }) {
   return (
@@ -47,15 +51,51 @@ const contacts = [
 ]
 
 export default function Contact() {
+  const sectionRef = useRef(null)
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: '+=500',
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+        },
+      })
+
+      tl.fromTo(
+        '.contact-left',
+        { opacity: 0, x: -40 },
+        { opacity: 1, x: 0, duration: 0.6, ease: 'power2.out' }
+      )
+      tl.fromTo(
+        '.contact-card',
+        { opacity: 0, x: 30 },
+        { opacity: 1, x: 0, stagger: 0.1, duration: 0.45, ease: 'power2.out' },
+        '-=0.3'
+      )
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <section id="contact" style={{
-      padding: 'clamp(5rem, 10vw, 9rem) clamp(1.25rem, 4vw, 4rem)',
+    <section ref={sectionRef} id="contact" style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 clamp(1.25rem, 4vw, 4rem)',
       background: 'rgba(255,255,255,0.01)',
       borderTop: '1px solid rgba(255,255,255,0.06)',
+      overflow: 'hidden',
     }}>
       <div style={{
         maxWidth: 1400,
         margin: '0 auto',
+        width: '100%',
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         gap: 'clamp(3rem, 8vw, 8rem)',
@@ -64,12 +104,7 @@ export default function Contact() {
       className="contact-grid"
       >
         {/* Left — Big headline */}
-        <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="contact-left" style={{ opacity: 0 }}>
           <span style={{
             fontSize: '0.75rem', fontWeight: 600,
             letterSpacing: '0.14em', textTransform: 'uppercase',
@@ -83,8 +118,6 @@ export default function Contact() {
             fontWeight: 900,
             letterSpacing: '-0.05em',
             lineHeight: 0.9,
-            color: 'transparent',
-            WebkitTextStroke: '1.5px transparent',
             background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -103,22 +136,19 @@ export default function Contact() {
           }}>
             Brisbane-based and ready to build. Reach out by phone, email, or social — we respond fast.
           </p>
-        </motion.div>
+        </div>
 
         {/* Right — Contact details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(0.25rem, 1vw, 0.5rem)' }}>
-          {contacts.map((item, i) => {
+          {contacts.map((item) => {
             const { Icon } = item
             return (
-              <motion.a
+              <a
                 key={item.label}
                 href={item.href}
                 target={item.href.startsWith('http') ? '_blank' : undefined}
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 + i * 0.1 }}
+                className="contact-card"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -129,6 +159,7 @@ export default function Contact() {
                   textDecoration: 'none',
                   transition: 'border-color 0.25s, background 0.25s, transform 0.25s',
                   background: 'rgba(255,255,255,0.02)',
+                  opacity: 0,
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = 'rgba(94,174,255,0.35)'
@@ -168,7 +199,7 @@ export default function Contact() {
                     {item.value}
                   </div>
                 </div>
-              </motion.a>
+              </a>
             )
           })}
         </div>

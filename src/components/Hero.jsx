@@ -1,5 +1,10 @@
+import { useRef, useLayoutEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const line1Words = ['Custom', 'websites', 'for']
 const line2Words = ['Brisbane', 'businesses.']
@@ -14,6 +19,22 @@ const wordVar = {
 }
 
 export default function Hero({ onOpenModal, isLoaded = false }) {
+  const sectionRef = useRef(null)
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top top',
+        end: '+=300',
+        pin: true,
+        anticipatePin: 1,
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
   const a = (delay = 0) => ({
     initial: { opacity: 0, y: 22 },
     animate: isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
@@ -21,7 +42,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
   })
 
   return (
-    <section style={{
+    <section ref={sectionRef} style={{
       position: 'relative',
       height: '100vh',
       display: 'flex',
@@ -62,7 +83,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 1100, width: '100%' }}>
 
-        {/* ── Logo ── */}
+        {/* Logo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
           animate={isLoaded ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
@@ -81,7 +102,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
           />
         </motion.div>
 
-        {/* ── Headline line 1 ── */}
+        {/* Headline line 1 */}
         <div style={{ overflow: 'hidden', marginBottom: '0.1em' }}>
           <h1 style={{
             fontSize: 'clamp(2.6rem, 7vw, 8rem)',
@@ -107,7 +128,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
           </h1>
         </div>
 
-        {/* ── Headline line 2 (gradient) ── */}
+        {/* Headline line 2 (gradient) */}
         <div style={{ overflow: 'hidden', marginBottom: 'clamp(1rem, 2.5vh, 2rem)' }}>
           <h1 style={{
             fontSize: 'clamp(2.6rem, 7vw, 8rem)',
@@ -133,7 +154,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
           </h1>
         </div>
 
-        {/* ── Tagline ── */}
+        {/* Tagline */}
         <motion.p
           {...a(0.72)}
           style={{
@@ -151,7 +172,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
           Built to attract customers, not just look pretty.
         </motion.p>
 
-        {/* ── CTAs ── */}
+        {/* CTAs */}
         <motion.div
           {...a(0.92)}
           style={{

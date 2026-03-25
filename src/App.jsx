@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Lenis from '@studio-freight/lenis'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Cursor from './components/Cursor'
 import LoadingScreen from './components/LoadingScreen'
 import Navbar from './components/Navbar'
@@ -14,34 +16,44 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import MockupModal from './components/MockupModal'
 
+gsap.registerPlugin(ScrollTrigger)
+
 export default function App() {
   const [loading, setLoading] = useState(true)
   const [isLoaded, setIsLoaded] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smooth: true,
     })
 
-    function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
+    // Connect Lenis scroll events to GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update)
 
-    const id = requestAnimationFrame(raf)
+    // Drive Lenis via GSAP's ticker (time in seconds → raf expects ms)
+    const tickerFn = (time) => lenis.raf(time * 1000)
+    gsap.ticker.add(tickerFn)
+    gsap.ticker.lagSmoothing(0)
 
     return () => {
-      cancelAnimationFrame(id)
       lenis.destroy()
+      gsap.ticker.remove(tickerFn)
     }
   }, [])
 
+  // Refresh ScrollTrigger positions after loading screen exits
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => ScrollTrigger.refresh(), 150)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoaded])
+
   const handleLoadingComplete = () => {
     setLoading(false)
-    // Small delay so the exit animation starts before hero animates in
     setTimeout(() => setIsLoaded(true), 200)
   }
 
@@ -49,7 +61,7 @@ export default function App() {
   const closeModal = () => setModalOpen(false)
 
   return (
-    <div style={{ background: '#050508', color: '#fff', overflowX: 'hidden', minHeight: '100vh' }}>
+    <div style={{ background: '#050508', color: '#fff', overflowX: 'hidden' }}>
       <Cursor />
 
       <AnimatePresence>

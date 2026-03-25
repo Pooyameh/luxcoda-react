@@ -1,5 +1,8 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useRef, useLayoutEffect } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const items = [
   {
@@ -24,68 +27,65 @@ const items = [
   },
 ]
 
-// Scroll budget: 350vh container → 250vh of scroll
-// 4 items each start revealing at 0, 0.22, 0.44, 0.66 and finish at +0.18
-const RANGES = [
-  [0,    0.18],
-  [0.22, 0.40],
-  [0.44, 0.62],
-  [0.66, 0.84],
-]
-
 export default function Difference() {
-  const containerRef = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  })
+  const sectionRef = useRef(null)
 
-  // One useTransform pair per item (React rules — no hooks in loops)
-  const op0 = useTransform(scrollYProgress, RANGES[0], [0, 1])
-  const y0  = useTransform(scrollYProgress, RANGES[0], [36, 0])
-  const op1 = useTransform(scrollYProgress, RANGES[1], [0, 1])
-  const y1  = useTransform(scrollYProgress, RANGES[1], [36, 0])
-  const op2 = useTransform(scrollYProgress, RANGES[2], [0, 1])
-  const y2  = useTransform(scrollYProgress, RANGES[2], [36, 0])
-  const op3 = useTransform(scrollYProgress, RANGES[3], [0, 1])
-  const y3  = useTransform(scrollYProgress, RANGES[3], [36, 0])
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: '+=700',
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+        },
+      })
 
-  const opacities = [op0, op1, op2, op3]
-  const ys        = [y0,  y1,  y2,  y3]
+      // Stagger each row in as the user scrolls through the pin
+      tl.fromTo(
+        '.diff-item',
+        { opacity: 0, y: 36 },
+        { opacity: 1, y: 0, stagger: 0.18, duration: 0.5, ease: 'power2.out' }
+      )
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
 
   return (
-    // Outer scroll track — dark navy background
-    <div ref={containerRef} style={{ height: '350vh', background: '#06091a' }}>
-
-      {/* Sticky viewport */}
+    <div ref={sectionRef} style={{
+      height: '100vh',
+      background: '#06091a',
+      display: 'flex',
+      alignItems: 'center',
+      overflow: 'hidden',
+    }}>
       <div style={{
-        position: 'sticky', top: 0,
-        height: '100vh', overflow: 'hidden',
-        display: 'flex', alignItems: 'center',
+        maxWidth: 1400, margin: '0 auto', width: '100%',
+        padding: '0 clamp(1.25rem, 4vw, 4rem)',
       }}>
-        <div style={{
-          maxWidth: 1400, margin: '0 auto', width: '100%',
-          padding: '0 clamp(1.25rem, 4vw, 4rem)',
-        }}>
 
-          {/* Section label */}
-          <div style={{ marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
-            <span style={{
-              fontSize: '0.72rem', fontWeight: 600,
-              letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.38)',
-            }}>
-              The Difference
-            </span>
-          </div>
+        {/* Section label */}
+        <div style={{ marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+          <span style={{
+            fontSize: '0.72rem', fontWeight: 600,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.38)',
+          }}>
+            The Difference
+          </span>
+        </div>
 
-          {/* Top rule */}
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 0 }} />
+        {/* Top rule */}
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 0 }} />
 
-          {/* Rows */}
-          {items.map((item, i) => (
-            <motion.div key={item.num} style={{ opacity: opacities[i], y: ys[i] }}>
-              <div style={{
+        {/* Rows — each starts invisible, GSAP staggers them in */}
+        {items.map((item) => (
+          <div key={item.num} className="diff-item" style={{ opacity: 0 }}>
+            <div
+              style={{
                 display: 'grid',
                 gridTemplateColumns: 'clamp(2.5rem, 5vw, 5rem) 1fr 1fr',
                 gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
@@ -93,35 +93,34 @@ export default function Difference() {
                 padding: 'clamp(1.1rem, 2.2vw, 1.8rem) 0',
               }}
               className="diff-row"
-              >
-                <span className="gradient-text" style={{
-                  fontSize: '0.8rem', fontWeight: 700,
-                  letterSpacing: '0.05em', paddingTop: '0.15em',
-                }}>
-                  {item.num}
-                </span>
+            >
+              <span className="gradient-text" style={{
+                fontSize: '0.8rem', fontWeight: 700,
+                letterSpacing: '0.05em', paddingTop: '0.15em',
+              }}>
+                {item.num}
+              </span>
 
-                <h3 style={{
-                  fontSize: 'clamp(1.3rem, 2.8vw, 2.4rem)',
-                  fontWeight: 700, letterSpacing: '-0.03em',
-                  lineHeight: 1.1, color: '#fff',
-                }}>
-                  {item.title}
-                </h3>
+              <h3 style={{
+                fontSize: 'clamp(1.3rem, 2.8vw, 2.4rem)',
+                fontWeight: 700, letterSpacing: '-0.03em',
+                lineHeight: 1.1, color: '#fff',
+              }}>
+                {item.title}
+              </h3>
 
-                <p style={{
-                  fontSize: 'clamp(0.88rem, 1.2vw, 1rem)',
-                  color: 'rgba(255,255,255,0.7)',
-                  lineHeight: 1.7, paddingTop: '0.25em',
-                }}>
-                  {item.body}
-                </p>
-              </div>
+              <p style={{
+                fontSize: 'clamp(0.88rem, 1.2vw, 1rem)',
+                color: 'rgba(255,255,255,0.7)',
+                lineHeight: 1.7, paddingTop: '0.25em',
+              }}>
+                {item.body}
+              </p>
+            </div>
 
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
-            </motion.div>
-          ))}
-        </div>
+            <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
+          </div>
+        ))}
       </div>
 
       <style>{`

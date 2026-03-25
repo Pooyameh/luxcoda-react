@@ -1,7 +1,10 @@
-import { useRef, useState } from 'react'
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion'
+import { useRef, useLayoutEffect } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-// ── Brand icons as clean SVG ──────────────────────────────────────────────────
+gsap.registerPlugin(ScrollTrigger)
+
+// ── Brand icons ───────────────────────────────────────────────────────────────
 
 function JSIcon() {
   return (
@@ -55,7 +58,7 @@ const techs = [
     Icon: ClaudeIcon,
     name: 'Claude Code',
     role: 'The Architect',
-    body: 'This entire site was designed and built using Claude Code — Anthropic\'s AI development environment. Smart code, zero bloat.',
+    body: "This entire site was designed and built using Claude Code — Anthropic's AI development environment. Smart code, zero bloat.",
     accent: '#CC785C',
     bg: 'rgba(204,120,92,0.05)',
   },
@@ -77,147 +80,174 @@ const techs = [
   },
 ]
 
-// ── Transitions ───────────────────────────────────────────────────────────────
-
-const fade = {
-  enter: { opacity: 0, scale: 0.96, filter: 'blur(6px)' },
-  center: {
-    opacity: 1, scale: 1, filter: 'blur(0px)',
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
-  },
-  exit: {
-    opacity: 0, scale: 1.02, filter: 'blur(6px)',
-    transition: { duration: 0.4, ease: [0.4, 0, 1, 1] },
-  },
-}
-
 export default function TechStack() {
-  const containerRef = useRef(null)
-  const [current, setCurrent] = useState(0)
+  const sectionRef = useRef(null)
+  const slideRefs = useRef([])
+  const glowRefs = useRef([])
+  const dotsRef = useRef([])
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  })
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      let lastIdx = 0
 
-  // 300vh container → 200vh budget → 4 techs × 50vh each
-  useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    const next = Math.min(3, Math.floor(v * 4))
-    if (next !== current) setCurrent(next)
-  })
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top top',
+        end: '+=1200',
+        pin: true,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          const idx = Math.min(techs.length - 1, Math.floor(self.progress * techs.length))
 
-  const tech = techs[current]
+          if (idx !== lastIdx) {
+            const prev = lastIdx
+            lastIdx = idx
+
+            // Cross-fade content slides
+            gsap.to(slideRefs.current[prev], {
+              opacity: 0, scale: 1.02, filter: 'blur(6px)',
+              duration: 0.4, ease: 'power2.in', overwrite: true,
+            })
+            gsap.fromTo(slideRefs.current[idx],
+              { opacity: 0, scale: 0.96, filter: 'blur(6px)' },
+              { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out', overwrite: true }
+            )
+
+            // Cross-fade background glows
+            gsap.to(glowRefs.current[prev], { opacity: 0, duration: 0.8, overwrite: true })
+            gsap.to(glowRefs.current[idx], { opacity: 1, duration: 0.8, overwrite: true })
+
+            // Animate dots (use each tech's accent colour)
+            dotsRef.current.forEach((dot, i) => {
+              gsap.to(dot, {
+                width: i === idx ? 28 : 6,
+                backgroundColor: i === idx ? techs[idx].accent : 'rgba(255,255,255,0.15)',
+                duration: 0.3,
+                overwrite: true,
+              })
+            })
+          }
+        },
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <div ref={containerRef} style={{ height: '300vh', background: '#0a0612' }}>
-      <div style={{
-        position: 'sticky', top: 0,
-        height: '100vh', overflow: 'hidden',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-      }}>
+    <div ref={sectionRef} style={{
+      height: '100vh',
+      background: '#0a0612',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
 
-        {/* Section label */}
-        <div style={{
-          position: 'absolute', top: 'clamp(1.5rem, 4vh, 3rem)',
-          left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', alignItems: 'center', gap: '0.75rem',
+      {/* Section label */}
+      <div style={{
+        position: 'absolute', top: 'clamp(1.5rem, 4vh, 3rem)',
+        left: '50%', transform: 'translateX(-50%)',
+        zIndex: 2,
+      }}>
+        <span style={{
+          fontSize: '0.72rem', fontWeight: 600,
+          letterSpacing: '0.14em', textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.32)',
         }}>
+          Built With
+        </span>
+      </div>
+
+      {/* Per-tech background glows (all rendered, GSAP fades between them) */}
+      {techs.map((tech, i) => (
+        <div
+          key={i + '-glow'}
+          ref={el => glowRefs.current[i] = el}
+          style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: `radial-gradient(ellipse 60% 50% at 50% 50%, ${tech.bg} 0%, transparent 70%)`,
+            filter: 'blur(20px)',
+            opacity: i === 0 ? 1 : 0,
+          }}
+        />
+      ))}
+
+      {/* All tech slides overlaid — GSAP crossfades between them */}
+      {techs.map((tech, i) => (
+        <div
+          key={tech.name}
+          ref={el => slideRefs.current[i] = el}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: i === 0 ? 1 : 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            padding: '0 clamp(1.25rem, 4vw, 4rem)',
+            gap: 'clamp(1rem, 2.5vh, 1.75rem)',
+            zIndex: 1,
+          }}
+        >
+          <tech.Icon />
+
           <span style={{
             fontSize: '0.72rem', fontWeight: 600,
-            letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.32)',
+            letterSpacing: '0.16em', textTransform: 'uppercase',
+            color: tech.accent,
+            opacity: 0.9,
           }}>
-            Built With
+            {tech.role}
           </span>
-        </div>
 
-        {/* Animated background glow — changes colour per tech */}
-        <AnimatePresence>
-          <motion.div
-            key={current + '-glow'}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
+          <h2 style={{
+            fontSize: 'clamp(2.8rem, 7vw, 7rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.05em',
+            lineHeight: 0.95,
+            color: '#fff',
+            margin: 0,
+          }}>
+            {tech.name}
+          </h2>
+
+          <p style={{
+            fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+            color: 'rgba(255,255,255,0.65)',
+            lineHeight: 1.7,
+            maxWidth: 480,
+            margin: 0,
+          }}>
+            {tech.body}
+          </p>
+        </div>
+      ))}
+
+      {/* Progress dots */}
+      <div style={{
+        position: 'absolute',
+        bottom: 'clamp(1.5rem, 4vh, 3rem)',
+        left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', gap: '0.5rem', alignItems: 'center',
+        zIndex: 2,
+      }}>
+        {techs.map((tech, i) => (
+          <div
+            key={i}
+            ref={el => dotsRef.current[i] = el}
             style={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              background: `radial-gradient(ellipse 60% 50% at 50% 50%, ${tech.bg} 0%, transparent 70%)`,
-              filter: 'blur(20px)',
+              height: 5,
+              borderRadius: 3,
+              width: i === 0 ? 28 : 6,
+              backgroundColor: i === 0 ? tech.accent : 'rgba(255,255,255,0.15)',
             }}
           />
-        </AnimatePresence>
-
-        {/* Main content — crossfades per tech */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current}
-            variants={fade}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            style={{
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', textAlign: 'center',
-              padding: '0 clamp(1.25rem, 4vw, 4rem)',
-              maxWidth: 640,
-              gap: 'clamp(1rem, 2.5vh, 1.75rem)',
-            }}
-          >
-            {/* Icon */}
-            <tech.Icon />
-
-            {/* Role eyebrow */}
-            <span style={{
-              fontSize: '0.72rem', fontWeight: 600,
-              letterSpacing: '0.16em', textTransform: 'uppercase',
-              color: tech.accent,
-              opacity: 0.9,
-            }}>
-              {tech.role}
-            </span>
-
-            {/* Tech name */}
-            <h2 style={{
-              fontSize: 'clamp(2.8rem, 7vw, 7rem)',
-              fontWeight: 900,
-              letterSpacing: '-0.05em',
-              lineHeight: 0.95,
-              color: '#fff',
-              margin: 0,
-            }}>
-              {tech.name}
-            </h2>
-
-            {/* Description */}
-            <p style={{
-              fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-              color: 'rgba(255,255,255,0.65)',
-              lineHeight: 1.7,
-              maxWidth: 480,
-              margin: 0,
-            }}>
-              {tech.body}
-            </p>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Progress dots */}
-        <div style={{
-          position: 'absolute',
-          bottom: 'clamp(1.5rem, 4vh, 3rem)',
-          left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', gap: '0.5rem', alignItems: 'center',
-        }}>
-          {techs.map((t, i) => (
-            <div key={i} style={{
-              height: 5, borderRadius: 3,
-              transition: 'width 0.35s ease, background 0.35s ease',
-              width: i === current ? 28 : 6,
-              background: i === current ? tech.accent : 'rgba(255,255,255,0.15)',
-            }} />
-          ))}
-        </div>
+        ))}
       </div>
     </div>
   )
