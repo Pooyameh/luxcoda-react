@@ -1,59 +1,40 @@
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import MockupDialog from './MockupDialog'
+import { motion } from 'framer-motion'
+import { Check } from 'lucide-react'
 
 const plans = [
   {
     name: 'Starter',
-    price: '$999',
-    monthly: '$69',
-    desc: 'The perfect foundation for any Brisbane business ready to launch a professional online presence.',
+    upfront: '$999',
+    monthly: '$69/mo',
+    tagline: 'Everything you need to get online and be found.',
     features: [
-      'Custom website design',
-      'Mobile responsive layout',
+      'Custom-designed website',
+      'Fully mobile responsive',
       'SEO-ready structure',
       'Contact forms',
-      'Monthly hosting included',
-      'Ongoing maintenance',
+      'Monthly hosting & maintenance',
     ],
-    cta: 'Get Started',
-    highlight: false,
-    badge: null,
-    accent: '#5eaeff',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-    ),
+    featured: false,
   },
   {
     name: 'Growth',
-    price: '$1,499',
-    monthly: '$149',
-    desc: 'Everything in Starter, plus active tools to grow your search presence and online authority.',
+    upfront: '$1,499',
+    monthly: '$149/mo',
+    tagline: 'Built to rank higher and earn more trust.',
     features: [
       'Everything in Starter',
-      'Premium animations & interactions',
+      'Premium animations',
       'Active SEO management',
       'Google Business setup & management',
       'Monthly performance reports',
     ],
-    cta: 'Start Growing',
-    highlight: false,
-    badge: null,
-    accent: '#818cf8',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-      </svg>
-    ),
+    featured: false,
   },
   {
     name: 'Accelerate',
-    price: '$1,999',
-    monthly: '$249',
-    desc: 'Our most powerful package — everything you need to dominate your market online.',
+    upfront: '$1,999',
+    monthly: '$249/mo',
+    tagline: 'The complete growth system for serious businesses.',
     features: [
       'Everything in Growth',
       'Facebook & Instagram ad setup',
@@ -61,457 +42,292 @@ const plans = [
       'Social media content calendar',
       'Review generation strategy',
     ],
-    cta: 'Accelerate My Business',
-    highlight: true,
-    badge: 'RECOMMENDED',
-    accent: '#a855f7',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-      </svg>
-    ),
+    featured: true,
+    recommended: true,
   },
   {
     name: 'Premium',
-    price: 'Custom',
+    upfront: 'Let\'s Talk',
     monthly: null,
-    desc: 'A complete white-glove digital partnership — every service, fully handled for you.',
+    tagline: 'A fully managed presence — done entirely for you.',
     features: [
       'Everything in Accelerate',
       'Professional photography',
       'Booking systems & paywalls',
-      'Newsletters & email marketing',
+      'Email newsletters',
       'Full social media management',
     ],
-    cta: "Let's Talk",
-    highlight: false,
-    badge: null,
-    accent: '#c084fc',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-    ),
+    featured: false,
+    custom: true,
   },
 ]
 
-const CheckIcon = ({ color }) => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke={color}
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{ flexShrink: 0, marginTop: 1 }}
-  >
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-)
-
-export default function Pricing() {
-  const sectionRef = useRef(null)
-  const isInView = useInView(sectionRef, { once: true, amount: 0.05 })
-
+export default function Pricing({ onOpenModal }) {
   return (
-    <section
-      id="pricing"
-      ref={sectionRef}
-      style={{
-        position: 'relative',
-        background: '#0d0d22',
-        padding: '120px 24px',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Background orbs */}
-      <div
-        className="orb"
-        style={{
-          width: 700,
-          height: 700,
-          background: 'radial-gradient(circle, rgba(94,174,255,0.07) 0%, transparent 65%)',
-          top: '-20%',
-          left: '-15%',
-        }}
-      />
-      <div
-        className="orb"
-        style={{
-          width: 600,
-          height: 600,
-          background: 'radial-gradient(circle, rgba(168,85,247,0.07) 0%, transparent 65%)',
-          bottom: '-15%',
-          right: '-10%',
-        }}
-      />
+    <section id="pricing" style={{
+      padding: 'clamp(5rem, 10vw, 9rem) clamp(1.25rem, 4vw, 4rem)',
+    }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          style={{ textAlign: 'center', marginBottom: 80 }}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ marginBottom: 'clamp(3rem, 7vw, 6rem)', maxWidth: 640 }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 14,
-              marginBottom: 20,
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-block',
-                width: 44,
-                height: 1.5,
-                background: 'linear-gradient(90deg, transparent, #5eaeff)',
-                borderRadius: 2,
-              }}
-            />
-            <span className="section-label">Transparent Pricing</span>
-            <span
-              style={{
-                display: 'inline-block',
-                width: 44,
-                height: 1.5,
-                background: 'linear-gradient(270deg, transparent, #a855f7)',
-                borderRadius: 2,
-              }}
-            />
-          </div>
-          <h2
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
-              fontWeight: 800,
-              color: '#f0f0ff',
-              margin: '0 0 20px',
-              lineHeight: 1.05,
-            }}
-          >
-            Honest pricing,{' '}
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              zero surprises
-            </span>
+          <span style={{
+            fontSize: '0.75rem', fontWeight: 600,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.45)',
+            display: 'block', marginBottom: '0.75rem',
+          }}>
+            Transparent Pricing
+          </span>
+          <h2 style={{
+            fontSize: 'clamp(2.2rem, 5vw, 4.5rem)',
+            fontWeight: 800,
+            letterSpacing: '-0.04em',
+            lineHeight: 1.05,
+          }}>
+            No surprises.
+            <br />
+            <span className="gradient-text">Just results.</span>
           </h2>
-          <p
-            style={{
-              fontFamily: "'Barlow', sans-serif",
-              fontSize: '1.05rem',
-              color: 'rgba(240,240,255,0.85)',
-              margin: '0 auto',
-              maxWidth: 520,
-              lineHeight: 1.6,
-            }}
-          >
-            No lock-in contracts. Cancel anytime. Every plan includes a free mock-up before you commit.
-          </p>
         </motion.div>
 
-        {/* 4-column pricing grid */}
-        <div
-          style={{
-            display: 'grid',
-            gap: 20,
-            alignItems: 'start',
-          }}
-          className="xl:grid-cols-4 md:grid-cols-2 grid-cols-1"
-        >
+        {/* Pricing Bands */}
+        <div>
+          {/* Column headers (desktop) */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1.2fr 2fr 1fr',
+              gap: 'clamp(1rem, 3vw, 3rem)',
+              padding: '0 0 1rem',
+              marginBottom: '0.5rem',
+            }}
+            className="pricing-header"
+          >
+            <span style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>Plan</span>
+            <span style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>What's included</span>
+            <span style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', textAlign: 'right' }}>Investment</span>
+          </motion.div>
+
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 0 }} />
+
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 60 }}
-              animate={isInView ? { opacity: 1, y: plan.highlight ? -12 : 0 } : {}}
-              transition={{
-                duration: 0.7,
-                delay: 0.1 + i * 0.1,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              style={{ position: 'relative' }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 }}
             >
-              {/* Badge */}
-              {plan.badge && (
-                <div
-                  style={{
+              {/* Featured wrapper */}
+              <div style={{
+                position: 'relative',
+                ...(plan.featured ? {
+                  background: 'rgba(94,174,255,0.04)',
+                  margin: '0 -1.5rem',
+                  padding: '0 1.5rem',
+                } : {}),
+              }}>
+                {/* Recommended badge */}
+                {plan.recommended && (
+                  <div style={{
                     position: 'absolute',
-                    top: -15,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
-                    color: '#fff',
-                    fontFamily: "'Syne', sans-serif",
-                    fontSize: '0.62rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.18em',
-                    padding: '5px 18px',
-                    borderRadius: 20,
-                    whiteSpace: 'nowrap',
-                    zIndex: 2,
-                    boxShadow: '0 4px 20px rgba(168,85,247,0.4)',
-                  }}
-                >
-                  {plan.badge}
-                </div>
-              )}
-
-              <div
-                className="pricing-card"
-                style={{
-                  background: plan.highlight
-                    ? 'rgba(168,85,247,0.09)'
-                    : 'rgba(255,255,255,0.03)',
-                  border: plan.highlight
-                    ? '1px solid rgba(168,85,247,0.45)'
-                    : '1px solid rgba(255,255,255,0.07)',
-                  borderRadius: 22,
-                  padding: '32px 26px 28px',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: plan.highlight
-                    ? '0 0 60px rgba(168,85,247,0.18), 0 24px 80px rgba(0,0,0,0.35)'
-                    : '0 4px 24px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(16px)',
-                }}
-              >
-                {/* Gradient top border on featured card */}
-                {plan.highlight && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: 2,
-                      background: 'linear-gradient(90deg, #5eaeff, #a855f7)',
-                      borderRadius: '22px 22px 0 0',
-                    }}
-                  />
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 2,
+                    background: 'linear-gradient(90deg, #5eaeff, #a855f7)',
+                    borderRadius: '2px 2px 0 0',
+                  }} />
                 )}
 
-                {/* Icon + plan name */}
                 <div
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    marginBottom: 20,
+                    display: 'grid',
+                    gridTemplateColumns: '1.2fr 2fr 1fr',
+                    gap: 'clamp(1rem, 3vw, 3rem)',
+                    alignItems: 'start',
+                    padding: plan.featured
+                      ? 'clamp(2rem, 4vw, 3rem) 0'
+                      : 'clamp(1.75rem, 3.5vw, 2.75rem) 0',
                   }}
+                  className="pricing-row"
                 >
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 10,
-                      background: `${plan.accent}18`,
-                      border: `1px solid ${plan.accent}30`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: plan.accent,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {plan.icon}
+                  {/* Plan name */}
+                  <div>
+                    {plan.recommended && (
+                      <div style={{
+                        display: 'inline-block',
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: 100,
+                        background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
+                        color: '#fff',
+                        marginBottom: '0.65rem',
+                      }}>
+                        Recommended
+                      </div>
+                    )}
+                    <h3 style={{
+                      fontSize: plan.featured
+                        ? 'clamp(1.4rem, 2.8vw, 2.2rem)'
+                        : 'clamp(1.2rem, 2.2vw, 1.8rem)',
+                      fontWeight: 800,
+                      letterSpacing: '-0.03em',
+                      color: '#fff',
+                      marginBottom: '0.4rem',
+                    }}>
+                      {plan.name}
+                    </h3>
+                    <p style={{
+                      fontSize: 'clamp(0.82rem, 1.2vw, 0.9rem)',
+                      color: 'rgba(255,255,255,0.55)',
+                      lineHeight: 1.5,
+                    }}>
+                      {plan.tagline}
+                    </p>
                   </div>
-                  <span
-                    style={{
-                      fontFamily: "'Syne', sans-serif",
-                      fontSize: '0.7rem',
-                      fontWeight: 700,
-                      letterSpacing: '0.2em',
-                      textTransform: 'uppercase',
-                      color: plan.accent,
-                    }}
-                  >
-                    {plan.name}
-                  </span>
-                </div>
 
-                {/* Price */}
-                <div style={{ marginBottom: plan.monthly ? 4 : 8 }}>
-                  <span
-                    style={{
-                      fontFamily: "'Bebas Neue', sans-serif",
-                      fontSize: '3.2rem',
-                      letterSpacing: '0.02em',
-                      color: '#f0f0ff',
-                      lineHeight: 1,
-                    }}
-                  >
-                    {plan.price}
-                  </span>
-                  {plan.price !== 'Custom' && (
-                    <span
-                      style={{
-                        fontFamily: "'Barlow', sans-serif",
-                        fontSize: '0.78rem',
-                        color: 'rgba(240,240,255,0.7)',
-                        marginLeft: 4,
-                      }}
-                    >
-                      upfront
-                    </span>
-                  )}
-                </div>
-
-                {/* Monthly */}
-                {plan.monthly ? (
-                  <div
-                    style={{
-                      fontFamily: "'Syne', sans-serif",
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      color: plan.accent,
-                      marginBottom: 18,
-                    }}
-                  >
-                    + {plan.monthly}/mo ongoing
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      fontFamily: "'Syne', sans-serif",
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      color: plan.accent,
-                      marginBottom: 18,
-                    }}
-                  >
-                    Custom quote
-                  </div>
-                )}
-
-                {/* Description */}
-                <p
-                  style={{
-                    fontFamily: "'Barlow', sans-serif",
-                    fontSize: '0.875rem',
-                    color: 'rgba(240,240,255,0.85)',
-                    lineHeight: 1.65,
-                    margin: '0 0 20px',
-                  }}
-                >
-                  {plan.desc}
-                </p>
-
-                {/* Divider */}
-                <div
-                  style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 20 }}
-                />
-
-                {/* Features */}
-                <ul
-                  style={{
+                  {/* Features */}
+                  <ul style={{
                     listStyle: 'none',
-                    margin: '0 0 28px',
                     padding: 0,
+                    margin: 0,
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 11,
-                    flex: 1,
-                  }}
-                >
-                  {plan.features.map((f, fi) => (
-                    <li
-                      key={fi}
-                      style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}
-                    >
-                      <CheckIcon color={plan.accent} />
-                      <span
-                        style={{
-                          fontFamily: "'Barlow', sans-serif",
-                          fontSize: '0.875rem',
-                          color: 'rgba(240,240,255,0.88)',
-                          lineHeight: 1.45,
-                        }}
-                      >
-                        {f}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                    gap: '0.5rem',
+                  }}>
+                    {plan.features.map(feat => (
+                      <li key={feat} style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '0.5rem',
+                        fontSize: 'clamp(0.85rem, 1.2vw, 0.95rem)',
+                        color: 'rgba(255,255,255,0.8)',
+                        lineHeight: 1.5,
+                      }}>
+                        <span style={{ color: plan.featured ? '#5eaeff' : 'rgba(94,174,255,0.7)', marginTop: '0.18em', flexShrink: 0 }}>
+                          <Check size={13} strokeWidth={2.5} />
+                        </span>
+                        {feat}
+                      </li>
+                    ))}
+                  </ul>
 
-                {/* CTA */}
-                {plan.highlight ? (
-                  <MockupDialog
-                    trigger={
-                      <Button
-                        className="gradient-btn"
+                  {/* Price */}
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{
+                      fontSize: plan.featured
+                        ? 'clamp(1.5rem, 3vw, 2.5rem)'
+                        : 'clamp(1.3rem, 2.5vw, 2rem)',
+                      fontWeight: 800,
+                      letterSpacing: '-0.03em',
+                      ...(plan.featured ? {
+                        background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      } : { color: '#fff' }),
+                      lineHeight: 1.1,
+                    }}>
+                      {plan.upfront}
+                    </div>
+                    {plan.monthly && (
+                      <div style={{
+                        fontSize: 'clamp(0.78rem, 1.1vw, 0.88rem)',
+                        color: 'rgba(255,255,255,0.5)',
+                        marginTop: '0.25rem',
+                      }}>
+                        + {plan.monthly}
+                      </div>
+                    )}
+                    {plan.custom && (
+                      <button
+                        onClick={onOpenModal}
                         style={{
-                          width: '100%',
-                          height: 48,
-                          borderRadius: 12,
-                          fontSize: '0.875rem',
+                          marginTop: '0.75rem',
+                          fontSize: '0.78rem',
+                          color: 'rgba(255,255,255,0.65)',
+                          background: 'none',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: 100,
+                          padding: '0.4rem 0.9rem',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          transition: 'border-color 0.2s, color 0.2s',
                         }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; e.currentTarget.style.color = '#fff' }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)' }}
                       >
-                        {plan.cta}
-                      </Button>
-                    }
-                  />
-                ) : plan.price === 'Custom' ? (
-                  <a href="tel:0414758891" style={{ textDecoration: 'none', display: 'block' }}>
-                    <Button
-                      className="ghost-btn"
-                      style={{ width: '100%', height: 48, borderRadius: 12, fontSize: '0.875rem' }}
-                    >
-                      Call 0414 758 891
-                    </Button>
-                  </a>
-                ) : (
-                  <MockupDialog
-                    trigger={
-                      <Button
-                        className="ghost-btn"
-                        style={{
-                          width: '100%',
-                          height: 48,
-                          borderRadius: 12,
-                          fontSize: '0.875rem',
-                        }}
-                      >
-                        {plan.cta}
-                      </Button>
-                    }
-                  />
-                )}
+                        Get a quote
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
+
+              {/* Divider */}
+              {i < plans.length - 1 && (
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
+              )}
             </motion.div>
           ))}
+
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)' }} />
         </div>
 
-        {/* Fine print */}
+        {/* Bottom note */}
         <motion.p
           initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.8, duration: 0.7 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           style={{
-            textAlign: 'center',
-            marginTop: 52,
-            fontFamily: "'Barlow', sans-serif",
+            marginTop: 'clamp(1.5rem, 3vw, 2.5rem)',
             fontSize: '0.85rem',
-            color: 'rgba(240,240,255,0.55)',
-            lineHeight: 1.6,
+            color: 'rgba(255,255,255,0.4)',
+            textAlign: 'center',
           }}
         >
-          All plans include a <strong style={{ color: 'rgba(240,240,255,0.85)' }}>free design mock-up</strong> before you commit. Not happy? You don't pay a cent.
+          Not sure which plan is right for you? Claim your free mock-up and we'll recommend the best fit.
         </motion.p>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .pricing-header { display: none !important; }
+          .pricing-row {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+          .pricing-row > div:last-child {
+            text-align: left !important;
+          }
+        }
+        @media (max-width: 900px) {
+          .pricing-header {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .pricing-header > span:nth-child(2) { display: none; }
+          .pricing-row {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .pricing-row > ul { display: none !important; }
+        }
+      `}</style>
     </section>
   )
 }

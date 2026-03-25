@@ -1,68 +1,54 @@
 import { useEffect, useState } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from '@studio-freight/lenis'
-import { AnimatePresence } from 'framer-motion'
-
-import LoadingScreen from './components/LoadingScreen'
+import Cursor from './components/Cursor'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
-import Marquee from './components/Marquee'
-import Services from './components/Services'
+import Difference from './components/Difference'
 import Process from './components/Process'
-import Portfolio from './components/Portfolio'
 import Pricing from './components/Pricing'
+import Cta from './components/Cta'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
-
-import './App.css'
-
-gsap.registerPlugin(ScrollTrigger)
+import MockupModal from './components/MockupModal'
 
 export default function App() {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
+      smooth: true,
     })
 
-    // Connect Lenis with GSAP ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update)
+    function raf(time) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
 
-    const rafCallback = (time) => lenis.raf(time * 1000)
-    gsap.ticker.add(rafCallback)
-    gsap.ticker.lagSmoothing(0)
+    const id = requestAnimationFrame(raf)
 
     return () => {
+      cancelAnimationFrame(id)
       lenis.destroy()
-      gsap.ticker.remove(rafCallback)
     }
   }, [])
 
-  return (
-    <>
-      <AnimatePresence>
-        {!isLoaded && (
-          <LoadingScreen key="loading" onComplete={() => setIsLoaded(true)} />
-        )}
-      </AnimatePresence>
+  const openModal = () => setModalOpen(true)
+  const closeModal = () => setModalOpen(false)
 
-      <div style={{ visibility: isLoaded ? 'visible' : 'hidden' }}>
-        <Navbar />
-        <main>
-          <Hero isLoaded={isLoaded} />
-          <Marquee />
-          <Services />
-          <Process />
-          <Portfolio />
-          <Pricing />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-    </>
+  return (
+    <div style={{ background: '#050508', color: '#fff', overflowX: 'hidden', minHeight: '100vh' }}>
+      <Cursor />
+      <Navbar onOpenModal={openModal} />
+      <Hero onOpenModal={openModal} />
+      <Difference />
+      <Process />
+      <Pricing onOpenModal={openModal} />
+      <Cta onOpenModal={openModal} />
+      <Contact />
+      <Footer />
+      <MockupModal isOpen={modalOpen} onClose={closeModal} />
+    </div>
   )
 }
