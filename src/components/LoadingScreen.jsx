@@ -10,7 +10,7 @@ export default function LoadingScreen({ onComplete }) {
         position: 'fixed',
         inset: 0,
         zIndex: 10000,
-        background: '#141519',
+        background: '#1e2028',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -18,17 +18,56 @@ export default function LoadingScreen({ onComplete }) {
         gap: '2.5rem',
       }}
     >
+      {/* Outer slow-rotating ring */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'absolute',
+          width: 420,
+          height: 420,
+          borderRadius: '50%',
+          border: '1px solid rgba(94,174,255,0.08)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Inner counter-rotating ring */}
+      <motion.div
+        animate={{ rotate: -360 }}
+        transition={{ duration: 7, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'absolute',
+          width: 280,
+          height: 280,
+          borderRadius: '50%',
+          border: '1px solid rgba(168,85,247,0.12)',
+          pointerEvents: 'none',
+        }}
+      >
+        {/* Dot on the ring */}
+        <div style={{
+          position: 'absolute',
+          top: -3, left: '50%',
+          transform: 'translateX(-50%)',
+          width: 6, height: 6,
+          borderRadius: '50%',
+          background: '#a855f7',
+          boxShadow: '0 0 8px #a855f7',
+        }} />
+      </motion.div>
+
       {/* Pulsing glow orb */}
       <motion.div
-        animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.55, 0.35] }}
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         style={{
           position: 'absolute',
-          width: 320,
-          height: 320,
+          width: 360,
+          height: 360,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(94,174,255,0.18) 0%, rgba(168,85,247,0.14) 50%, transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(circle, rgba(94,174,255,0.16) 0%, rgba(168,85,247,0.12) 50%, transparent 70%)',
+          filter: 'blur(48px)',
           pointerEvents: 'none',
         }}
       />
@@ -37,11 +76,11 @@ export default function LoadingScreen({ onComplete }) {
       <motion.img
         src="/logo.png"
         alt="Luxcoda"
-        initial={{ opacity: 0, scale: 0.88, filter: 'blur(8px)' }}
+        initial={{ opacity: 0, scale: 0.82, filter: 'blur(12px)' }}
         animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          height: 'clamp(72px, 12vh, 110px)',
+          height: 'clamp(130px, 20vh, 180px)',
           width: 'auto',
           position: 'relative',
           zIndex: 1,
@@ -52,7 +91,7 @@ export default function LoadingScreen({ onComplete }) {
       <div style={{
         position: 'relative',
         zIndex: 1,
-        width: 'clamp(80px, 12vw, 120px)',
+        width: 'clamp(100px, 14vw, 140px)',
         height: 1.5,
         background: 'rgba(255,255,255,0.08)',
         borderRadius: 2,

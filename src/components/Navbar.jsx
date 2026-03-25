@@ -29,7 +29,7 @@ export default function Navbar({ onOpenModal }) {
         top: 0, left: 0, right: 0,
         zIndex: 100,
         transition: 'background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease',
-        background: scrolled ? 'rgba(5,5,8,0.85)' : 'transparent',
+        background: scrolled ? 'rgba(30,32,40,0.85)' : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
         WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
         borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
@@ -50,7 +50,16 @@ export default function Navbar({ onOpenModal }) {
             pointerEvents: scrolled ? 'auto' : 'none',
             transition: 'opacity 0.4s ease',
           }}>
-            <img src="/logo.png" alt="Luxcoda" style={{ height: 36, width: 'auto' }} />
+            <span style={{
+              fontFamily: 'inherit',
+              fontSize: '1.15rem',
+              fontWeight: 700,
+              letterSpacing: '-0.04em',
+              background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>luxcoda</span>
           </a>
 
           {/* Desktop Links — hidden below md via media query class */}

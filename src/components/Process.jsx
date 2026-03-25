@@ -27,14 +27,28 @@ const steps = [
   },
 ]
 
+// Split a title string (with \n) into an array of { char, isBreak } descriptors
+function splitTitle(title) {
+  return title.split('').map(ch => ({ char: ch, isBreak: ch === '\n' }))
+}
+
 export default function Process() {
   const sectionRef = useRef(null)
   const counterRef = useRef(null)
   const slideRefs = useRef([])
+  const charRefs = useRef([])   // charRefs[i] = array of inner char spans for slide i
+  const bodyRefs = useRef([])
   const dotsRef = useRef([])
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      // Initialize non-first slides: chars below clip, body offset
+      for (let i = 1; i < steps.length; i++) {
+        gsap.set(charRefs.current[i] || [], { y: '120%' })
+        gsap.set(bodyRefs.current[i], { y: 32 })
+        gsap.set(slideRefs.current[i], { opacity: 0 })
+      }
+
       let lastIdx = 0
 
       ScrollTrigger.create({
@@ -55,27 +69,35 @@ export default function Process() {
             const prev = lastIdx
             lastIdx = idx
 
-            // Cross-fade slides — dramatic scale + blur + y
-            gsap.to(slideRefs.current[prev], {
-              opacity: 0, y: -60, scale: 0.94, filter: 'blur(10px)',
-              duration: 0.4, ease: 'power2.in', overwrite: true,
+            // Exit: chars slide up and out, then hide slide
+            const prevChars = charRefs.current[prev] || []
+            gsap.to(prevChars, {
+              y: '-120%', stagger: 0.012, duration: 0.22, ease: 'power2.in', overwrite: true,
+              onComplete: () => gsap.set(slideRefs.current[prev], { opacity: 0 }),
             })
-            gsap.fromTo(slideRefs.current[idx],
-              { opacity: 0, y: 70, scale: 0.96, filter: 'blur(12px)' },
-              { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out', overwrite: true }
+            gsap.to(bodyRefs.current[prev], { y: -28, duration: 0.25, ease: 'power2.in', overwrite: true })
+
+            // Enter: show slide immediately, chars slide up from below
+            gsap.set(slideRefs.current[idx], { opacity: 1 })
+            const idxChars = charRefs.current[idx] || []
+            gsap.fromTo(idxChars,
+              { y: '120%' },
+              { y: '0%', stagger: 0.045, duration: 0.55, ease: 'power3.out', overwrite: true, delay: 0.05 }
+            )
+            gsap.fromTo(bodyRefs.current[idx],
+              { y: 32 },
+              { y: 0, duration: 0.5, ease: 'power2.out', overwrite: true, delay: 0.28 }
             )
 
-            // Animate dots
+            // Dots
             dotsRef.current.forEach((dot, i) => {
               gsap.to(dot, {
                 width: i === idx ? 28 : 6,
                 backgroundColor: i === idx ? '#5eaeff' : 'rgba(255,255,255,0.18)',
-                duration: 0.3,
-                overwrite: true,
+                duration: 0.3, overwrite: true,
               })
             })
 
-            // Update counter text directly (no React re-render)
             if (counterRef.current) {
               counterRef.current.textContent = `${idx + 1} / ${steps.length}`
             }
@@ -90,7 +112,7 @@ export default function Process() {
   return (
     <div ref={sectionRef} id="process" style={{
       height: '100vh',
-      background: '#16181e',
+      background: '#1e2028',
       position: 'relative',
       overflow: 'hidden',
     }}>
@@ -114,68 +136,84 @@ export default function Process() {
         </span>
       </div>
 
-      {/* All step slides overlaid — GSAP crossfades between them */}
-      {steps.map((step, i) => (
-        <div
-          key={step.num}
-          ref={el => slideRefs.current[i] = el}
-          style={{
-            position: 'absolute', inset: 0,
-            opacity: i === 0 ? 1 : 0,
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            alignItems: 'center',
-            padding: '0 clamp(1.25rem, 4vw, 4rem)',
-            gap: 'clamp(1rem, 3vw, 4rem)',
-          }}
-          className="process-grid"
-        >
-          {/* Giant step number */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden',
-          }}>
-            <span style={{
-              fontSize: 'clamp(18vw, 22vw, 26vw)',
-              fontWeight: 900,
-              lineHeight: 1,
-              letterSpacing: '-0.06em',
-              background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              userSelect: 'none',
-              opacity: 0.12,
+      {steps.map((step, i) => {
+        const chars = splitTitle(step.title)
+        return (
+          <div
+            key={step.num}
+            ref={el => slideRefs.current[i] = el}
+            style={{
+              position: 'absolute', inset: 0,
+              opacity: i === 0 ? 1 : 0,
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              alignItems: 'center',
+              padding: '0 clamp(1.25rem, 4vw, 4rem)',
+              gap: 'clamp(1rem, 3vw, 4rem)',
+            }}
+            className="process-grid"
+          >
+            {/* Giant step number */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden',
             }}>
-              {step.num}
-            </span>
-          </div>
+              <span style={{
+                fontSize: 'clamp(18vw, 22vw, 26vw)',
+                fontWeight: 900, lineHeight: 1, letterSpacing: '-0.06em',
+                background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                userSelect: 'none', opacity: 0.12,
+              }}>
+                {step.num}
+              </span>
+            </div>
 
-          {/* Step content */}
-          <div>
-            <h2 style={{
-              fontSize: 'clamp(1.8rem, 3.5vw, 3.5rem)',
-              fontWeight: 800,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.1,
-              color: '#fff',
-              marginBottom: 'clamp(1rem, 2vh, 1.5rem)',
-              whiteSpace: 'pre-line',
-            }}>
-              {step.title}
-            </h2>
+            {/* Step content */}
+            <div>
+              <h2 style={{
+                fontSize: 'clamp(1.8rem, 3.5vw, 3.5rem)',
+                fontWeight: 800, letterSpacing: '-0.04em',
+                lineHeight: 1.1, color: '#fff',
+                marginBottom: 'clamp(1rem, 2vh, 1.5rem)',
+              }}>
+                {chars.map((item, ci) =>
+                  item.isBreak ? (
+                    <br key={ci} />
+                  ) : item.char === ' ' ? (
+                    <span key={ci} style={{ display: 'inline-block', width: '0.28em' }} />
+                  ) : (
+                    <span key={ci} style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom' }}>
+                      <span
+                        ref={el => {
+                          if (!charRefs.current[i]) charRefs.current[i] = []
+                          charRefs.current[i][ci] = el
+                        }}
+                        style={{ display: 'inline-block' }}
+                      >
+                        {item.char}
+                      </span>
+                    </span>
+                  )
+                )}
+              </h2>
 
-            <p style={{
-              fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)',
-              color: 'rgba(255,255,255,0.7)',
-              lineHeight: 1.75,
-              maxWidth: 440,
-            }}>
-              {step.body}
-            </p>
+              <div style={{ overflow: 'hidden' }}>
+                <p
+                  ref={el => bodyRefs.current[i] = el}
+                  style={{
+                    fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)',
+                    color: 'rgba(255,255,255,0.7)',
+                    lineHeight: 1.75, maxWidth: 440, margin: 0,
+                  }}
+                >
+                  {step.body}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
 
       {/* Progress dots */}
       <div style={{
@@ -190,8 +228,7 @@ export default function Process() {
             key={i}
             ref={el => dotsRef.current[i] = el}
             style={{
-              height: 5,
-              borderRadius: 3,
+              height: 5, borderRadius: 3,
               width: i === 0 ? 28 : 6,
               backgroundColor: i === 0 ? '#5eaeff' : 'rgba(255,255,255,0.18)',
             }}

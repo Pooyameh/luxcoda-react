@@ -36,19 +36,40 @@ export default function Difference() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=700',
+          end: '+=1600',
           pin: true,
-          scrub: 1,
+          scrub: 0.8,
           anticipatePin: 1,
         },
       })
 
-      // Slide from left + scale + blur cascade — horizontal stagger reveal
-      tl.fromTo(
-        '.diff-item',
-        { opacity: 0, x: -48, scale: 0.96, filter: 'blur(6px)' },
-        { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)', stagger: 0.22, duration: 0.6, ease: 'power2.out' }
-      )
+      items.forEach((_, i) => {
+        const offset = i * 0.5
+
+        // Number slides up
+        tl.fromTo(
+          `.diff-num-${i}`,
+          { y: '120%' },
+          { y: '0%', duration: 0.25, ease: 'none' },
+          offset
+        )
+
+        // Title chars slide up letter by letter
+        tl.fromTo(
+          `.diff-char-${i}`,
+          { y: '120%' },
+          { y: '0%', stagger: 0.06, duration: 0.45, ease: 'none' },
+          offset
+        )
+
+        // Body slides up as a block
+        tl.fromTo(
+          `.diff-body-${i}`,
+          { y: 36 },
+          { y: 0, duration: 0.4, ease: 'none' },
+          offset + 0.3
+        )
+      })
     }, sectionRef)
 
     return () => ctx.revert()
@@ -57,7 +78,7 @@ export default function Difference() {
   return (
     <div ref={sectionRef} style={{
       height: '100vh',
-      background: '#191b2e',
+      background: '#1e2028',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
@@ -81,9 +102,8 @@ export default function Difference() {
         {/* Top rule */}
         <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)', marginBottom: 0 }} />
 
-        {/* Rows — each starts invisible, GSAP staggers them in */}
-        {items.map((item) => (
-          <div key={item.num} className="diff-item" style={{ opacity: 0 }}>
+        {items.map((item, idx) => (
+          <div key={item.num}>
             <div
               style={{
                 display: 'grid',
@@ -94,28 +114,48 @@ export default function Difference() {
               }}
               className="diff-row"
             >
-              <span className="gradient-text" style={{
-                fontSize: '0.8rem', fontWeight: 700,
-                letterSpacing: '0.05em', paddingTop: '0.15em',
-              }}>
-                {item.num}
-              </span>
+              {/* Number */}
+              <div style={{ overflow: 'hidden', paddingTop: '0.15em' }}>
+                <span className={`diff-num-${idx} gradient-text`} style={{
+                  display: 'inline-block',
+                  fontSize: '0.8rem', fontWeight: 700,
+                  letterSpacing: '0.05em',
+                }}>
+                  {item.num}
+                </span>
+              </div>
 
+              {/* Title — letter by letter */}
               <h3 style={{
                 fontSize: 'clamp(1.3rem, 2.8vw, 2.4rem)',
                 fontWeight: 700, letterSpacing: '-0.03em',
                 lineHeight: 1.1, color: '#fff',
+                margin: 0,
               }}>
-                {item.title}
+                {item.title.split('').map((char, ci) =>
+                  char === ' ' ? (
+                    <span key={ci} style={{ display: 'inline-block', width: '0.28em' }} />
+                  ) : (
+                    <span key={ci} style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom' }}>
+                      <span className={`diff-char-${idx}`} style={{ display: 'inline-block' }}>
+                        {char}
+                      </span>
+                    </span>
+                  )
+                )}
               </h3>
 
-              <p style={{
-                fontSize: 'clamp(0.88rem, 1.2vw, 1rem)',
-                color: 'rgba(255,255,255,0.7)',
-                lineHeight: 1.7, paddingTop: '0.25em',
-              }}>
-                {item.body}
-              </p>
+              {/* Body */}
+              <div style={{ overflow: 'hidden', paddingTop: '0.25em' }}>
+                <p className={`diff-body-${idx}`} style={{
+                  fontSize: 'clamp(0.88rem, 1.2vw, 1rem)',
+                  color: 'rgba(255,255,255,0.7)',
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}>
+                  {item.body}
+                </p>
+              </div>
             </div>
 
             <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)' }} />

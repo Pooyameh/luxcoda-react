@@ -18,7 +18,7 @@ export default function Footer() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           <img src="/logo.png" alt="Luxcoda" style={{ height: 28, width: 'auto', opacity: 0.7 }} />
           <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>
-            © 2026 Luxcoda
+            © 2026 Luxcoda. All Rights Reserved.
           </span>
         </div>
 
