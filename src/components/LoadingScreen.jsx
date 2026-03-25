@@ -10,7 +10,7 @@ export default function LoadingScreen({ onComplete }) {
         position: 'fixed',
         inset: 0,
         zIndex: 10000,
-        background: '#050508',
+        background: '#141519',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

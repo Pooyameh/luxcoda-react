@@ -20,16 +20,28 @@ export default function Cta({ onOpenModal }) {
         },
       })
 
-      tl.fromTo(
-        ['.cta-eyebrow', '.cta-headline', '.cta-body'],
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, stagger: 0.12, duration: 0.5, ease: 'power2.out' }
+      // Eyebrow: letterSpacing compression (wide → tight = split-text feel)
+      tl.fromTo('.cta-eyebrow',
+        { opacity: 0, letterSpacing: '0.38em' },
+        { opacity: 1, letterSpacing: '0.14em', duration: 0.5, ease: 'power2.out' }
       )
-      tl.fromTo(
-        '.cta-button',
-        { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' },
-        '-=0.2'
+      // Headline: blur-to-sharp + y rise
+      tl.fromTo('.cta-headline',
+        { opacity: 0, y: 38, filter: 'blur(10px)' },
+        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.65, ease: 'power2.out' },
+        '-=0.3'
+      )
+      // Body: slide in from right
+      tl.fromTo('.cta-body',
+        { opacity: 0, x: 32 },
+        { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' },
+        '-=0.35'
+      )
+      // Button: overshooting scale bounce
+      tl.fromTo('.cta-button',
+        { opacity: 0, scale: 0.72 },
+        { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(2.2)' },
+        '-=0.25'
       )
     }, sectionRef)
 

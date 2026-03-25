@@ -96,6 +96,11 @@ export default function TechStack() {
         end: '+=1200',
         pin: true,
         anticipatePin: 1,
+        snap: {
+          snapTo: 1 / techs.length,
+          duration: { min: 0.2, max: 0.3 },
+          ease: 'power2.inOut',
+        },
         onUpdate: (self) => {
           const idx = Math.min(techs.length - 1, Math.floor(self.progress * techs.length))
 
@@ -103,14 +108,14 @@ export default function TechStack() {
             const prev = lastIdx
             lastIdx = idx
 
-            // Cross-fade content slides
+            // Cross-fade content slides — scale + blur + vertical drift
             gsap.to(slideRefs.current[prev], {
-              opacity: 0, scale: 1.02, filter: 'blur(6px)',
+              opacity: 0, scale: 1.06, filter: 'blur(10px)', y: -36,
               duration: 0.4, ease: 'power2.in', overwrite: true,
             })
             gsap.fromTo(slideRefs.current[idx],
-              { opacity: 0, scale: 0.96, filter: 'blur(6px)' },
-              { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out', overwrite: true }
+              { opacity: 0, scale: 0.92, filter: 'blur(12px)', y: 44 },
+              { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, duration: 0.65, ease: 'power2.out', overwrite: true }
             )
 
             // Cross-fade background glows
@@ -137,7 +142,7 @@ export default function TechStack() {
   return (
     <div ref={sectionRef} style={{
       height: '100vh',
-      background: '#0a0612',
+      background: '#1c1528',
       position: 'relative',
       overflow: 'hidden',
       display: 'flex',

@@ -29,6 +29,11 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
         end: '+=300',
         pin: true,
         anticipatePin: 1,
+        snap: {
+          snapTo: 1,
+          duration: { min: 0.2, max: 0.3 },
+          ease: 'power2.inOut',
+        },
       })
     }, sectionRef)
 
@@ -52,7 +57,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
       overflow: 'hidden',
       padding: '72px clamp(1.25rem, 4vw, 4rem) clamp(2rem, 4vw, 4rem)',
       textAlign: 'center',
-      background: '#050508',
+      background: '#141519',
     }}>
       {/* Orbs */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>

@@ -43,11 +43,11 @@ export default function Difference() {
         },
       })
 
-      // Stagger each row in as the user scrolls through the pin
+      // Slide from left + scale + blur cascade — horizontal stagger reveal
       tl.fromTo(
         '.diff-item',
-        { opacity: 0, y: 36 },
-        { opacity: 1, y: 0, stagger: 0.18, duration: 0.5, ease: 'power2.out' }
+        { opacity: 0, x: -48, scale: 0.96, filter: 'blur(6px)' },
+        { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)', stagger: 0.22, duration: 0.6, ease: 'power2.out' }
       )
     }, sectionRef)
 
@@ -57,7 +57,7 @@ export default function Difference() {
   return (
     <div ref={sectionRef} style={{
       height: '100vh',
-      background: '#06091a',
+      background: '#191b2e',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
@@ -79,7 +79,7 @@ export default function Difference() {
         </div>
 
         {/* Top rule */}
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 0 }} />
+        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)', marginBottom: 0 }} />
 
         {/* Rows — each starts invisible, GSAP staggers them in */}
         {items.map((item) => (
@@ -118,7 +118,7 @@ export default function Difference() {
               </p>
             </div>
 
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)' }} />
           </div>
         ))}
       </div>

@@ -54,11 +54,11 @@ export default function Pricing({ onOpenModal }) {
         },
       })
 
-      // Stagger each plan row in as the user scrolls
+      // Scale + blur reveal — each row emerges like it's being pulled into focus
       tl.fromTo(
         '.pricing-plan-row',
-        { opacity: 0, y: 28 },
-        { opacity: 1, y: 0, stagger: 0.18, duration: 0.5, ease: 'power2.out' }
+        { opacity: 0, scale: 0.93, filter: 'blur(8px)', y: 14 },
+        { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, stagger: 0.22, duration: 0.6, ease: 'power2.out' }
       )
     }, sectionRef)
 
@@ -68,7 +68,7 @@ export default function Pricing({ onOpenModal }) {
   return (
     <div ref={sectionRef} id="pricing" style={{
       height: '100vh',
-      background: '#050e0c',
+      background: '#171d1b',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
@@ -98,7 +98,7 @@ export default function Pricing({ onOpenModal }) {
         </div>
 
         {/* Column labels */}
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: '0.1rem' }} />
+        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)', marginBottom: '0.1rem' }} />
         <div
           style={{
             display: 'grid',
@@ -117,7 +117,7 @@ export default function Pricing({ onOpenModal }) {
             }}>{h}</span>
           ))}
         </div>
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
+        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)' }} />
 
         {/* Plan rows — each starts invisible, GSAP staggers them in */}
         {plans.map((plan) => (
@@ -208,7 +208,7 @@ export default function Pricing({ onOpenModal }) {
                 </div>
               </div>
             </div>
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)' }} />
           </div>
         ))}
 

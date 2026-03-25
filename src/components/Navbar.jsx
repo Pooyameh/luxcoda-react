@@ -43,8 +43,13 @@ export default function Navbar({ onOpenModal }) {
           justifyContent: 'space-between',
           height: 72,
         }}>
-          {/* Logo */}
-          <a href="#" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          {/* Logo — only visible once user scrolls past Hero */}
+          <a href="#" style={{
+            display: 'flex', alignItems: 'center', textDecoration: 'none',
+            opacity: scrolled ? 1 : 0,
+            pointerEvents: scrolled ? 'auto' : 'none',
+            transition: 'opacity 0.4s ease',
+          }}>
             <img src="/logo.png" alt="Luxcoda" style={{ height: 36, width: 'auto' }} />
           </a>
 
@@ -134,7 +139,7 @@ export default function Navbar({ onOpenModal }) {
             transition={{ duration: 0.25 }}
             style={{
               position: 'fixed', inset: 0, zIndex: 99,
-              background: '#050508',
+              background: '#141519',
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               gap: '2.5rem',

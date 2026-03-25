@@ -43,6 +43,11 @@ export default function Process() {
         end: '+=1200',
         pin: true,
         anticipatePin: 1,
+        snap: {
+          snapTo: 1 / steps.length,
+          duration: { min: 0.2, max: 0.3 },
+          ease: 'power2.inOut',
+        },
         onUpdate: (self) => {
           const idx = Math.min(steps.length - 1, Math.floor(self.progress * steps.length))
 
@@ -50,14 +55,14 @@ export default function Process() {
             const prev = lastIdx
             lastIdx = idx
 
-            // Cross-fade slides
+            // Cross-fade slides — dramatic scale + blur + y
             gsap.to(slideRefs.current[prev], {
-              opacity: 0, y: -40, filter: 'blur(6px)',
-              duration: 0.45, ease: 'power2.in', overwrite: true,
+              opacity: 0, y: -60, scale: 0.94, filter: 'blur(10px)',
+              duration: 0.4, ease: 'power2.in', overwrite: true,
             })
             gsap.fromTo(slideRefs.current[idx],
-              { opacity: 0, y: 40, filter: 'blur(6px)' },
-              { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.55, ease: 'power2.out', overwrite: true }
+              { opacity: 0, y: 70, scale: 0.96, filter: 'blur(12px)' },
+              { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out', overwrite: true }
             )
 
             // Animate dots
@@ -85,7 +90,7 @@ export default function Process() {
   return (
     <div ref={sectionRef} id="process" style={{
       height: '100vh',
-      background: '#060810',
+      background: '#16181e',
       position: 'relative',
       overflow: 'hidden',
     }}>

@@ -61,7 +61,7 @@ export default function App() {
   const closeModal = () => setModalOpen(false)
 
   return (
-    <div style={{ background: '#050508', color: '#fff', overflowX: 'hidden' }}>
+    <div style={{ background: '#141519', color: '#fff', overflowX: 'hidden' }}>
       <Cursor />
 
       <AnimatePresence>
