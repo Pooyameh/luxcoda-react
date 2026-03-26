@@ -18,7 +18,7 @@ html {
 
 body {
   font-family: 'Geist Variable', system-ui, sans-serif;
-  background-color: #1e2028;
+  background-color: #282b35;
   color: #ffffff;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -67,7 +67,7 @@ body {
 
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #1e2028; }
+::-webkit-scrollbar-track { background: #282b35; }
 ::-webkit-scrollbar-thumb { background: rgba(94,174,255,0.25); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(94,174,255,0.45); }
 

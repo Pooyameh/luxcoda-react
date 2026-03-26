@@ -57,7 +57,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
       overflow: 'hidden',
       padding: '72px clamp(1.25rem, 4vw, 4rem) clamp(2rem, 4vw, 4rem)',
       textAlign: 'center',
-      background: '#141519',
+      background: '#1e2129',
     }}>
       {/* Orbs */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
@@ -87,25 +87,6 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
 
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 1100, width: '100%' }}>
-
-        {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
-          animate={isLoaded ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          style={{ marginBottom: 'clamp(1rem, 2.5vh, 2rem)' }}
-        >
-          <img
-            src="/logo.png"
-            alt="Luxcoda"
-            style={{
-              height: 'clamp(64px, 9vh, 96px)',
-              width: 'auto',
-              display: 'block',
-              margin: '0 auto',
-            }}
-          />
-        </motion.div>
 
         {/* Headline line 1 */}
         <div style={{ overflow: 'hidden', marginBottom: '0.1em' }}>

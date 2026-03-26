@@ -12,7 +12,7 @@ export default function Navbar({ onOpenModal }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
+    const onScroll = () => setScrolled(window.scrollY > 350)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -148,7 +148,7 @@ export default function Navbar({ onOpenModal }) {
             transition={{ duration: 0.25 }}
             style={{
               position: 'fixed', inset: 0, zIndex: 99,
-              background: '#141519',
+              background: '#1e2129',
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               gap: '2.5rem',

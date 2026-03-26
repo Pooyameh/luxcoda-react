@@ -112,14 +112,14 @@ export default function Process() {
   return (
     <div ref={sectionRef} id="process" style={{
       height: '100vh',
-      background: '#1e2028',
+      background: '#282b35',
       position: 'relative',
       overflow: 'hidden',
     }}>
 
       {/* Section label */}
       <div style={{
-        position: 'absolute', top: 'clamp(1.5rem, 4vh, 3rem)',
+        position: 'absolute', top: 'calc(72px + clamp(0.75rem, 1.5vh, 1.25rem))',
         left: 'clamp(1.25rem, 4vw, 4rem)',
         display: 'flex', alignItems: 'center', gap: '0.75rem',
         zIndex: 2,
@@ -148,7 +148,7 @@ export default function Process() {
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               alignItems: 'center',
-              padding: '0 clamp(1.25rem, 4vw, 4rem)',
+              padding: '72px clamp(1.25rem, 4vw, 4rem) 0',
               gap: 'clamp(1rem, 3vw, 4rem)',
             }}
             className="process-grid"

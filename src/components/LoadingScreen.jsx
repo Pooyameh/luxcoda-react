@@ -10,7 +10,7 @@ export default function LoadingScreen({ onComplete }) {
         position: 'fixed',
         inset: 0,
         zIndex: 10000,
-        background: '#1e2028',
+        background: '#282b35',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -80,7 +80,7 @@ export default function LoadingScreen({ onComplete }) {
         animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
         transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          height: 'clamp(130px, 20vh, 180px)',
+          height: 'clamp(200px, 30vh, 260px)',
           width: 'auto',
           position: 'relative',
           zIndex: 1,

@@ -1,64 +1,36 @@
 import { useRef, useLayoutEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SiJavascript, SiHtml5, SiPython, SiAnthropic, SiOpenai, SiGithub } from 'react-icons/si'
 
 gsap.registerPlugin(ScrollTrigger)
 
 // ── Brand icons ───────────────────────────────────────────────────────────────
 
+const ICON_SIZE = 64
+
 function JSIcon() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-      <rect width="64" height="64" rx="10" fill="#F7DF1E"/>
-      <text x="7" y="50" fontSize="36" fontWeight="bold" fill="#323330" fontFamily="monospace">JS</text>
-    </svg>
-  )
+  return <SiJavascript size={ICON_SIZE} color="#F7DF1E" />
 }
 
 function HTMLIcon() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-      <rect width="64" height="64" rx="10" fill="#E34F26"/>
-      <text x="5" y="46" fontSize="22" fontWeight="bold" fill="white" fontFamily="monospace">HTML</text>
-    </svg>
-  )
+  return <SiHtml5 size={ICON_SIZE} color="#E34F26" />
 }
 
 function PythonIcon() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-      <rect width="64" height="64" rx="10" fill="#3776AB"/>
-      <text x="8" y="46" fontSize="28" fontWeight="bold" fill="#FFD343" fontFamily="monospace">Py</text>
-    </svg>
-  )
+  return <SiPython size={ICON_SIZE} color="#3776AB" />
 }
 
 function ClaudeIcon() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-      <rect width="64" height="64" rx="10" fill="#CC785C"/>
-      <path d="M22 44L32 20L42 44" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M25.5 36H38.5" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
-    </svg>
-  )
+  return <SiAnthropic size={ICON_SIZE} color="#CC785C" />
 }
 
 function OpenAIIcon() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-      <rect width="64" height="64" rx="10" fill="#10a37f"/>
-      <path d="M32 16 L32.1 16 M32 16 L32 48 M16 32 L48 32 M20 20 L44 44 M44 20 L20 44" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-    </svg>
-  )
+  return <SiOpenai size={ICON_SIZE} color="#fff" />
 }
 
 function GitHubIcon() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-      <rect width="64" height="64" rx="10" fill="#24292e"/>
-      <path d="M32 12C21 12 12 21 12 32.3C12 41.4 17.9 49.1 26.1 51.8C27.1 52 27.5 51.4 27.5 50.8V47.3C22 48.5 20.8 44.8 20.8 44.8C19.9 42.5 18.6 41.8 18.6 41.8C16.8 40.6 18.7 40.6 18.7 40.6C20.7 40.7 21.7 42.7 21.7 42.7C23.5 45.7 26.4 44.8 27.6 44.3C27.8 43 28.3 42.1 28.9 41.6C24.4 41.1 19.6 39.3 19.6 31.5C19.6 29.3 20.4 27.5 21.7 26.1C21.5 25.6 20.8 23.5 21.9 20.7C21.9 20.7 23.6 20.2 27.5 22.8C29.1 22.4 30.8 22.2 32.5 22.2C34.2 22.2 35.9 22.4 37.5 22.8C41.4 20.2 43.1 20.7 43.1 20.7C44.2 23.5 43.5 25.6 43.3 26.1C44.6 27.5 45.4 29.3 45.4 31.5C45.4 39.3 40.6 41.1 36.1 41.6C36.8 42.2 37.5 43.5 37.5 45.5V50.8C37.5 51.4 37.9 52 38.9 51.8C47.1 49.1 53 41.4 53 32.3C53 21 44 12 32 12Z" fill="white"/>
-    </svg>
-  )
+  return <SiGithub size={ICON_SIZE} color="#fff" />
 }
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -193,7 +165,7 @@ export default function TechStack() {
   return (
     <div ref={sectionRef} style={{
       height: '100vh',
-      background: '#1e2028',
+      background: '#282b35',
       position: 'relative',
       overflow: 'hidden',
       display: 'flex',
@@ -204,7 +176,7 @@ export default function TechStack() {
 
       {/* Section label */}
       <div style={{
-        position: 'absolute', top: 'clamp(1.5rem, 4vh, 3rem)',
+        position: 'absolute', top: 'calc(72px + clamp(0.75rem, 1.5vh, 1.25rem))',
         left: '50%', transform: 'translateX(-50%)',
         zIndex: 2,
       }}>
@@ -242,7 +214,7 @@ export default function TechStack() {
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
             textAlign: 'center',
-            padding: '0 clamp(1.25rem, 4vw, 4rem)',
+            padding: '72px clamp(1.25rem, 4vw, 4rem) 0',
             gap: 'clamp(1rem, 2.5vh, 1.75rem)',
             zIndex: 1,
           }}

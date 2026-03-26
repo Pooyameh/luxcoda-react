@@ -78,10 +78,11 @@ export default function Difference() {
   return (
     <div ref={sectionRef} style={{
       height: '100vh',
-      background: '#1e2028',
+      background: '#282b35',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
+      paddingTop: '72px',
     }}>
       <div style={{
         maxWidth: 1400, margin: '0 auto', width: '100%',
