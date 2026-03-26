@@ -43,23 +43,17 @@ export default function Navbar({ onOpenModal }) {
           justifyContent: 'space-between',
           height: 72,
         }}>
-          {/* Logo — only visible once user scrolls past Hero */}
+          {/* Wordmark — always visible */}
           <a href="#" style={{
             display: 'flex', alignItems: 'center', textDecoration: 'none',
-            opacity: scrolled ? 1 : 0,
-            pointerEvents: scrolled ? 'auto' : 'none',
-            transition: 'opacity 0.4s ease',
           }}>
             <span style={{
               fontFamily: 'inherit',
               fontSize: '1.15rem',
               fontWeight: 700,
               letterSpacing: '-0.04em',
-              background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>luxcoda</span>
+              color: '#fff',
+            }}>Luxcoda</span>
           </a>
 
           {/* Desktop Links — hidden below md via media query class */}

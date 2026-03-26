@@ -47,18 +47,29 @@ export default function Pricing({ onOpenModal }) {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=700',
+          end: '+=900',
           pin: true,
           scrub: 1,
           anticipatePin: 1,
         },
       })
 
-      // Scale + blur reveal — each row emerges like it's being pulled into focus
+      tl.fromTo(
+        '.pricing-title-block',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+      )
+      tl.fromTo(
+        '.pricing-cols-block',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.25, ease: 'power2.out' },
+        '-=0.1'
+      )
       tl.fromTo(
         '.pricing-plan-row',
         { opacity: 0, scale: 0.93, filter: 'blur(8px)', y: 14 },
-        { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, stagger: 0.22, duration: 0.6, ease: 'power2.out' }
+        { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, stagger: 0.22, duration: 0.6, ease: 'power2.out' },
+        '-=0.1'
       )
     }, sectionRef)
 
@@ -68,10 +79,12 @@ export default function Pricing({ onOpenModal }) {
   return (
     <div ref={sectionRef} id="pricing" style={{
       height: '100vh',
-      background: '#171d1b',
+      background: '#0f1117',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
+      paddingTop: '72px',
+      boxSizing: 'border-box',
     }}>
       <div style={{
         maxWidth: 1400, margin: '0 auto', width: '100%',
@@ -79,7 +92,7 @@ export default function Pricing({ onOpenModal }) {
       }}>
 
         {/* Header */}
-        <div style={{ marginBottom: 'clamp(1.2rem, 2.5vw, 2rem)' }}>
+        <div className="pricing-title-block" style={{ opacity: 0, marginBottom: 'clamp(1.2rem, 2.5vw, 2rem)' }}>
           <span style={{
             fontSize: '0.72rem', fontWeight: 600,
             letterSpacing: '0.14em', textTransform: 'uppercase',
@@ -98,26 +111,28 @@ export default function Pricing({ onOpenModal }) {
         </div>
 
         {/* Column labels */}
-        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)', marginBottom: '0.1rem' }} />
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1.1fr 1.8fr 0.9fr',
-            gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
-            padding: '0.6rem 0',
-            marginBottom: '0.1rem',
-          }}
-          className="pricing-header"
-        >
-          {['Plan', "What's included", 'Investment'].map(h => (
-            <span key={h} style={{
-              fontSize: '0.68rem', letterSpacing: '0.1em',
-              color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase',
-              ...(h === 'Investment' ? { textAlign: 'right' } : {}),
-            }}>{h}</span>
-          ))}
+        <div className="pricing-cols-block" style={{ opacity: 0 }}>
+          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)', marginBottom: '0.1rem' }} />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1.1fr 1.8fr 0.9fr',
+              gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
+              padding: '0.6rem 0',
+              marginBottom: '0.1rem',
+            }}
+            className="pricing-header"
+          >
+            {['Plan', "What's included", 'Investment'].map(h => (
+              <span key={h} style={{
+                fontSize: '0.68rem', letterSpacing: '0.1em',
+                color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase',
+                ...(h === 'Investment' ? { textAlign: 'right' } : {}),
+              }}>{h}</span>
+            ))}
+          </div>
+          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)' }} />
         </div>
-        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09) 20%, rgba(255,255,255,0.09) 80%, transparent)' }} />
 
         {/* Plan rows — each starts invisible, GSAP staggers them in */}
         {plans.map((plan) => (
