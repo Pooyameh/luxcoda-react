@@ -3,160 +3,128 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SiJavascript, SiHtml5, SiPython, SiAnthropic, SiOpenai, SiGithub } from 'react-icons/si'
 
-gsap.registerPlugin(ScrollTrigger)
-
-// ── Brand icons ───────────────────────────────────────────────────────────────
-
-const ICON_SIZE = 64
-
-function JSIcon() {
-  return <SiJavascript size={ICON_SIZE} color="#F7DF1E" />
-}
-
-function HTMLIcon() {
-  return <SiHtml5 size={ICON_SIZE} color="#E34F26" />
-}
-
-function PythonIcon() {
-  return <SiPython size={ICON_SIZE} color="#3776AB" />
-}
-
-function ClaudeIcon() {
-  return <SiAnthropic size={ICON_SIZE} color="#CC785C" />
-}
-
-function OpenAIIcon() {
-  return <SiOpenai size={ICON_SIZE} color="#fff" />
-}
-
-function GitHubIcon() {
-  return <SiGithub size={ICON_SIZE} color="#fff" />
-}
-
-// ── Data ──────────────────────────────────────────────────────────────────────
+const ICON_SIZE = 56
 
 const techs = [
   {
-    Icon: JSIcon,
+    Icon: () => <SiJavascript size={ICON_SIZE} color="#F7DF1E" />,
     name: 'JavaScript',
     role: 'The Language',
     body: 'Every animation, interaction, and live feature on this site runs on modern JavaScript — fast, lightweight, and built for the web.',
     accent: '#F7DF1E',
-    bg: 'rgba(247,223,30,0.05)',
+    glow: 'rgba(247,223,30,0.12)',
   },
   {
-    Icon: HTMLIcon,
+    Icon: () => <SiHtml5 size={ICON_SIZE} color="#E34F26" />,
     name: 'HTML',
     role: 'The Structure',
     body: 'Clean, semantic HTML forms the foundation of every site — fast-loading, accessible, and search-engine ready from the ground up.',
     accent: '#E34F26',
-    bg: 'rgba(227,79,38,0.05)',
+    glow: 'rgba(227,79,38,0.12)',
   },
   {
-    Icon: PythonIcon,
+    Icon: () => <SiPython size={ICON_SIZE} color="#3776AB" />,
     name: 'Python',
     role: 'The Backend',
     body: 'Python powers server-side logic, automation workflows, and AI integrations — turning complex requirements into clean, maintainable code.',
     accent: '#3776AB',
-    bg: 'rgba(55,118,171,0.05)',
+    glow: 'rgba(55,118,171,0.12)',
   },
   {
-    Icon: ClaudeIcon,
+    Icon: () => <SiAnthropic size={ICON_SIZE} color="#CC785C" />,
     name: 'Claude Code',
     role: 'The Architect',
     body: "This entire site was designed and built using Claude Code — Anthropic's AI development environment. Smart code, zero bloat.",
     accent: '#CC785C',
-    bg: 'rgba(204,120,92,0.05)',
+    glow: 'rgba(204,120,92,0.12)',
   },
   {
-    Icon: OpenAIIcon,
+    Icon: () => <SiOpenai size={ICON_SIZE} color="#fff" />,
     name: 'OpenAI',
     role: 'The Intelligence',
     body: 'GPT models power the AI-assisted development workflow — from copy refinement to technical problem-solving.',
     accent: '#10a37f',
-    bg: 'rgba(16,163,127,0.05)',
+    glow: 'rgba(16,163,127,0.12)',
   },
   {
-    Icon: GitHubIcon,
+    Icon: () => <SiGithub size={ICON_SIZE} color="#fff" />,
     name: 'GitHub',
     role: 'The Foundation',
     body: 'Version control, project management, and deployment pipelines — every line of code tracked and shipped through GitHub.',
-    accent: '#888',
-    bg: 'rgba(136,136,136,0.05)',
+    accent: '#aaa',
+    glow: 'rgba(180,180,180,0.08)',
   },
 ]
+
+const SCROLL_TOTAL = 3600
+const STEP = 1 / techs.length
 
 export default function TechStack() {
   const sectionRef = useRef(null)
   const slideRefs = useRef([])
   const glowRefs = useRef([])
   const dotsRef = useRef([])
-  const charRefs = useRef([])   // charRefs[i] = array of inner char spans
-  const bodyRefs = useRef([])
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Initialize non-first slides
-      for (let i = 1; i < techs.length; i++) {
-        gsap.set(slideRefs.current[i], { opacity: 0 })
-        gsap.set(glowRefs.current[i], { opacity: 0 })
-        gsap.set(charRefs.current[i] || [], { y: '120%' })
-        gsap.set(bodyRefs.current[i], { y: 32 })
-      }
+      // Initialize hidden state
+      slideRefs.current.slice(1).forEach(el => {
+        gsap.set(el, { opacity: 0, y: 28, filter: 'blur(8px)' })
+      })
+      glowRefs.current.slice(1).forEach(el => {
+        gsap.set(el, { opacity: 0 })
+      })
+      dotsRef.current.forEach((dot, i) => {
+        if (i > 0) gsap.set(dot, { width: 6, backgroundColor: 'rgba(255,255,255,0.18)' })
+      })
 
-      let lastIdx = 0
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top top',
-        end: '+=1800',
-        pin: true,
-        anticipatePin: 1,
-        snap: {
-          snapTo: 1 / techs.length,
-          duration: { min: 0.2, max: 0.3 },
-          ease: 'power2.inOut',
-        },
-        onUpdate: (self) => {
-          const idx = Math.min(techs.length - 1, Math.floor(self.progress * techs.length))
-
-          if (idx !== lastIdx) {
-            const prev = lastIdx
-            lastIdx = idx
-
-            // Exit old slide: chars fly out upward, then hide
-            const prevChars = charRefs.current[prev] || []
-            gsap.to(prevChars, {
-              y: '-120%', stagger: 0.01, duration: 0.2, ease: 'power2.in', overwrite: true,
-              onComplete: () => gsap.set(slideRefs.current[prev], { opacity: 0 }),
-            })
-            gsap.to(bodyRefs.current[prev], { y: -28, duration: 0.22, ease: 'power2.in', overwrite: true })
-            gsap.to(glowRefs.current[prev], { opacity: 0, duration: 0.6, overwrite: true })
-
-            // Enter new slide: show instantly, chars slide up from below
-            gsap.set(slideRefs.current[idx], { opacity: 1 })
-            gsap.to(glowRefs.current[idx], { opacity: 1, duration: 0.8, overwrite: true })
-            const idxChars = charRefs.current[idx] || []
-            gsap.fromTo(idxChars,
-              { y: '120%' },
-              { y: '0%', stagger: 0.05, duration: 0.55, ease: 'power3.out', overwrite: true, delay: 0.06 }
-            )
-            gsap.fromTo(bodyRefs.current[idx],
-              { y: 32 },
-              { y: 0, duration: 0.5, ease: 'power2.out', overwrite: true, delay: 0.3 }
-            )
-
-            // Dots
-            dotsRef.current.forEach((dot, i) => {
-              gsap.to(dot, {
-                width: i === idx ? 28 : 6,
-                backgroundColor: i === idx ? techs[idx].accent : 'rgba(255,255,255,0.15)',
-                duration: 0.3, overwrite: true,
-              })
-            })
-          }
+      // Pure scrub timeline — deterministic, never skips
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: `+=${SCROLL_TOTAL}`,
+          pin: true,
+          scrub: 2.2,
+          anticipatePin: 1,
         },
       })
+
+      for (let i = 0; i < techs.length - 1; i++) {
+        const exitPos  = i * STEP + STEP * 0.70
+        const enterPos = i * STEP + STEP * 0.80
+
+        // Exit current slide
+        tl.to(slideRefs.current[i],
+          { opacity: 0, y: -22, filter: 'blur(7px)', duration: STEP * 0.14, ease: 'power2.in' },
+          exitPos
+        )
+        tl.to(glowRefs.current[i],
+          { opacity: 0, duration: STEP * 0.2, ease: 'power1.in' },
+          exitPos
+        )
+
+        // Enter next slide
+        tl.fromTo(slideRefs.current[i + 1],
+          { opacity: 0, y: 28, filter: 'blur(7px)' },
+          { opacity: 1, y: 0, filter: 'blur(0px)', duration: STEP * 0.18, ease: 'power2.out' },
+          enterPos
+        )
+        tl.to(glowRefs.current[i + 1],
+          { opacity: 1, duration: STEP * 0.22, ease: 'power1.out' },
+          enterPos
+        )
+
+        // Dots
+        tl.to(dotsRef.current[i],
+          { width: 6, backgroundColor: 'rgba(255,255,255,0.18)', duration: STEP * 0.08 },
+          exitPos
+        )
+        tl.to(dotsRef.current[i + 1],
+          { width: 28, backgroundColor: techs[i + 1].accent, duration: STEP * 0.08 },
+          enterPos
+        )
+      }
     }, sectionRef)
 
     return () => ctx.revert()
@@ -165,7 +133,7 @@ export default function TechStack() {
   return (
     <div ref={sectionRef} style={{
       height: '100vh',
-      background: '#282b35',
+      background: '#07080f',
       position: 'relative',
       overflow: 'hidden',
       display: 'flex',
@@ -174,21 +142,6 @@ export default function TechStack() {
       justifyContent: 'center',
     }}>
 
-      {/* Section label */}
-      <div style={{
-        position: 'absolute', top: 'calc(72px + clamp(0.75rem, 1.5vh, 1.25rem))',
-        left: '50%', transform: 'translateX(-50%)',
-        zIndex: 2,
-      }}>
-        <span style={{
-          fontSize: '0.72rem', fontWeight: 600,
-          letterSpacing: '0.14em', textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.32)',
-        }}>
-          Built With
-        </span>
-      </div>
-
       {/* Per-tech background glows */}
       {techs.map((tech, i) => (
         <div
@@ -196,12 +149,26 @@ export default function TechStack() {
           ref={el => glowRefs.current[i] = el}
           style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
-            background: `radial-gradient(ellipse 60% 50% at 50% 50%, ${tech.bg} 0%, transparent 70%)`,
-            filter: 'blur(20px)',
+            background: `radial-gradient(ellipse 65% 55% at 50% 50%, ${tech.glow} 0%, transparent 70%)`,
+            filter: 'blur(32px)',
             opacity: i === 0 ? 1 : 0,
           }}
         />
       ))}
+
+      {/* Section label */}
+      <div style={{
+        position: 'absolute',
+        top: 'calc(70px + clamp(0.75rem, 1.5vh, 1.25rem))',
+        left: '50%', transform: 'translateX(-50%)',
+        zIndex: 2,
+      }}>
+        <span style={{
+          fontSize: '0.72rem', fontWeight: 600,
+          letterSpacing: '0.14em', textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.28)',
+        }}>Built With</span>
+      </div>
 
       {/* Slides */}
       {techs.map((tech, i) => (
@@ -210,16 +177,26 @@ export default function TechStack() {
           ref={el => slideRefs.current[i] = el}
           style={{
             position: 'absolute', inset: 0,
-            opacity: i === 0 ? 1 : 0,
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
             textAlign: 'center',
-            padding: '72px clamp(1.25rem, 4vw, 4rem) 0',
+            padding: '70px clamp(1.25rem, 4vw, 4rem) 0',
             gap: 'clamp(1rem, 2.5vh, 1.75rem)',
             zIndex: 1,
           }}
         >
-          <tech.Icon />
+          {/* Icon in glass container */}
+          <div style={{
+            width: 100, height: 100, borderRadius: 24,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(28px)',
+            WebkitBackdropFilter: 'blur(28px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: `inset 0 1px 0 rgba(255,255,255,0.08), 0 0 40px ${tech.glow}`,
+          }}>
+            <tech.Icon />
+          </div>
 
           <span style={{
             fontSize: '0.72rem', fontWeight: 600,
@@ -229,43 +206,21 @@ export default function TechStack() {
             {tech.role}
           </span>
 
-          {/* Name — letter by letter */}
           <h2 style={{
             fontSize: 'clamp(2.8rem, 7vw, 7rem)',
             fontWeight: 900, letterSpacing: '-0.05em',
             lineHeight: 0.95, color: '#fff', margin: 0,
           }}>
-            {tech.name.split('').map((char, ci) =>
-              char === ' ' ? (
-                <span key={ci} style={{ display: 'inline-block', width: '0.28em' }} />
-              ) : (
-                <span key={ci} style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom' }}>
-                  <span
-                    ref={el => {
-                      if (!charRefs.current[i]) charRefs.current[i] = []
-                      charRefs.current[i][ci] = el
-                    }}
-                    style={{ display: 'inline-block' }}
-                  >
-                    {char}
-                  </span>
-                </span>
-              )
-            )}
+            {tech.name}
           </h2>
 
-          <div style={{ overflow: 'hidden' }}>
-            <p
-              ref={el => bodyRefs.current[i] = el}
-              style={{
-                fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                color: 'rgba(255,255,255,0.65)',
-                lineHeight: 1.7, maxWidth: 480, margin: 0,
-              }}
-            >
-              {tech.body}
-            </p>
-          </div>
+          <p style={{
+            fontSize: 'clamp(0.95rem, 1.4vw, 1.05rem)',
+            color: 'rgba(255,255,255,0.55)',
+            lineHeight: 1.75, maxWidth: 480, margin: 0,
+          }}>
+            {tech.body}
+          </p>
         </div>
       ))}
 
@@ -282,9 +237,9 @@ export default function TechStack() {
             key={i}
             ref={el => dotsRef.current[i] = el}
             style={{
-              height: 5, borderRadius: 3,
+              height: 4, borderRadius: 3,
               width: i === 0 ? 28 : 6,
-              backgroundColor: i === 0 ? tech.accent : 'rgba(255,255,255,0.15)',
+              backgroundColor: i === 0 ? tech.accent : 'rgba(255,255,255,0.18)',
             }}
           />
         ))}

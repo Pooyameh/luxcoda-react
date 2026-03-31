@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"api_key\\\\|apiKey\\\\|API_KEY\\\\|secret\\\\|SECRET\\\\|password\\\\|PASSWORD\\\\|token\\\\|TOKEN\" /c/Users/pooya/Documents/Luxcoda/luxcoda-react/src --include=*.jsx --include=*.js)"
+    ]
+  }
+}

@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import Lenis from '@studio-freight/lenis'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import '@fontsource-variable/geist'
 import Cursor from './components/Cursor'
 import LoadingScreen from './components/LoadingScreen'
 import Navbar from './components/Navbar'
@@ -16,6 +17,7 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import MockupModal from './components/MockupModal'
 
+// Register once — all components share this
 gsap.registerPlugin(ScrollTrigger)
 
 export default function App() {
@@ -25,15 +27,13 @@ export default function App() {
 
   useLayoutEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smooth: true,
     })
 
-    // Connect Lenis scroll events to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update)
 
-    // Drive Lenis via GSAP's ticker (time in seconds → raf expects ms)
     const tickerFn = (time) => lenis.raf(time * 1000)
     gsap.ticker.add(tickerFn)
     gsap.ticker.lagSmoothing(0)
@@ -44,10 +44,9 @@ export default function App() {
     }
   }, [])
 
-  // Refresh ScrollTrigger positions after loading screen exits
   useEffect(() => {
     if (isLoaded) {
-      const timer = setTimeout(() => ScrollTrigger.refresh(), 150)
+      const timer = setTimeout(() => ScrollTrigger.refresh(), 200)
       return () => clearTimeout(timer)
     }
   }, [isLoaded])
@@ -57,28 +56,25 @@ export default function App() {
     setTimeout(() => setIsLoaded(true), 200)
   }
 
-  const openModal = () => setModalOpen(true)
-  const closeModal = () => setModalOpen(false)
-
   return (
-    <div style={{ background: '#1e2028', color: '#fff', overflowX: 'hidden' }}>
+    <div style={{ background: '#060610', color: '#fff', overflowX: 'hidden' }}>
       <Cursor />
 
       <AnimatePresence>
         {loading && <LoadingScreen onComplete={handleLoadingComplete} />}
       </AnimatePresence>
 
-      <Navbar onOpenModal={openModal} />
-      <Hero onOpenModal={openModal} isLoaded={isLoaded} />
+      <Navbar onOpenModal={() => setModalOpen(true)} />
+      <Hero onOpenModal={() => setModalOpen(true)} isLoaded={isLoaded} />
       <Difference />
       <Process />
-      <Pricing onOpenModal={openModal} />
+      <Pricing onOpenModal={() => setModalOpen(true)} />
       <TechStack />
-      <Cta onOpenModal={openModal} />
+      <Cta onOpenModal={() => setModalOpen(true)} />
       <Contact />
       <Footer />
 
-      <MockupModal isOpen={modalOpen} onClose={closeModal} />
+      <MockupModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   )
 }

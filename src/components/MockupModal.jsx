@@ -4,15 +4,15 @@ import { X, CheckCircle } from 'lucide-react'
 
 const inputStyle = {
   width: '100%',
-  background: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(255,255,255,0.12)',
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: 12,
   padding: '0.85rem 1rem',
   fontSize: '0.95rem',
   color: '#fff',
   fontFamily: 'inherit',
   outline: 'none',
-  transition: 'border-color 0.2s',
+  transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
   WebkitAppearance: 'none',
 }
 
@@ -21,13 +21,11 @@ export default function MockupModal({ isOpen, onClose }) {
   const [submitted, setSubmitted] = useState(false)
   const [focused, setFocused] = useState(null)
 
-  // Lock body scroll when open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
-      // Reset after close animation
       const t = setTimeout(() => {
         setSubmitted(false)
         setForm({ name: '', business: '', phone: '', email: '' })
@@ -62,17 +60,18 @@ export default function MockupModal({ isOpen, onClose }) {
             onClick={onClose}
             style={{
               position: 'fixed', inset: 0, zIndex: 200,
-              background: 'rgba(0,0,0,0.75)',
-              backdropFilter: 'blur(8px)',
+              background: 'rgba(0,0,0,0.72)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
             }}
           />
 
           {/* Panel */}
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            initial={{ opacity: 0, y: 36, scale: 0.97, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: 'fixed',
               top: '50%', left: '50%',
@@ -81,9 +80,12 @@ export default function MockupModal({ isOpen, onClose }) {
               width: 'min(520px, calc(100vw - 2rem))',
               maxHeight: 'calc(100svh - 2rem)',
               overflowY: 'auto',
-              background: '#0c0c14',
+              background: 'rgba(8,8,22,0.92)',
+              backdropFilter: 'blur(48px)',
+              WebkitBackdropFilter: 'blur(48px)',
               border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 24,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07), 0 40px 100px rgba(0,0,0,0.7)',
+              borderRadius: 26,
               padding: 'clamp(2rem, 5vw, 3rem)',
             }}
           >
@@ -93,17 +95,16 @@ export default function MockupModal({ isOpen, onClose }) {
               aria-label="Close"
               style={{
                 position: 'absolute', top: '1.25rem', right: '1.25rem',
-                background: 'rgba(255,255,255,0.07)',
-                border: 'none', borderRadius: '50%',
-                width: 36, height: 36,
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '50%', width: 36, height: 36,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'background 0.2s',
+                cursor: 'pointer', transition: 'background 0.2s',
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
             >
-              <X size={16} color="rgba(255,255,255,0.7)" />
+              <X size={15} color="rgba(255,255,255,0.65)" />
             </button>
 
             {!submitted ? (
@@ -114,9 +115,8 @@ export default function MockupModal({ isOpen, onClose }) {
                     display: 'inline-block',
                     fontSize: '0.65rem', fontWeight: 700,
                     letterSpacing: '0.12em', textTransform: 'uppercase',
-                    padding: '0.3rem 0.75rem',
-                    borderRadius: 100,
-                    background: 'linear-gradient(135deg, rgba(94,174,255,0.15), rgba(168,85,247,0.15))',
+                    padding: '0.3rem 0.75rem', borderRadius: 100,
+                    background: 'rgba(255,255,255,0.05)',
                     border: '1px solid rgba(94,174,255,0.2)',
                     marginBottom: '1rem',
                   }}>
@@ -124,35 +124,25 @@ export default function MockupModal({ isOpen, onClose }) {
                   </div>
                   <h2 style={{
                     fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-                    fontWeight: 800,
-                    letterSpacing: '-0.03em',
-                    lineHeight: 1.15,
-                    color: '#fff',
-                    marginBottom: '0.5rem',
+                    fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15,
+                    color: '#fff', marginBottom: '0.5rem',
                   }}>
                     Claim Your Free Mock-Up
                   </h2>
                   <p style={{
-                    fontSize: '0.9rem',
-                    color: 'rgba(255,255,255,0.6)',
-                    lineHeight: 1.6,
+                    fontSize: '0.9rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.65,
                   }}>
                     Tell us a bit about your business and we'll design a custom preview — no cost, no obligation.
                   </p>
                 </div>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {fields.map(field => (
                     <div key={field.key}>
                       <label style={{
-                        display: 'block',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.05em',
-                        color: 'rgba(255,255,255,0.65)',
-                        marginBottom: '0.4rem',
-                        textTransform: 'uppercase',
+                        display: 'block', fontSize: '0.76rem', fontWeight: 600,
+                        letterSpacing: '0.05em', color: 'rgba(255,255,255,0.55)',
+                        marginBottom: '0.4rem', textTransform: 'uppercase',
                       }}>
                         {field.label}
                       </label>
@@ -167,10 +157,13 @@ export default function MockupModal({ isOpen, onClose }) {
                         style={{
                           ...inputStyle,
                           borderColor: focused === field.key
-                            ? 'rgba(94,174,255,0.5)'
-                            : 'rgba(255,255,255,0.12)',
+                            ? 'rgba(94,174,255,0.45)'
+                            : 'rgba(255,255,255,0.1)',
+                          background: focused === field.key
+                            ? 'rgba(94,174,255,0.05)'
+                            : 'rgba(255,255,255,0.04)',
                           boxShadow: focused === field.key
-                            ? '0 0 0 3px rgba(94,174,255,0.1)'
+                            ? '0 0 0 3px rgba(94,174,255,0.08)'
                             : 'none',
                         }}
                       />
@@ -182,15 +175,11 @@ export default function MockupModal({ isOpen, onClose }) {
                     style={{
                       marginTop: '0.5rem',
                       background: 'linear-gradient(135deg, #5eaeff, #a855f7)',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: 100,
-                      padding: '1rem',
-                      fontSize: '1rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      fontFamily: 'inherit',
+                      color: '#fff', border: 'none', borderRadius: 100,
+                      padding: '1rem', fontSize: '1rem',
+                      fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
                       letterSpacing: '0.01em',
+                      boxShadow: '0 0 32px rgba(94,174,255,0.2)',
                       transition: 'opacity 0.2s, transform 0.2s',
                     }}
                     onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'scale(1.01)' }}
@@ -201,7 +190,6 @@ export default function MockupModal({ isOpen, onClose }) {
                 </form>
               </>
             ) : (
-              /* Thank You State */
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -209,33 +197,28 @@ export default function MockupModal({ isOpen, onClose }) {
                 style={{
                   textAlign: 'center',
                   padding: 'clamp(1rem, 4vw, 2rem) 0',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '1rem',
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', gap: '1rem',
                 }}
               >
                 <div style={{
                   width: 72, height: 72, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, rgba(94,174,255,0.15), rgba(168,85,247,0.15))',
-                  border: '1px solid rgba(94,174,255,0.3)',
+                  background: 'rgba(94,174,255,0.08)',
+                  border: '1px solid rgba(94,174,255,0.25)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 0 32px rgba(94,174,255,0.15)',
                 }}>
-                  <CheckCircle size={32} strokeWidth={1.5} color="#5eaeff" />
+                  <CheckCircle size={30} strokeWidth={1.5} color="#5eaeff" />
                 </div>
                 <h2 style={{
                   fontSize: 'clamp(1.4rem, 4vw, 1.8rem)',
-                  fontWeight: 800,
-                  letterSpacing: '-0.03em',
-                  color: '#fff',
+                  fontWeight: 800, letterSpacing: '-0.03em', color: '#fff',
                 }}>
                   You're all set!
                 </h2>
                 <p style={{
-                  fontSize: '1rem',
-                  color: 'rgba(255,255,255,0.65)',
-                  lineHeight: 1.65,
-                  maxWidth: 340,
+                  fontSize: '1rem', color: 'rgba(255,255,255,0.58)',
+                  lineHeight: 1.65, maxWidth: 340,
                 }}>
                   Thanks for reaching out. We'll be in touch within 24 hours with your custom mock-up.
                 </p>
@@ -243,19 +226,16 @@ export default function MockupModal({ isOpen, onClose }) {
                   onClick={onClose}
                   style={{
                     marginTop: '0.5rem',
-                    background: 'rgba(255,255,255,0.07)',
-                    color: 'rgba(255,255,255,0.8)',
+                    background: 'rgba(255,255,255,0.06)',
+                    color: 'rgba(255,255,255,0.75)',
                     border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 100,
-                    padding: '0.75rem 2rem',
-                    fontSize: '0.9rem',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
+                    borderRadius: 100, padding: '0.75rem 2rem',
+                    fontSize: '0.9rem', fontWeight: 500,
+                    cursor: 'pointer', fontFamily: 'inherit',
                     transition: 'background 0.2s',
                   }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                 >
                   Close
                 </button>
