@@ -34,7 +34,7 @@ const techs = [
     Icon: () => <SiAnthropic size={ICON_SIZE} color="#CC785C" />,
     name: 'Claude Code',
     role: 'The Architect',
-    body: "This entire site was designed and built using Claude Code — Anthropic's AI development environment. Smart code, zero bloat.",
+    body: "We use Claude Code to debug, review, and optimise our code — catching issues quickly and keeping every project clean, fast, and reliable.",
     accent: '#CC785C',
     glow: 'rgba(204,120,92,0.12)',
   },
@@ -166,7 +166,7 @@ export default function TechStack() {
         <span style={{
           fontSize: '0.72rem', fontWeight: 600,
           letterSpacing: '0.14em', textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.28)',
+          color: 'rgba(255,255,255,0.48)',
         }}>Built With</span>
       </div>
 
@@ -192,7 +192,7 @@ export default function TechStack() {
             background: 'rgba(255,255,255,0.05)',
             backdropFilter: 'blur(28px)',
             WebkitBackdropFilter: 'blur(28px)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.15)',
             boxShadow: `inset 0 1px 0 rgba(255,255,255,0.08), 0 0 40px ${tech.glow}`,
           }}>
             <tech.Icon />
@@ -216,7 +216,7 @@ export default function TechStack() {
 
           <p style={{
             fontSize: 'clamp(0.95rem, 1.4vw, 1.05rem)',
-            color: 'rgba(255,255,255,0.55)',
+            color: 'rgba(255,255,255,0.72)',
             lineHeight: 1.75, maxWidth: 480, margin: 0,
           }}>
             {tech.body}

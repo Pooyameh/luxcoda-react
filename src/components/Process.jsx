@@ -122,7 +122,7 @@ export default function Process() {
         <span style={{
           fontSize: '0.72rem', fontWeight: 600,
           letterSpacing: '0.14em', textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.3)',
+          color: 'rgba(255,255,255,0.5)',
         }}>How It Works</span>
       </div>
 
@@ -161,8 +161,8 @@ export default function Process() {
             background: 'rgba(255,255,255,0.04)',
             backdropFilter: 'blur(32px)',
             WebkitBackdropFilter: 'blur(32px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 24px 60px rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255,255,255,0.14)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 24px 60px rgba(0,0,0,0.5)',
           }}>
             <div style={{
               display: 'inline-block', fontSize: '0.65rem', fontWeight: 700,
@@ -187,7 +187,7 @@ export default function Process() {
 
             <p style={{
               fontSize: 'clamp(0.95rem, 1.3vw, 1.05rem)',
-              color: 'rgba(255,255,255,0.6)',
+              color: 'rgba(255,255,255,0.75)',
               lineHeight: 1.78, margin: 0,
             }}>
               {step.body}

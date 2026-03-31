@@ -111,14 +111,14 @@ export default function Difference() {
           <span style={{
             fontSize: '0.72rem', fontWeight: 600,
             letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.3)',
+            color: 'rgba(255,255,255,0.5)',
           }}>
             The Difference
           </span>
         </div>
 
         {/* Top divider */}
-        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07) 20%, rgba(255,255,255,0.07) 80%, transparent)', marginBottom: 0 }} />
+        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.1) 80%, transparent)', marginBottom: 0 }} />
 
         {items.map((item, idx) => (
           <div key={item.num} className={`diff-row-${idx}`} style={{ opacity: 0 }}>
@@ -157,7 +157,7 @@ export default function Difference() {
               {/* Body */}
               <p className={`diff-body-${idx}`} style={{
                 fontSize: 'clamp(0.88rem, 1.2vw, 1rem)',
-                color: 'rgba(255,255,255,0.55)',
+                color: 'rgba(255,255,255,0.7)',
                 lineHeight: 1.75, margin: 0,
                 opacity: 0,
               }}>
@@ -165,7 +165,7 @@ export default function Difference() {
               </p>
             </div>
 
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07) 20%, rgba(255,255,255,0.07) 80%, transparent)' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.1) 80%, transparent)' }} />
           </div>
         ))}
       </div>

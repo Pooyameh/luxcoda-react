@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -r \"api_key\\\\|apiKey\\\\|API_KEY\\\\|secret\\\\|SECRET\\\\|password\\\\|PASSWORD\\\\|token\\\\|TOKEN\" /c/Users/pooya/Documents/Luxcoda/luxcoda-react/src --include=*.jsx --include=*.js)"
+      "Bash(grep -r \"api_key\\\\|apiKey\\\\|API_KEY\\\\|secret\\\\|SECRET\\\\|password\\\\|PASSWORD\\\\|token\\\\|TOKEN\" /c/Users/pooya/Documents/Luxcoda/luxcoda-react/src --include=*.jsx --include=*.js)",
+      "Bash(find /c/Users/pooya/Documents/Luxcoda/luxcoda-react -type f -name .env* -o -name *.config.js -o -name package.json)"
     ]
   }
 }

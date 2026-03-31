@@ -9,10 +9,28 @@ const links = [
 
 export default function Navbar({ onOpenModal }) {
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
+    let lastY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      if (y < 80) {
+        // Near top — always show, no glass
+        setHidden(false)
+        setScrolled(false)
+      } else if (y > lastY + 4) {
+        // Scrolling down — hide
+        setHidden(true)
+        setScrolled(true)
+      } else if (y < lastY - 4) {
+        // Scrolling up — slide back in
+        setHidden(false)
+        setScrolled(true)
+      }
+      lastY = y
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -28,12 +46,13 @@ export default function Navbar({ onOpenModal }) {
         position: 'fixed',
         top: 0, left: 0, right: 0,
         zIndex: 100,
-        transition: 'background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease',
-        background: scrolled ? 'rgba(6,6,16,0.7)' : 'transparent',
+        transition: 'transform 0.4s cubic-bezier(0.16,1,0.3,1), background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease',
+        transform: hidden ? 'translateY(-110%)' : 'translateY(0)',
+        background: scrolled ? 'rgba(6,6,16,0.75)' : 'transparent',
         backdropFilter: scrolled ? 'blur(28px) saturate(160%)' : 'none',
         WebkitBackdropFilter: scrolled ? 'blur(28px) saturate(160%)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.07)' : '1px solid transparent',
-        boxShadow: scrolled ? '0 1px 0 rgba(255,255,255,0.03), 0 8px 32px rgba(0,0,0,0.4)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+        boxShadow: scrolled ? '0 1px 0 rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.4)' : 'none',
       }}>
         <div style={{
           maxWidth: 1400,

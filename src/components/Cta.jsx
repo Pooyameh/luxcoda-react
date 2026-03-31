@@ -88,8 +88,8 @@ export default function Cta({ onOpenModal }) {
             background: 'rgba(255,255,255,0.04)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
-            border: '1px solid rgba(255,255,255,0.09)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07), 0 40px 100px rgba(0,0,0,0.6)',
+            border: '1px solid rgba(255,255,255,0.13)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,0.6)',
             padding: 'clamp(2.5rem, 6vw, 5rem)',
             textAlign: 'center',
           }}
@@ -100,7 +100,7 @@ export default function Cta({ onOpenModal }) {
               opacity: 0,
               fontSize: '0.75rem', fontWeight: 600,
               letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.38)',
+              color: 'rgba(255,255,255,0.55)',
               marginBottom: '1.25rem',
             }}
           >
@@ -126,7 +126,7 @@ export default function Cta({ onOpenModal }) {
             style={{
               opacity: 0,
               fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(255,255,255,0.7)',
               lineHeight: 1.7,
               maxWidth: 520,
               margin: '0 auto clamp(2rem, 4vw, 3rem)',

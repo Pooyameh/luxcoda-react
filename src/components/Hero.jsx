@@ -54,7 +54,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      padding: '70px clamp(1.25rem, 4vw, 4rem) clamp(2rem, 4vw, 4rem)',
+      padding: 'clamp(110px, 16vh, 150px) clamp(1.25rem, 4vw, 4rem) clamp(2rem, 4vw, 4rem)',
       textAlign: 'center',
       background: '#060610',
     }}>
@@ -108,12 +108,12 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
             background: 'rgba(255,255,255,0.05)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.18)',
             marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)',
             fontSize: '0.75rem',
             fontWeight: 500,
             letterSpacing: '0.04em',
-            color: 'rgba(255,255,255,0.6)',
+            color: 'rgba(255,255,255,0.75)',
           }}
         >
           <span style={{

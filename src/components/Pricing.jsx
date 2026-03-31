@@ -28,7 +28,7 @@ const plans = [
   },
   {
     name: 'Premium',
-    upfront: "Let's Talk",
+    upfront: "Custom",
     monthly: null,
     tagline: 'A fully managed presence — done entirely for you.',
     features: ['Everything in Accelerate', 'Professional photography', 'Booking systems & paywalls', 'Email newsletters', 'Full social media management'],
@@ -72,9 +72,10 @@ export default function Pricing({ onOpenModal }) {
       height: '100vh',
       background: '#060612',
       display: 'flex',
-      alignItems: 'center',
-      overflow: 'hidden',
-      paddingTop: '70px',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      overflow: 'visible',
+      padding: '80px 0 clamp(1rem, 2vh, 1.5rem)',
       boxSizing: 'border-box',
     }}>
 
@@ -95,7 +96,7 @@ export default function Pricing({ onOpenModal }) {
       }}>
 
         {/* Header */}
-        <div className="pricing-title-block" style={{ opacity: 0, marginBottom: 'clamp(1.2rem, 2.5vw, 2rem)' }}>
+        <div className="pricing-title-block" style={{ opacity: 0, marginBottom: 'clamp(0.75rem, 1.5vw, 1.2rem)' }}>
           <span style={{
             fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.14em',
             textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)',
@@ -118,8 +119,8 @@ export default function Pricing({ onOpenModal }) {
           background: 'rgba(255,255,255,0.03)',
           backdropFilter: 'blur(32px)',
           WebkitBackdropFilter: 'blur(32px)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 32px 80px rgba(0,0,0,0.5)',
+          border: '1px solid rgba(255,255,255,0.11)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.5)',
           overflow: 'hidden',
         }}>
           {/* Column labels */}
@@ -127,13 +128,13 @@ export default function Pricing({ onOpenModal }) {
             display: 'grid',
             gridTemplateColumns: '1.1fr 1.8fr 0.85fr',
             gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
-            padding: 'clamp(0.6rem, 1.2vw, 1rem) clamp(1.25rem, 2.5vw, 2rem)',
+            padding: 'clamp(0.45rem, 0.8vw, 0.7rem) clamp(1.25rem, 2.5vw, 2rem)',
             borderBottom: '1px solid rgba(255,255,255,0.06)',
           }}>
             {['Plan', "What's included", 'Investment'].map((h, hi) => (
               <span key={h} style={{
                 fontSize: '0.66rem', letterSpacing: '0.1em',
-                color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase',
                 ...(hi === 2 ? { textAlign: 'right' } : {}),
               }}>{h}</span>
             ))}
@@ -161,8 +162,8 @@ export default function Pricing({ onOpenModal }) {
                   gap: 'clamp(0.75rem, 2.5vw, 2.5rem)',
                   alignItems: 'start',
                   padding: plan.featured
-                    ? 'clamp(1rem, 1.8vw, 1.5rem) clamp(1.25rem, 2.5vw, 2rem)'
-                    : 'clamp(0.75rem, 1.4vw, 1.2rem) clamp(1.25rem, 2.5vw, 2rem)',
+                    ? 'clamp(0.65rem, 1.2vw, 1rem) clamp(1.25rem, 2.5vw, 2rem)'
+                    : 'clamp(0.5rem, 0.9vw, 0.8rem) clamp(1.25rem, 2.5vw, 2rem)',
                 }}
               >
                 {/* Name col */}
@@ -182,7 +183,7 @@ export default function Pricing({ onOpenModal }) {
                       : 'clamp(0.9rem, 1.5vw, 1.3rem)',
                     fontWeight: 800, letterSpacing: '-0.03em', color: '#fff', marginBottom: '0.2rem',
                   }}>{plan.name}</div>
-                  <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.42)', lineHeight: 1.4 }}>{plan.tagline}</div>
+                  <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.4 }}>{plan.tagline}</div>
                 </div>
 
                 {/* Features col */}
@@ -190,7 +191,7 @@ export default function Pricing({ onOpenModal }) {
                   {plan.features.map(f => (
                     <li key={f} style={{
                       display: 'flex', alignItems: 'flex-start', gap: '0.4rem',
-                      fontSize: 'clamp(0.76rem, 1vw, 0.86rem)', color: 'rgba(255,255,255,0.7)', lineHeight: 1.45,
+                      fontSize: 'clamp(0.76rem, 1vw, 0.86rem)', color: 'rgba(255,255,255,0.82)', lineHeight: 1.45,
                     }}>
                       <span style={{ color: plan.featured ? '#5eaeff' : 'rgba(94,174,255,0.55)', marginTop: '0.15em', flexShrink: 0 }}>
                         <Check size={11} strokeWidth={2.5} />

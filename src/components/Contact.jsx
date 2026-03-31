@@ -120,7 +120,7 @@ export default function Contact() {
           <span style={{
             fontSize: '0.75rem', fontWeight: 600,
             letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.35)',
+            color: 'rgba(255,255,255,0.55)',
             display: 'block', marginBottom: '1.5rem',
           }}>
             Get in Touch
@@ -132,11 +132,11 @@ export default function Contact() {
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)',
           }}>
-            Let's<br />Talk.
+            Let's<br />Build.
           </h2>
           <p style={{
             fontSize: 'clamp(0.95rem, 1.4vw, 1.05rem)',
-            color: 'rgba(255,255,255,0.5)',
+            color: 'rgba(255,255,255,0.68)',
             lineHeight: 1.72, maxWidth: 360,
           }}>
             Brisbane-based and ready to build. Reach out by phone, email, or social — we respond fast.
@@ -150,8 +150,8 @@ export default function Contact() {
             background: 'rgba(255,255,255,0.03)',
             backdropFilter: 'blur(36px)',
             WebkitBackdropFilter: 'blur(36px)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 32px 80px rgba(0,0,0,0.55)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), 0 32px 80px rgba(0,0,0,0.55)',
             overflow: 'hidden',
           }}
         >
