@@ -75,7 +75,7 @@ export default function Pricing({ onOpenModal }) {
       flexDirection: 'column',
       justifyContent: 'center',
       overflow: 'visible',
-      padding: '80px 0 clamp(1rem, 2vh, 1.5rem)',
+      padding: '80px 0 clamp(3rem, 5vh, 4.5rem)',
       boxSizing: 'border-box',
     }}>
 
@@ -187,7 +187,7 @@ export default function Pricing({ onOpenModal }) {
                 </div>
 
                 {/* Features col */}
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.28rem' }}>
+                <ul className="pricing-features-col" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.28rem' }}>
                   {plan.features.map(f => (
                     <li key={f} style={{
                       display: 'flex', alignItems: 'flex-start', gap: '0.4rem',
@@ -249,8 +249,13 @@ export default function Pricing({ onOpenModal }) {
       <style>{`
         @media (max-width: 900px) {
           .pricing-header-row { display: none !important; }
-          .pricing-row { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
-          .pricing-row > div:last-child { text-align: left !important; }
+          .pricing-features-col { display: none !important; }
+          .pricing-row {
+            grid-template-columns: 1fr auto !important;
+            gap: 0.75rem 1rem !important;
+            align-items: center !important;
+          }
+          .pricing-row > div:last-child { text-align: right !important; }
         }
       `}</style>
     </div>

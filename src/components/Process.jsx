@@ -136,7 +136,7 @@ export default function Process() {
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             alignItems: 'center',
-            padding: '70px clamp(1.25rem, 4vw, 4rem) 0',
+            padding: '70px clamp(1.25rem, 4vw, 4rem) clamp(4rem, 7vh, 6rem)',
             gap: 'clamp(1rem, 3vw, 4rem)',
           }}
           className="process-grid"

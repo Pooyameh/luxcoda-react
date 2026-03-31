@@ -180,7 +180,7 @@ export default function TechStack() {
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
             textAlign: 'center',
-            padding: '70px clamp(1.25rem, 4vw, 4rem) 0',
+            padding: '70px clamp(1.25rem, 4vw, 4rem) clamp(4rem, 7vh, 6rem)',
             gap: 'clamp(1rem, 2.5vh, 1.75rem)',
             zIndex: 1,
           }}

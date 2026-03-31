@@ -89,7 +89,7 @@ export default function Difference() {
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
-      paddingTop: '70px',
+      padding: 'clamp(80px, 11vh, 110px) 0 clamp(3rem, 6vh, 5rem)',
     }}>
       {/* Background orb */}
       <div style={{

@@ -84,7 +84,7 @@ export default function Contact() {
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
-      padding: '0 clamp(1.25rem, 4vw, 4rem)',
+      padding: 'clamp(5rem, 10vh, 8rem) clamp(1.25rem, 4vw, 4rem)',
       background: '#06060f',
       overflow: 'hidden',
     }}>

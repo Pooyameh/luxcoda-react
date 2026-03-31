@@ -54,7 +54,7 @@ export default function Hero({ onOpenModal, isLoaded = false }) {
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      padding: 'clamp(110px, 16vh, 150px) clamp(1.25rem, 4vw, 4rem) clamp(2rem, 4vw, 4rem)',
+      padding: 'clamp(110px, 16vh, 150px) clamp(1.25rem, 4vw, 4rem) clamp(4rem, 7vh, 6rem)',
       textAlign: 'center',
       background: '#060610',
     }}>
