@@ -57,7 +57,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: '#060610', color: '#fff', overflowX: 'hidden' }}>
+    <div style={{ background: '#010112', color: '#fff', overflowX: 'hidden' }}>
       <Cursor />
 
       <AnimatePresence>
