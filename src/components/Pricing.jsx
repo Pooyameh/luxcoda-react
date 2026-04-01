@@ -1,7 +1,6 @@
-import { useRef, useLayoutEffect } from 'react'
+import { useState, useRef, useLayoutEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import AnimatedText from './AnimatedText'
 
 const plans = [
   {
@@ -34,124 +33,173 @@ const plans = [
   },
 ]
 
-function PlanRow({ name, price, pitch, desc, includes, index, onOpenModal }) {
-  const rowRef = useRef(null)
+function PricingCard({ name, price, pitch, desc, includes, index, onOpenModal }) {
+  const [hovered, setHovered] = useState(false)
+  const cardRef  = useRef(null)
+  const wrapRef  = useRef(null)
+  const isMobile = useRef(typeof window !== 'undefined' && window.innerWidth < 768).current
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(rowRef.current, { opacity: 0, y: 20 })
+      gsap.set(wrapRef.current, { opacity: 0, y: 24 })
       ScrollTrigger.create({
-        trigger: rowRef.current,
-        start: 'top 85%',
+        trigger: wrapRef.current,
+        start: 'top 88%',
         once: true,
         onEnter: () => {
-          gsap.to(rowRef.current, {
+          gsap.to(wrapRef.current, {
             opacity: 1, y: 0,
             duration: 0.9, ease: 'power2.out',
-            delay: index * 0.06,
+            delay: index * 0.07,
           })
         },
       })
-    }, rowRef)
+    }, wrapRef)
     return () => ctx.revert()
   }, [index])
 
+  const handleMouseMove = (e) => {
+    if (isMobile || !cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    cardRef.current.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`
+  }
+
+  const handleMouseLeave = () => {
+    setHovered(false)
+    if (cardRef.current) {
+      cardRef.current.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)'
+    }
+  }
+
   return (
-    <div
-      ref={rowRef}
-      style={{
-        borderBottom: '1px solid rgba(232,237,242,0.06)',
-        padding: 'clamp(3rem, 8vh, 5rem) 0',
-      }}
-    >
-      {/* Plan name */}
-      <AnimatedText
-        as="h3"
+    <div ref={wrapRef}>
+      <div
+        ref={cardRef}
+        onMouseEnter={() => setHovered(true)}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={() => setHovered(true)}
+        onTouchEnd={() => setTimeout(() => setHovered(false), 300)}
         style={{
+          background: hovered ? 'rgba(111,163,199,0.06)' : 'rgba(232,237,242,0.02)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: `1px solid ${hovered ? 'rgba(111,163,199,0.20)' : 'rgba(232,237,242,0.06)'}`,
+          borderRadius: '16px',
+          padding: 'clamp(24px, 3vw, 36px)',
+          transition: 'background 0.5s cubic-bezier(0.23,1,0.32,1), border-color 0.5s cubic-bezier(0.23,1,0.32,1)',
+          transformStyle: 'preserve-3d',
+          cursor: 'default',
+          position: 'relative',
+          overflow: 'hidden',
+          height: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Diagonal shine */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          background: hovered
+            ? 'linear-gradient(135deg, rgba(111,163,199,0.08) 0%, transparent 50%, rgba(111,163,199,0.04) 100%)'
+            : 'none',
+          borderRadius: '16px',
+          pointerEvents: 'none',
+          transition: 'background 0.5s ease',
+        }} />
+
+        {/* Corner accent dot */}
+        <div style={{
+          position: 'absolute', top: '16px', right: '16px',
+          width: '6px', height: '6px', borderRadius: '50%',
+          background: hovered ? '#6fa3c7' : 'rgba(111,163,199,0.2)',
+          transition: 'all 0.4s ease',
+          boxShadow: hovered ? '0 0 12px rgba(111,163,199,0.4)' : 'none',
+        }} />
+
+        {/* Plan name */}
+        <h3 style={{
           fontFamily: '"Bodoni Moda", serif',
           fontWeight: 700,
-          fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
-          color: 'var(--white)',
-          lineHeight: 1,
-          marginBottom: '0.6rem',
-        }}
-        start="top 90%"
-      >
-        {name}
-      </AnimatedText>
+          fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+          color: '#e8edf2',
+          margin: '0 0 8px 0',
+          lineHeight: 1.1,
+        }}>
+          {name}
+        </h3>
 
-      {/* Price */}
-      <p style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontWeight: 500,
-        fontSize: 15,
-        color: 'var(--accent)',
-        letterSpacing: '0.05em',
-        marginBottom: '0.75rem',
-      }}>
-        {price}
-      </p>
-
-      {/* Pitch */}
-      <p style={{
-        fontFamily: '"Bodoni Moda", serif',
-        fontStyle: 'italic',
-        fontWeight: 400,
-        fontSize: 'clamp(1.1rem, 1.5vw, 1.3rem)',
-        color: 'var(--muted-strong)',
-        marginBottom: '1.25rem',
-        lineHeight: 1.4,
-      }}>
-        {pitch}
-      </p>
-
-      {/* Description */}
-      <p style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontWeight: 300,
-        fontSize: 14,
-        color: 'var(--muted)',
-        maxWidth: 520,
-        lineHeight: 1.8,
-        marginBottom: '1.25rem',
-      }}>
-        {desc}
-      </p>
-
-      {/* Includes — inline list */}
-      <p style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontWeight: 400,
-        fontSize: 13,
-        color: 'var(--muted)',
-        marginBottom: '1.5rem',
-        lineHeight: 1.6,
-      }}>
-        {includes.join(' · ')}
-      </p>
-
-      {/* CTA */}
-      <button
-        onClick={onOpenModal}
-        style={{
-          background: 'none',
-          border: 'none',
-          padding: 0,
+        {/* Price */}
+        <p style={{
           fontFamily: '"DM Sans", sans-serif',
           fontWeight: 500,
-          fontSize: 11,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: 'var(--accent)',
-          cursor: 'pointer',
-          transition: 'opacity 0.2s',
-          textDecoration: 'none',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline' }}
-        onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none' }}
-      >
-        Get Started →
-      </button>
+          fontSize: '14px',
+          color: '#6fa3c7',
+          letterSpacing: '0.05em',
+          margin: '0 0 16px 0',
+        }}>
+          {price}
+        </p>
+
+        {/* Pitch */}
+        <p style={{
+          fontFamily: '"Bodoni Moda", serif',
+          fontStyle: 'italic',
+          fontWeight: 400,
+          fontSize: 'clamp(1rem, 1.3vw, 1.15rem)',
+          color: 'rgba(232,237,242,0.5)',
+          margin: '0 0 16px 0',
+          lineHeight: 1.5,
+        }}>
+          {pitch}
+        </p>
+
+        {/* Description */}
+        <p style={{
+          fontFamily: '"DM Sans", sans-serif',
+          fontWeight: 300,
+          fontSize: '13px',
+          color: 'rgba(232,237,242,0.4)',
+          lineHeight: 1.8,
+          margin: '0 0 20px 0',
+        }}>
+          {desc}
+        </p>
+
+        {/* Includes */}
+        <p style={{
+          fontFamily: '"DM Sans", sans-serif',
+          fontWeight: 400,
+          fontSize: '12px',
+          color: 'rgba(232,237,242,0.3)',
+          lineHeight: 1.8,
+          margin: '0 0 24px 0',
+        }}>
+          {includes.join(' · ')}
+        </p>
+
+        {/* CTA */}
+        <button
+          onClick={onOpenModal}
+          style={{
+            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+            fontFamily: '"DM Sans", sans-serif',
+            fontSize: '11px', fontWeight: 500,
+            letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: hovered ? '#8fc4e0' : '#6fa3c7',
+            transition: 'color 0.3s ease',
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+          }}
+        >
+          GET STARTED
+          <span style={{
+            display: 'inline-block',
+            transition: 'transform 0.3s ease',
+            transform: hovered ? 'translateX(4px)' : 'translateX(0)',
+          }}>→</span>
+        </button>
+      </div>
     </div>
   )
 }
@@ -160,11 +208,20 @@ export default function Pricing({ onOpenModal }) {
   return (
     <section id="pricing" style={{ background: 'transparent', padding: 'min(18vh, 160px) 0' }}>
       <div className="content-wrap">
-        {plans.map((p, i) => (
-          <PlanRow key={p.name} index={i} onOpenModal={onOpenModal} {...p} />
-        ))}
+        <div
+          className="pricing-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '20px',
+            alignItems: 'start',
+          }}
+        >
+          {plans.map((p, i) => (
+            <PricingCard key={p.name} index={i} onOpenModal={onOpenModal} {...p} />
+          ))}
+        </div>
 
-        {/* Closing note */}
         <p style={{
           fontFamily: '"DM Sans", sans-serif',
           fontStyle: 'italic',
@@ -177,6 +234,12 @@ export default function Pricing({ onOpenModal }) {
           Every project starts with a free mock-up. No commitment. No invoice until you&apos;re thrilled.
         </p>
       </div>
+
+      <style>{`
+        @media (max-width: 767px) {
+          .pricing-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+        }
+      `}</style>
     </section>
   )
 }

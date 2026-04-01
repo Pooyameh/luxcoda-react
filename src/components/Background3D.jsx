@@ -243,71 +243,116 @@ const planetFrag = /* glsl */`
 `
 
 function IcePlanet({ scale }) {
-  const meshRef  = useRef()
-  const atmRef   = useRef()
-  const lightRef = useRef()
-  const [hovered, setHovered] = useState(false)
-  const scrollLerp = useRef(0)
+  const outerRef    = useRef()
+  const innerRef    = useRef()
+  const meshRef     = useRef()
+  const atmRef      = useRef()
+  const ringRef     = useRef()
+  const lightRef    = useRef()
+  const labelDivRef = useRef(null)
+  const hoveredRef  = useRef(false)
+  const scrollLerp  = useRef(0)
+  const smoothOp    = useRef(0)
+  const smoothSc    = useRef(0.2)
 
   const uniforms = useMemo(() => ({ uOpacity: { value: 0 } }), [])
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     scrollLerp.current += (useScrollStore.getState().scrollProgress - scrollLerp.current) * 0.04
-    const sp  = scrollLerp.current
-    const vis = ss(0.10, 0.17, sp) * (1 - ss(0.30, 0.38, sp))
+    const sp     = scrollLerp.current
+    const rawVis = ss(0.10, 0.17, sp) * (1 - ss(0.30, 0.38, sp))
 
-    if (!meshRef.current) return
-    meshRef.current.visible  = vis > 0.01
-    if (atmRef.current)  atmRef.current.visible  = vis > 0.01
-    uniforms.uOpacity.value  = vis
+    smoothOp.current += (rawVis - smoothOp.current) * 0.008
+    smoothSc.current += ((0.2 + rawVis * 0.8) - smoothSc.current) * 0.008
 
-    const x = 0.70 + ss(0.12, 0.28, sp) * 0.35
-    const y = -1.8 + ss(0.10, 0.24, sp) * 2.2
-    meshRef.current.position.set(x * scale, y * scale, -3.2)
-    if (atmRef.current) atmRef.current.position.copy(meshRef.current.position)
+    const op  = smoothOp.current
+    const hov = hoveredRef.current
+    if (!outerRef.current) return
 
-    meshRef.current.rotation.y += 0.0012
-    if (lightRef.current) {
-      lightRef.current.position.set(x * scale - 1.2, y * scale + 0.5, -2)
-      lightRef.current.intensity = vis * (hovered ? 1.8 : 0.8)
+    outerRef.current.visible = op > 0.005
+
+    // x fixed at right edge (partially off-screen), y rises from below
+    const x = 1.50
+    const y = -1.4 + ss(0.10, 0.28, sp) * 2.0
+    outerRef.current.position.set(x * scale, y * scale, -3.2)
+    if (innerRef.current) innerRef.current.scale.setScalar(smoothSc.current)
+    if (meshRef.current)  meshRef.current.rotation.y += 0.0012
+
+    uniforms.uOpacity.value = op
+    if (atmRef.current) atmRef.current.material.opacity = op * 0.13
+
+    const t = clock.getElapsedTime()
+    const ringPulse = hov ? 0.30 : 0.06 + Math.sin(t * 1.1) * 0.015
+    if (ringRef.current) ringRef.current.material.opacity = op * ringPulse
+
+    if (lightRef.current) lightRef.current.intensity = op * (hov ? 2.2 : 0.8)
+
+    if (labelDivRef.current) {
+      labelDivRef.current.style.opacity = op < 0.05 ? '0' : (hov ? '0.9' : '0.2')
+      const lineEl = labelDivRef.current.querySelector('.lbl-line')
+      if (lineEl) lineEl.style.width = hov ? '24px' : '12px'
     }
-    if (atmRef.current) atmRef.current.material.opacity = vis * 0.13
   })
 
   const r = 0.72 * scale
   return (
-    <group>
-      <pointLight ref={lightRef} color="#6fa3c7" intensity={0} distance={6} />
+    <group ref={outerRef} visible={false}>
+      <pointLight ref={lightRef} color="#6fa3c7" intensity={0} distance={6} position={[-1.2, 0.5, 0.8]} />
 
-      {/* Planet body */}
-      <mesh
-        ref={meshRef}
-        onPointerOver={() => { setHovered(true); document.body.style.cursor = 'pointer' }}
-        onPointerOut={() => { setHovered(false); document.body.style.cursor = '' }}
-        onClick={() => { window.location.href = '/about' }}
-      >
-        <sphereGeometry args={[r, 64, 64]} />
-        <shaderMaterial
-          vertexShader={planetVert}
-          fragmentShader={planetFrag}
-          uniforms={uniforms}
-          transparent
-          depthWrite={false}
-        />
-        {hovered && (
-          <Html center position={[r + 0.15, -r - 0.1, 0]} style={{ zIndex: 10, pointerEvents: 'none' }}>
-            <span style={{ fontFamily: '"DM Sans"', fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#6fa3c7', whiteSpace: 'nowrap', background: 'rgba(5,5,8,0.75)', padding: '3px 8px', borderRadius: 2 }}>
-              ABOUT US →
-            </span>
-          </Html>
-        )}
-      </mesh>
+      {/* Entrance-scale group */}
+      <group ref={innerRef}>
+        {/* Pulsing glow ring */}
+        <mesh ref={ringRef} rotation={[Math.PI * 0.15, 0, 0]}>
+          <ringGeometry args={[r * 1.30, r * 1.37, 64]} />
+          <meshBasicMaterial color="#6fa3c7" transparent opacity={0} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
 
-      {/* Atmosphere rim */}
-      <mesh ref={atmRef}>
-        <sphereGeometry args={[r * 1.14, 32, 32]} />
-        <meshBasicMaterial color="#6fa3c7" transparent opacity={0.13} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.BackSide} />
-      </mesh>
+        {/* Planet body */}
+        <mesh
+          ref={meshRef}
+          onPointerOver={() => { hoveredRef.current = true; document.body.style.cursor = 'pointer' }}
+          onPointerOut={() => { hoveredRef.current = false; document.body.style.cursor = '' }}
+          onClick={() => { window.location.href = '/about' }}
+        >
+          <sphereGeometry args={[r, 64, 64]} />
+          <shaderMaterial
+            vertexShader={planetVert}
+            fragmentShader={planetFrag}
+            uniforms={uniforms}
+            transparent
+            depthWrite={false}
+          />
+        </mesh>
+
+        {/* Atmosphere rim */}
+        <mesh ref={atmRef}>
+          <sphereGeometry args={[r * 1.14, 32, 32]} />
+          <meshBasicMaterial color="#6fa3c7" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.BackSide} />
+        </mesh>
+      </group>
+
+      {/* Always-visible label — outside innerRef so scale doesn't shift it */}
+      <Html center position={[-r * 1.6, -r * 0.9, 0]} style={{ pointerEvents: 'none', zIndex: 10 }}>
+        <div
+          ref={labelDivRef}
+          style={{
+            fontFamily: '"DM Sans", sans-serif',
+            fontSize: '9px',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: '#6fa3c7',
+            opacity: 0,
+            transition: 'opacity 0.6s ease',
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span className="lbl-line" style={{ display: 'inline-block', width: '12px', height: '1px', background: '#6fa3c7', transition: 'width 0.4s ease', flexShrink: 0 }} />
+          ABOUT US
+        </div>
+      </Html>
     </group>
   )
 }
@@ -382,84 +427,132 @@ function SpaceNebula({ scale }) {
 // CONSTELLATION — star pattern at Pricing section
 // ══════════════════════════════════════════════════════════════════════════════
 const CSTARS = [
-  [-0.40,  0.42, -2.6],
-  [-0.02,  0.68, -2.6],
-  [ 0.38,  0.50, -2.6],
-  [ 0.52, -0.08, -2.6],
-  [ 0.18, -0.40, -2.6],
-  [-0.28, -0.18, -2.6],
+  [0.82,  0.35, -2.6],
+  [1.10,  0.58, -2.6],
+  [1.40,  0.42, -2.6],
+  [1.52, -0.10, -2.6],
+  [1.22, -0.38, -2.6],
+  [0.88, -0.22, -2.6],
 ]
 const CLINES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[1,4]]
 
 function Constellation({ scale }) {
-  const [hovered, setHovered] = useState(false)
-  const groupRef   = useRef()
-  const starRefs   = useRef([])
-  const lineRefs   = useRef([])
-  const scrollLerp = useRef(0)
-  const visRef     = useRef(0)
+  const groupRef    = useRef()
+  const innerRef    = useRef()
+  const starRefs    = useRef([])
+  const lineRefs    = useRef([])
+  const ringRef     = useRef()
+  const labelDivRef = useRef(null)
+  const hoveredRef  = useRef(false)
+  const scrollLerp  = useRef(0)
+  const smoothOp    = useRef(0)
+  const smoothSc    = useRef(0.2)
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     scrollLerp.current += (useScrollStore.getState().scrollProgress - scrollLerp.current) * 0.04
-    const sp  = scrollLerp.current
-    const vis = ss(0.47, 0.56, sp) * (1 - ss(0.69, 0.77, sp))
-    visRef.current = vis
-    if (!groupRef.current) return
-    groupRef.current.visible = vis > 0.01
+    const sp     = scrollLerp.current
+    const rawVis = ss(0.47, 0.56, sp) * (1 - ss(0.69, 0.77, sp))
 
-    const baseLineColor = hovered ? '#4a7a9a' : '#2a4a5a'
+    smoothOp.current += (rawVis - smoothOp.current) * 0.008
+    smoothSc.current += ((0.2 + rawVis * 0.8) - smoothSc.current) * 0.008
+
+    const op  = smoothOp.current
+    const hov = hoveredRef.current
+    if (!groupRef.current) return
+
+    groupRef.current.visible = op > 0.005
+    if (innerRef.current) innerRef.current.scale.setScalar(smoothSc.current)
+
+    const baseLineColor = hov ? '#4a7a9a' : '#2a4a5a'
     lineRefs.current.forEach(l => {
       if (l?.material) {
-        l.material.opacity  = vis * (hovered ? 0.90 : 0.55)
+        l.material.opacity  = op * (hov ? 0.90 : 0.55)
         l.material.color.set(baseLineColor)
       }
     })
     starRefs.current.forEach(m => {
       if (m?.material) {
-        m.material.opacity = vis
-        m.material.color.set(hovered ? '#8fc4e0' : '#a8cce4')
+        m.material.opacity = op
+        m.material.color.set(hov ? '#8fc4e0' : '#a8cce4')
       }
     })
+
+    const t = clock.getElapsedTime()
+    const ringPulse = hov ? 0.25 : 0.05 + Math.sin(t * 0.9) * 0.012
+    if (ringRef.current) ringRef.current.material.opacity = op * ringPulse
+
+    if (labelDivRef.current) {
+      labelDivRef.current.style.opacity = op < 0.05 ? '0' : (hov ? '0.9' : '0.2')
+      const lineEl = labelDivRef.current.querySelector('.lbl-line')
+      if (lineEl) lineEl.style.width = hov ? '24px' : '12px'
+    }
   })
 
   const scaledStars = CSTARS.map(([x, y, z]) => [x * scale, y * scale, z])
+  // Center of constellation for ring placement
+  const cx = CSTARS.reduce((s, [x]) => s + x, 0) / CSTARS.length * scale
+  const cy = CSTARS.reduce((s, [, y]) => s + y, 0) / CSTARS.length * scale
+  const cRadius = 0.50 * scale
 
   return (
     <group
       ref={groupRef}
       visible={false}
-      onPointerOver={() => { setHovered(true); document.body.style.cursor = 'pointer' }}
-      onPointerOut={() => { setHovered(false); document.body.style.cursor = '' }}
+      onPointerOver={() => { hoveredRef.current = true; document.body.style.cursor = 'pointer' }}
+      onPointerOut={() => { hoveredRef.current = false; document.body.style.cursor = '' }}
       onClick={() => { window.location.href = '/work' }}
     >
-      {/* Stars */}
-      {scaledStars.map((pos, i) => (
-        <mesh key={i} ref={el => (starRefs.current[i] = el)} position={pos}>
-          <sphereGeometry args={[0.012 * scale, 8, 8]} />
-          <meshBasicMaterial color="#a8cce4" transparent opacity={0} />
+      <group ref={innerRef}>
+        {/* Stars */}
+        {scaledStars.map((pos, i) => (
+          <mesh key={i} ref={el => (starRefs.current[i] = el)} position={pos}>
+            <sphereGeometry args={[0.012 * scale, 8, 8]} />
+            <meshBasicMaterial color="#a8cce4" transparent opacity={0} />
+          </mesh>
+        ))}
+
+        {/* Connection lines */}
+        {CLINES.map(([a, b], i) => (
+          <Line
+            key={i}
+            ref={el => (lineRefs.current[i] = el)}
+            points={[scaledStars[a], scaledStars[b]]}
+            color="#2a4a5a"
+            lineWidth={1}
+            transparent
+            opacity={0}
+          />
+        ))}
+
+        {/* Pulsing halo ring around constellation */}
+        <mesh ref={ringRef} position={[cx, cy, -2.6]}>
+          <ringGeometry args={[cRadius * 1.05, cRadius * 1.12, 64]} />
+          <meshBasicMaterial color="#6fa3c7" transparent opacity={0} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} depthWrite={false} />
         </mesh>
-      ))}
+      </group>
 
-      {/* Connection lines */}
-      {CLINES.map(([a, b], i) => (
-        <Line
-          key={i}
-          ref={el => (lineRefs.current[i] = el)}
-          points={[scaledStars[a], scaledStars[b]]}
-          color="#2a4a5a"
-          lineWidth={1}
-          transparent
-          opacity={0}
-        />
-      ))}
-
-      {hovered && (
-        <Html center position={[0.58 * scale, -0.52 * scale, -2.6]} style={{ zIndex: 10, pointerEvents: 'none' }}>
-          <span style={{ fontFamily: '"DM Sans"', fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#6fa3c7', whiteSpace: 'nowrap', background: 'rgba(5,5,8,0.75)', padding: '3px 8px', borderRadius: 2 }}>
-            OUR WORK →
-          </span>
-        </Html>
-      )}
+      {/* Always-visible label */}
+      <Html center position={[scaledStars[3][0] + 0.14, scaledStars[3][1] - 0.08, -2.6]} style={{ pointerEvents: 'none', zIndex: 10 }}>
+        <div
+          ref={labelDivRef}
+          style={{
+            fontFamily: '"DM Sans", sans-serif',
+            fontSize: '9px',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: '#6fa3c7',
+            opacity: 0,
+            transition: 'opacity 0.6s ease',
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span className="lbl-line" style={{ display: 'inline-block', width: '12px', height: '1px', background: '#6fa3c7', transition: 'width 0.4s ease', flexShrink: 0 }} />
+          OUR WORK
+        </div>
+      </Html>
     </group>
   )
 }
@@ -468,39 +561,60 @@ function Constellation({ scale }) {
 // WARM STAR — appears at CTA section, cold→warm transition
 // ══════════════════════════════════════════════════════════════════════════════
 function WarmStar({ scale }) {
-  const groupRef   = useRef()
-  const coreRef    = useRef()
-  const coronaRef  = useRef()
-  const lightRef   = useRef()
-  const raysRef    = useRef([])
-  const [hovered, setHovered] = useState(false)
-  const scrollLerp = useRef(0)
+  const groupRef    = useRef()
+  const innerRef    = useRef()
+  const coreRef     = useRef()
+  const coronaRef   = useRef()
+  const lightRef    = useRef()
+  const raysRef     = useRef([])
+  const ringRef     = useRef()
+  const labelDivRef = useRef(null)
+  const hoveredRef  = useRef(false)
+  const scrollLerp  = useRef(0)
+  const smoothOp    = useRef(0)
+  const smoothSc    = useRef(0.2)
 
   useFrame(({ clock }) => {
     scrollLerp.current += (useScrollStore.getState().scrollProgress - scrollLerp.current) * 0.04
-    const sp  = scrollLerp.current
-    const vis = ss(0.64, 0.74, sp)
-    if (!groupRef.current) return
-    groupRef.current.visible = vis > 0.01
+    const sp     = scrollLerp.current
+    const rawVis = ss(0.64, 0.74, sp)
 
-    // Rise from lower-right
-    const x =  0.85 - ss(0.64, 0.82, sp) * 0.20
-    const y = -1.80 + ss(0.64, 0.80, sp) * 2.10
+    smoothOp.current += (rawVis - smoothOp.current) * 0.008
+    smoothSc.current += ((0.2 + rawVis * 0.8) - smoothSc.current) * 0.008
+
+    const op  = smoothOp.current
+    const hov = hoveredRef.current
+    if (!groupRef.current) return
+
+    groupRef.current.visible = op > 0.005
+
+    // Bottom-right corner — x fixed, y rises to -0.6
+    const x = 1.0
+    const y = -1.80 + ss(0.64, 0.80, sp) * 1.20
     groupRef.current.position.set(x * scale, y * scale, -2.2)
+    if (innerRef.current) innerRef.current.scale.setScalar(smoothSc.current)
 
     const t = clock.getElapsedTime()
     const pulse = 0.9 + Math.sin(t * 0.9) * 0.1
 
-    if (coreRef.current)   coreRef.current.material.opacity   = vis
-    if (coronaRef.current) coronaRef.current.material.opacity = vis * 0.12 * pulse
-    if (lightRef.current) {
-      lightRef.current.intensity = vis * (hovered ? 3.5 : 1.8) * pulse
-    }
+    if (coreRef.current)   coreRef.current.material.opacity   = op
+    if (coronaRef.current) coronaRef.current.material.opacity = op * 0.12 * pulse
+    if (lightRef.current)  lightRef.current.intensity = op * (hov ? 3.5 : 1.8) * pulse
+
     raysRef.current.forEach((r, i) => {
       if (!r) return
-      r.material.opacity  = vis * (hovered ? 0.18 : 0.08)
+      r.material.opacity = op * (hov ? 0.18 : 0.08)
       r.rotation.z = (i / raysRef.current.length) * Math.PI + t * 0.06
     })
+
+    const ringPulse = hov ? 0.28 : 0.05 + Math.sin(t * 1.3) * 0.012
+    if (ringRef.current) ringRef.current.material.opacity = op * ringPulse
+
+    if (labelDivRef.current) {
+      labelDivRef.current.style.opacity = op < 0.05 ? '0' : (hov ? '0.9' : '0.2')
+      const lineEl = labelDivRef.current.querySelector('.lbl-line')
+      if (lineEl) lineEl.style.width = hov ? '24px' : '12px'
+    }
   })
 
   const cr = 0.11 * scale
@@ -510,41 +624,65 @@ function WarmStar({ scale }) {
     <group ref={groupRef} visible={false}>
       <pointLight ref={lightRef} color="#d4a850" intensity={0} distance={8} />
 
-      {/* Core */}
-      <mesh
-        ref={coreRef}
-        onPointerOver={() => { setHovered(true); document.body.style.cursor = 'pointer' }}
-        onPointerOut={() => { setHovered(false); document.body.style.cursor = '' }}
-        onClick={() => { window.location.href = '/contact' }}
-      >
-        <sphereGeometry args={[cr, 24, 24]} />
-        <meshBasicMaterial color="#fff8e8" transparent opacity={0} />
-        {hovered && (
-          <Html center position={[-0.5 * scale, -0.22 * scale, 0]} style={{ zIndex: 10, pointerEvents: 'none' }}>
-            <span style={{ fontFamily: '"DM Sans"', fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#d4a050', whiteSpace: 'nowrap', background: 'rgba(5,5,8,0.75)', padding: '3px 8px', borderRadius: 2 }}>
-              GET IN TOUCH →
-            </span>
-          </Html>
-        )}
-      </mesh>
-
-      {/* Corona glow */}
-      <mesh ref={coronaRef}>
-        <sphereGeometry args={[cr * 4.5, 24, 24]} />
-        <meshBasicMaterial color="#d4a050" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
-      </mesh>
-
-      {/* Rays */}
-      {RAY_ANGLES.map((deg, i) => (
-        <mesh
-          key={i}
-          ref={el => (raysRef.current[i] = el)}
-          rotation={[0, 0, (deg * Math.PI) / 180]}
-        >
-          <planeGeometry args={[cr * 0.18, cr * 14, 1, 1]} />
-          <meshBasicMaterial color="#d4a050" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
+      <group ref={innerRef}>
+        {/* Pulsing glow ring */}
+        <mesh ref={ringRef}>
+          <ringGeometry args={[cr * 1.8, cr * 1.95, 64]} />
+          <meshBasicMaterial color="#d4a050" transparent opacity={0} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} depthWrite={false} />
         </mesh>
-      ))}
+
+        {/* Core */}
+        <mesh
+          ref={coreRef}
+          onPointerOver={() => { hoveredRef.current = true; document.body.style.cursor = 'pointer' }}
+          onPointerOut={() => { hoveredRef.current = false; document.body.style.cursor = '' }}
+          onClick={() => { window.location.href = '/contact' }}
+        >
+          <sphereGeometry args={[cr, 24, 24]} />
+          <meshBasicMaterial color="#fff8e8" transparent opacity={0} />
+        </mesh>
+
+        {/* Corona glow */}
+        <mesh ref={coronaRef}>
+          <sphereGeometry args={[cr * 4.5, 24, 24]} />
+          <meshBasicMaterial color="#d4a050" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
+        </mesh>
+
+        {/* Rays */}
+        {RAY_ANGLES.map((deg, i) => (
+          <mesh
+            key={i}
+            ref={el => (raysRef.current[i] = el)}
+            rotation={[0, 0, (deg * Math.PI) / 180]}
+          >
+            <planeGeometry args={[cr * 0.18, cr * 14, 1, 1]} />
+            <meshBasicMaterial color="#d4a050" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
+          </mesh>
+        ))}
+      </group>
+
+      {/* Always-visible label — outside innerRef */}
+      <Html center position={[-cr * 7, -cr * 1.5, 0]} style={{ pointerEvents: 'none', zIndex: 10 }}>
+        <div
+          ref={labelDivRef}
+          style={{
+            fontFamily: '"DM Sans", sans-serif',
+            fontSize: '9px',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: '#d4a050',
+            opacity: 0,
+            transition: 'opacity 0.6s ease',
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span className="lbl-line" style={{ display: 'inline-block', width: '12px', height: '1px', background: '#d4a050', transition: 'width 0.4s ease', flexShrink: 0 }} />
+          CONTACT
+        </div>
+      </Html>
     </group>
   )
 }
@@ -555,25 +693,30 @@ function WarmStar({ scale }) {
 const NAV_STAR_DATA = [
   { pos: [ 0.82,  0.55, -2.0], label: 'SERVICES', href: '/services', range: [0.04, 0.22] },
   { pos: [-0.72, -0.12, -2.5], label: 'BLOG',     href: '/blog',     range: [0.32, 0.52] },
-  { pos: [ 0.30,  0.72, -3.0], label: 'FAQ',       href: '/faq',      range: [0.56, 0.78] },
+  { pos: [ 0.75,  0.72, -3.0], label: 'FAQ',       href: '/faq',      range: [0.56, 0.78] },
 ]
 
 function NavStar({ pos, label, href, range, scale }) {
   const meshRef    = useRef()
   const glowRef    = useRef()
   const [hovered, setHovered] = useState(false)
+  const hoveredRef = useRef(false)
   const scrollLerp = useRef(0)
+  const smoothOp   = useRef(0)
 
   useFrame(({ clock }) => {
     scrollLerp.current += (useScrollStore.getState().scrollProgress - scrollLerp.current) * 0.04
-    const sp  = scrollLerp.current
-    const vis = ss(range[0], range[0] + 0.08, sp) * (1 - ss(range[1] - 0.06, range[1], sp))
+    const sp     = scrollLerp.current
+    const rawVis = ss(range[0], range[0] + 0.08, sp) * (1 - ss(range[1] - 0.06, range[1], sp))
+    smoothOp.current += (rawVis - smoothOp.current) * 0.008
+    const op  = smoothOp.current
+    const hov = hoveredRef.current
     if (!meshRef.current) return
-    meshRef.current.visible = vis > 0.01
-    if (glowRef.current) glowRef.current.visible = vis > 0.01
+    meshRef.current.visible = op > 0.005
+    if (glowRef.current) glowRef.current.visible = op > 0.005
     const pulse = 0.7 + 0.3 * Math.sin(clock.getElapsedTime() * 1.4 + pos[0] * 10)
-    meshRef.current.material.opacity = vis * (hovered ? 1.0 : 0.75) * pulse
-    if (glowRef.current) glowRef.current.material.opacity = vis * (hovered ? 0.35 : 0.12) * pulse
+    meshRef.current.material.opacity = op * (hov ? 1.0 : 0.75) * pulse
+    if (glowRef.current) glowRef.current.material.opacity = op * (hov ? 0.35 : 0.12) * pulse
   })
 
   const scaledPos = [pos[0] * scale, pos[1] * scale, pos[2]]
@@ -585,8 +728,8 @@ function NavStar({ pos, label, href, range, scale }) {
         ref={meshRef}
         position={scaledPos}
         visible={false}
-        onPointerOver={() => { setHovered(true); document.body.style.cursor = 'pointer' }}
-        onPointerOut={() => { setHovered(false); document.body.style.cursor = '' }}
+        onPointerOver={() => { setHovered(true); hoveredRef.current = true; document.body.style.cursor = 'pointer' }}
+        onPointerOut={() => { setHovered(false); hoveredRef.current = false; document.body.style.cursor = '' }}
         onClick={() => { window.location.href = href }}
       >
         <sphereGeometry args={[r, 8, 8]} />

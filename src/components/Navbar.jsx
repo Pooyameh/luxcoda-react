@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const links = [
@@ -9,12 +9,31 @@ const links = [
 
 export default function Navbar({ onOpenModal }) {
   const [scrolled,   setScrolled]   = useState(false)
+  const [visible,    setVisible]    = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const lastScrollY  = useRef(0)
+  const ticking      = useRef(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 100)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleScroll = () => {
+      if (ticking.current) return
+      ticking.current = true
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY
+        if (currentY < 100) {
+          setVisible(true)
+        } else if (currentY < lastScrollY.current - 5) {
+          setVisible(true)
+        } else if (currentY > lastScrollY.current + 5) {
+          setVisible(false)
+        }
+        setScrolled(currentY > 100)
+        lastScrollY.current = currentY
+        ticking.current = false
+      })
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   useEffect(() => {
@@ -28,7 +47,8 @@ export default function Navbar({ onOpenModal }) {
         position: 'fixed',
         top: 0, left: 0, right: 0,
         zIndex: 50,
-        transition: 'background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease',
+        transform: visible ? 'translateY(0)' : 'translateY(-100%)',
+        transition: 'transform 0.4s cubic-bezier(0.23,1,0.32,1), background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease',
         background: scrolled ? 'rgba(5,5,5,0.7)' : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
         WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
