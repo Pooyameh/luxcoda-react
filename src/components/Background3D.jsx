@@ -9,28 +9,21 @@ class ErrorBoundary extends Component {
   render() { return this.state.hasError ? null : this.props.children }
 }
 
-// ─── Vertex shader ────────────────────────────────────────────────────────────
-const vertexShader = /* glsl */`
-  varying vec2 vUv;
+// ─── NDC Vertex Shader (bypasses camera — fills screen exactly) ───────────────
+const ndcVertexShader = /* glsl */`
   void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    gl_Position = vec4(position.xy, 0.0, 1.0);
   }
 `
 
-// ─── Fragment shader — scroll-reactive liquid aurora ──────────────────────────
-// Zones:
-//   0.00–0.15  Hero        → deep dark, barely moving, single faint glow right
-//   0.15–0.45  Diff+Process → warming currents emerge, speed increases
-//   0.45–0.70  Pricing+CTA  → rich gold peak, most active, radial light center
-//   0.70–1.00  TechStack+Contact → settling back to dark intimate embers
-const fragmentShader = /* glsl */`
+// ─── Fragment Shader — bright scroll-reactive aurora ──────────────────────────
+const fluidFragmentShader = /* glsl */`
   precision highp float;
 
   uniform float uTime;
   uniform vec2  uMouse;
   uniform float uScrollProgress;
-  varying vec2  vUv;
+  uniform vec2  uResolution;
 
   // ── Ashima simplex 3D noise ─────────────────────────────────────────────────
   vec3 mod289v3(vec3 x){return x-floor(x*(1./289.))*289.;}
@@ -81,7 +74,6 @@ const fragmentShader = /* glsl */`
     return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
   }
 
-  // ── FBM (5 octaves) ─────────────────────────────────────────────────────────
   float fbm(vec3 p){
     float v=0.;float a=.5;float f=1.;
     for(int i=0;i<5;i++){v+=a*snoise(p*f);a*=.5;f*=2.;}
@@ -89,77 +81,93 @@ const fragmentShader = /* glsl */`
   }
 
   void main(){
-    vec2 uv = vUv;
+    vec2 uv = gl_FragCoord.xy / uResolution.xy;
     float sp = uScrollProgress;
 
-    // ── Mouse distortion: push noise field radially away from cursor ──────────
+    // ── Mouse distortion ──────────────────────────────────────────────────────
     vec2 toMouse = uv - uMouse;
     float md = length(toMouse);
-    vec2 distort = normalize(toMouse + 0.001) * smoothstep(0.65, 0.0, md) * 0.11;
+    vec2 distort = normalize(toMouse + 0.001) * smoothstep(0.55, 0.0, md) * 0.08;
     vec2 duv = uv + distort;
 
-    // ── Scroll-zone parameters (all driven by a sin arch over 0..1) ───────────
-    // sinCurve peaks at sp=0.5 (pricing/CTA zone), is 0 at edges
-    float sinCurve = sin(sp * 3.14159265);
+    // ── Scroll zones ──────────────────────────────────────────────────────────
+    float sinCurve  = sin(sp * 3.14159265);            // arch: 0 at edges, 1 at mid
+    float speedMult = 1.0 + sinCurve * 1.2;
+    float noiseScale= mix(1.4, 2.8, sinCurve);
+    float animTime  = uTime * speedMult;
 
-    // Animation speed: slow at hero/contact, fastest at pricing
-    float speedMult  = 1.0 + sinCurve * 0.90;
-
-    // Noise spatial scale: coarser at edges, finer detail at peak
-    float noiseScale = mix(1.55, 2.65, sinCurve);
-
-    // Gold intensity: invisible at hero, peaks at pricing, embers at contact
-    float goldIntens = sinCurve * 0.72;
-
-    // Overall scene brightness: dim at edges, full brightness at peak
-    float brightness = 0.25 + sinCurve * 0.48;
-
-    float animTime = uTime * speedMult;
-
-    // ── Two FBM noise layers ──────────────────────────────────────────────────
-    float n  = fbm(vec3(duv * noiseScale,                          animTime));
-    float n2 = fbm(vec3(duv * noiseScale * 0.62 + vec2(3.7, 2.1), animTime * 0.55 + 1.5));
-
-    n  = (n  + 1.0) * 0.5;   // remap [-1,1] → [0,1]
+    // ── FBM noise layers ──────────────────────────────────────────────────────
+    float n  = fbm(vec3(duv * noiseScale,               animTime));
+    float n2 = fbm(vec3(duv * noiseScale * 0.6 + vec2(3.7, 2.1), animTime * 0.5 + 1.5));
+    n  = (n  + 1.0) * 0.5;
     n2 = (n2 + 1.0) * 0.5;
 
-    // ── Color palette ─────────────────────────────────────────────────────────
-    vec3 black     = vec3(0.020, 0.020, 0.020);
-    vec3 charcoal  = vec3(0.042, 0.038, 0.033);
-    vec3 darkBrown = vec3(0.085, 0.058, 0.024);
-    vec3 warmGold  = vec3(0.195, 0.130, 0.044);
-    vec3 deepGold  = vec3(0.255, 0.185, 0.062);
+    // ── Visible warm color palette ────────────────────────────────────────────
+    vec3 nearBlack  = vec3(0.04,  0.025, 0.010);
+    vec3 chocolate  = vec3(0.12,  0.070, 0.030);
+    vec3 amber      = vec3(0.22,  0.130, 0.040);
+    vec3 gold       = vec3(0.35,  0.220, 0.060);
+    vec3 hotGold    = vec3(0.50,  0.320, 0.080);
 
-    // ── Composite ─────────────────────────────────────────────────────────────
-    vec3 col = mix(black, charcoal, smoothstep(0.20, 0.65, n));
-    col = mix(col, darkBrown, smoothstep(0.45, 0.78, n2) * brightness);
-    col = mix(col, warmGold,  smoothstep(0.62, 0.92, n * n2) * goldIntens);
+    // ── Base color: always at least chocolate visible ─────────────────────────
+    float baseWarm  = 0.30 + sinCurve * 0.50;          // never fully black
+    vec3 col = mix(nearBlack, chocolate, smoothstep(0.15, 0.60, n) * baseWarm);
+    col = mix(col, amber,   smoothstep(0.42, 0.78, n2) * (0.50 + sinCurve * 0.45));
+    col = mix(col, gold,    smoothstep(0.60, 0.90, n * n2) * (sinCurve * 0.80 + 0.15));
+    col = mix(col, hotGold, smoothstep(0.72, 0.95, n) * sinCurve * 0.55);
 
-    // Deep gold accent visible only in the pricing/CTA peak zone (0.35–0.70)
-    float peakZone = smoothstep(0.30, 0.52, sp) * smoothstep(0.72, 0.52, sp);
-    col = mix(col, deepGold, smoothstep(0.55, 0.85, n) * peakZone * 0.28);
+    // ── Hero glow — always-on radial at top-right, slides as scroll increases ─
+    float heroZone  = smoothstep(0.25, 0.0, sp);        // present at top of page
+    vec2  glowPos   = vec2(0.72, 0.48);
+    float heroDist  = length(uv - glowPos);
+    float heroGlow  = exp(-2.5 * heroDist) * (0.35 + heroZone * 0.45);
+    col += amber * heroGlow;
 
-    // ── Directional warm light — slides from right→left as page scrolls ───────
-    vec2 lightPos   = mix(vec2(0.75, 0.52), vec2(0.28, 0.35), sp);
-    float lightDist = length(uv - lightPos);
-    float lIntens   = brightness * 0.14;
-    float light     = smoothstep(0.88, 0.0, lightDist) * lIntens;
-    col += vec3(light * 0.82, light * 0.60, light * 0.22);  // warm tint
+    // ── Warm zone secondary glow (Difference / Process) ───────────────────────
+    float warmZone  = smoothstep(0.10, 0.30, sp) * smoothstep(0.55, 0.32, sp);
+    vec2  warmPos   = vec2(0.35, 0.55);
+    float warmDist  = length(uv - warmPos);
+    float warmGlow  = exp(-3.0 * warmDist) * warmZone * 0.55;
+    col += chocolate * warmGlow;
+
+    // ── Gold zone peak glow (Pricing / CTA) ───────────────────────────────────
+    float goldZone  = smoothstep(0.35, 0.52, sp) * smoothstep(0.72, 0.52, sp);
+    vec2  goldPos   = vec2(0.50, 0.45);
+    float goldDist  = length(uv - goldPos);
+    float goldGlow  = exp(-2.0 * goldDist) * goldZone * 0.65;
+    col += gold * goldGlow;
+
+    // ── End zone ember glow (TechStack / Contact) ─────────────────────────────
+    float endZone   = smoothstep(0.72, 0.90, sp);
+    vec2  endPos    = vec2(0.28, 0.50);
+    float endDist   = length(uv - endPos);
+    float endGlow   = exp(-3.5 * endDist) * endZone * 0.40;
+    col += chocolate * endGlow;
+
+    // ── Caustic / sparkle layer ───────────────────────────────────────────────
+    float caustic = fbm(vec3(duv * 4.5, animTime * 0.7 + 3.0));
+    caustic = (caustic + 1.0) * 0.5;
+    col += hotGold * smoothstep(0.78, 0.98, caustic) * sinCurve * 0.22;
+
+    // ── Directional light sliding right → left ────────────────────────────────
+    vec2 lightPos  = mix(vec2(0.78, 0.52), vec2(0.22, 0.42), sp);
+    float lDist    = length(uv - lightPos);
+    float light    = smoothstep(0.90, 0.0, lDist) * (0.10 + sinCurve * 0.16);
+    col += vec3(light * 0.85, light * 0.60, light * 0.20);
 
     // ── Vignette ──────────────────────────────────────────────────────────────
-    float vig = 1.0 - smoothstep(0.30, 0.95, length(uv - 0.5) * 1.45);
-    col *= mix(0.55, 1.0, vig);
+    float vig = 1.0 - smoothstep(0.28, 0.88, length(uv - 0.5) * 1.4);
+    col *= mix(0.45, 1.0, vig);
 
-    // ── Edge darkening: first 12% and last 15% of scroll are darkest ──────────
-    float edgeDark = smoothstep(0.0, 0.13, sp) * smoothstep(1.0, 0.85, sp);
-    col *= mix(0.32, 1.0, edgeDark);
+    // ── Ensure minimum floor brightness so it never looks pure black ──────────
+    col = max(col, vec3(0.025, 0.015, 0.005));
 
     gl_FragColor = vec4(col, 1.0);
   }
 `
 
-// ─── Fluid background plane ───────────────────────────────────────────────────
-function FluidBackground({ scrollProgress, mouseRef }) {
+// ─── Fluid background plane (NDC — fills screen) ─────────────────────────────
+function FluidPlane({ scrollProgress, mouseRef }) {
   const matRef    = useRef()
   const scrollRef = useRef(scrollProgress)
   useEffect(() => { scrollRef.current = scrollProgress }, [scrollProgress])
@@ -168,87 +176,167 @@ function FluidBackground({ scrollProgress, mouseRef }) {
     uTime:           { value: 0 },
     uMouse:          { value: new THREE.Vector2(0.5, 0.5) },
     uScrollProgress: { value: 0 },
+    uResolution:     { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
   }), [])
+
+  useEffect(() => {
+    const onResize = () => {
+      uniforms.uResolution.value.set(window.innerWidth, window.innerHeight)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [uniforms])
 
   useFrame(({ clock }) => {
     if (!matRef.current) return
-    uniforms.uTime.value = clock.getElapsedTime() * 0.08
+    uniforms.uTime.value = clock.getElapsedTime() * 0.09
 
-    // Convert mouseRef coords (-1..1) → UV space (0..1)
     uniforms.uMouse.value.set(
       mouseRef.current.x * 0.5 + 0.5,
       mouseRef.current.y * 0.5 + 0.5,
     )
 
-    // Lerped scroll — smooth zone transitions, no snapping
     uniforms.uScrollProgress.value +=
       (scrollRef.current - uniforms.uScrollProgress.value) * 0.04
   })
 
   return (
-    <mesh position={[0, 0, -10]}>
-      <planeGeometry args={[60, 34]} />
+    <mesh>
+      <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={matRef}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
+        vertexShader={ndcVertexShader}
+        fragmentShader={fluidFragmentShader}
         uniforms={uniforms}
         depthWrite={false}
+        depthTest={false}
       />
     </mesh>
   )
 }
 
-// ─── Gold particle field — reacts to scroll zone ──────────────────────────────
-function Particles({ scrollProgress }) {
+// ─── Canvas-generated radial gradient texture ─────────────────────────────────
+function makeNebulaTexture(r, g, b) {
+  const size = 256
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = size
+  const ctx = canvas.getContext('2d')
+  const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2)
+  grad.addColorStop(0.0, `rgba(${r},${g},${b},0.9)`)
+  grad.addColorStop(0.35, `rgba(${r},${g},${b},0.35)`)
+  grad.addColorStop(0.7,  `rgba(${r},${g},${b},0.08)`)
+  grad.addColorStop(1.0,  `rgba(${r},${g},${b},0.0)`)
+  ctx.fillStyle = grad
+  ctx.fillRect(0, 0, size, size)
+  return new THREE.CanvasTexture(canvas)
+}
+
+// ─── Gold nebula sprites ───────────────────────────────────────────────────────
+function GoldNebula({ scrollProgress }) {
+  const groupRef  = useRef()
+  const scrollRef = useRef(scrollProgress)
+  const lerpedRef = useRef(0)
+  useEffect(() => { scrollRef.current = scrollProgress }, [scrollProgress])
+
+  const nebulae = useMemo(() => [
+    { pos: [ 8,  3, -6], scale: 10, tex: makeNebulaTexture(200, 130, 40), baseOpacity: 0.25 },
+    { pos: [-7, -2, -8], scale: 9,  tex: makeNebulaTexture(160, 95,  25), baseOpacity: 0.20 },
+    { pos: [ 3, -5, -7], scale: 8,  tex: makeNebulaTexture(220, 150, 55), baseOpacity: 0.18 },
+    { pos: [-4,  6, -5], scale: 7,  tex: makeNebulaTexture(180, 110, 35), baseOpacity: 0.15 },
+  ], [])
+
+  const materials = useRef([])
+
+  useFrame(({ clock }) => {
+    lerpedRef.current += (scrollRef.current - lerpedRef.current) * 0.04
+    const sp       = lerpedRef.current
+    const sinCurve = Math.sin(sp * Math.PI)
+    const t        = clock.getElapsedTime()
+
+    materials.current.forEach((mat, i) => {
+      if (!mat) return
+      const base   = nebulae[i].baseOpacity
+      const target = base * (0.4 + sinCurve * 1.1)
+      mat.opacity += (target - mat.opacity) * 0.03
+
+      // Slow breathing pulse
+      const pulse = 1.0 + Math.sin(t * 0.3 + i * 1.5) * 0.06
+      if (groupRef.current) {
+        const mesh = groupRef.current.children[i]
+        if (mesh) mesh.scale.setScalar(nebulae[i].scale * pulse)
+      }
+    })
+  })
+
+  return (
+    <group ref={groupRef}>
+      {nebulae.map((n, i) => (
+        <mesh key={i} position={n.pos} scale={n.scale}>
+          <planeGeometry args={[1, 1]} />
+          <meshBasicMaterial
+            ref={el => (materials.current[i] = el)}
+            map={n.tex}
+            transparent
+            opacity={n.baseOpacity * 0.5}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// ─── Floating gold particles ───────────────────────────────────────────────────
+function FloatingParticles({ scrollProgress }) {
   const geoRef    = useRef()
   const matRef    = useRef()
   const scrollRef = useRef(scrollProgress)
-  const lerpedRef = useRef(0)      // internal lerped value avoids re-renders
+  const lerpedRef = useRef(0)
   useEffect(() => { scrollRef.current = scrollProgress }, [scrollProgress])
 
-  const count = 150
+  const count = 80
 
-  const { positions, offsets } = useMemo(() => {
+  const { positions, offsets, speeds } = useMemo(() => {
     const pos  = new Float32Array(count * 3)
     const offs = new Float32Array(count)
+    const spds = new Float32Array(count)
     for (let i = 0; i < count; i++) {
-      pos[i * 3]     = (Math.random() - 0.5) * 40
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 25
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 12 - 5
+      pos[i * 3]     = (Math.random() - 0.5) * 36
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 22
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 10 - 4
       offs[i] = Math.random() * Math.PI * 2
+      spds[i] = 0.12 + Math.random() * 0.10
     }
-    return { positions: pos, offsets: offs }
+    return { positions: pos, offsets: offs, speeds: spds }
   }, [])
 
   const basePos = useMemo(() => positions.slice(), [positions])
 
   useFrame(({ clock }) => {
-    const t = clock.getElapsedTime()
-
-    // Lerp scroll internally for ultra-smooth material changes
     lerpedRef.current += (scrollRef.current - lerpedRef.current) * 0.04
     const sp       = lerpedRef.current
-    const sinCurve = Math.sin(sp * Math.PI)  // 0 at edges, 1 at middle
+    const sinCurve = Math.sin(sp * Math.PI)
+    const t        = clock.getElapsedTime()
 
-    // Drift speed: faster in the warm middle zone
-    const speed = 0.15 + sinCurve * 0.12
-
-    // Position drift
     if (geoRef.current) {
       const arr = geoRef.current.attributes.position.array
       for (let i = 0; i < count; i++) {
-        arr[i * 3]     = basePos[i * 3]     + Math.cos(t * speed + offsets[i]) * 0.20
-        arr[i * 3 + 1] = basePos[i * 3 + 1] + Math.sin(t * speed + offsets[i]) * 0.26
-                         + sinCurve * t * 0.008  // gentle upward drift in middle zone
+        arr[i * 3]     = basePos[i * 3]     + Math.cos(t * speeds[i] + offsets[i]) * 0.18
+        // Upward drift — faster in warm middle zone; wrap at top boundary
+        const drift    = t * (0.04 + sinCurve * 0.06) * speeds[i] * 8
+        let   y        = basePos[i * 3 + 1] + Math.sin(t * speeds[i] + offsets[i]) * 0.22 + drift
+        const yBound   = 12
+        if (y > yBound) y -= yBound * 2  // wrap around
+        arr[i * 3 + 1] = y
       }
       geoRef.current.attributes.position.needsUpdate = true
     }
 
-    // Material: opacity + size react to scroll zone
     if (matRef.current) {
-      const targetOpacity = 0.04 + sinCurve * 0.17   // 0.04 (edges) → 0.21 (peak)
-      const targetSize    = 0.012 + sinCurve * 0.018  // 0.012 (edges) → 0.030 (peak)
+      const targetOpacity = 0.08 + sinCurve * 0.28
+      const targetSize    = 0.018 + sinCurve * 0.026
       matRef.current.opacity += (targetOpacity - matRef.current.opacity) * 0.03
       matRef.current.size    += (targetSize    - matRef.current.size)    * 0.03
     }
@@ -261,11 +349,12 @@ function Particles({ scrollProgress }) {
       </bufferGeometry>
       <pointsMaterial
         ref={matRef}
-        color="#c9a96e"
-        size={0.012}
+        color="#d4a84b"
+        size={0.018}
         sizeAttenuation
         transparent
-        opacity={0.04}
+        opacity={0.08}
+        blending={THREE.AdditiveBlending}
         depthWrite={false}
       />
     </points>
@@ -276,11 +365,17 @@ function Particles({ scrollProgress }) {
 function Scene({ scrollProgress, mouseRef }) {
   return (
     <>
-      <FluidBackground scrollProgress={scrollProgress} mouseRef={mouseRef} />
-      <Particles scrollProgress={scrollProgress} />
+      <FluidPlane     scrollProgress={scrollProgress} mouseRef={mouseRef} />
+      <GoldNebula     scrollProgress={scrollProgress} />
+      <FloatingParticles scrollProgress={scrollProgress} />
       <EffectComposer>
-        <Bloom intensity={0.18} luminanceThreshold={0.38} luminanceSmoothing={0.92} />
-        <Vignette darkness={0.48} offset={0.32} />
+        <Bloom
+          intensity={0.55}
+          luminanceThreshold={0.20}
+          luminanceSmoothing={0.85}
+          mipmapBlur
+        />
+        <Vignette darkness={0.40} offset={0.30} />
       </EffectComposer>
     </>
   )
@@ -292,7 +387,7 @@ export default function Background3D({ scrollProgress = 0 }) {
 
   useEffect(() => {
     const onMove = (e) => {
-      mouseRef.current.x = (e.clientX / window.innerWidth  - 0.5) * 2
+      mouseRef.current.x =  (e.clientX / window.innerWidth  - 0.5) * 2
       mouseRef.current.y = -(e.clientY / window.innerHeight - 0.5) * 2
     }
     window.addEventListener('mousemove', onMove, { passive: true })
@@ -309,8 +404,11 @@ export default function Background3D({ scrollProgress = 0 }) {
           zIndex: 0,
           pointerEvents: 'none',
         }}
-        camera={{ position: [0, 0, 10], fov: 60 }}
-        gl={{ antialias: true, alpha: true }}
+        camera={{ position: [0, 0, 1], fov: 60 }}
+        gl={{ antialias: true, alpha: false, toneMapping: THREE.NoToneMapping }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(0x050505, 1)
+        }}
       >
         <Scene scrollProgress={scrollProgress} mouseRef={mouseRef} />
       </Canvas>
