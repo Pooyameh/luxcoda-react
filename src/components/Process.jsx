@@ -123,7 +123,7 @@ function Step({ num, label, heading, body, flip }) {
           style={{
             fontFamily: '"Bodoni Moda", serif',
             fontWeight: 600,
-            fontSize: 'clamp(1.5rem, 3vw, 2.5rem)',
+            fontSize: 'clamp(1.3rem, 2.5vw, 2.2rem)',
             color: 'var(--white)',
             lineHeight: 1.2,
             marginBottom: '1.5rem',

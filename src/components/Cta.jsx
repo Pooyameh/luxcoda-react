@@ -32,9 +32,9 @@ export default function Cta({ onOpenModal }) {
           fontFamily: '"Bodoni Moda", serif',
           fontStyle: 'italic',
           fontWeight: 400,
-          fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+          fontSize: 'clamp(1.6rem, 3.5vw, 3rem)',
           color: 'var(--white)',
-          lineHeight: 1.15,
+          lineHeight: 1.2,
           maxWidth: 800,
           marginBottom: '3rem',
         }}

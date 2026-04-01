@@ -1,9 +1,11 @@
-import { useRef, useLayoutEffect } from 'react'
+import { useRef, useLayoutEffect, Fragment } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 /**
  * AnimatedText — character-level scroll entrance animation.
+ * Words are wrapped in display:inline-block;white-space:nowrap containers
+ * so the browser can only break between words, never mid-word.
  *
  * Props:
  *   children  — string text to animate
@@ -59,16 +61,27 @@ export default function AnimatedText({
 
   const text = typeof children === 'string' ? children : ''
 
+  // Split into words; wrap each word in an inline-block nowrap container
+  // so the browser never breaks a word mid-character.
+  const words = text.split(' ')
+
   return (
     <Tag
       ref={ref}
       className={className}
       style={{ perspective: '1000px', display: 'block', ...style }}
     >
-      {text.split('').map((char, i) => (
-        <span key={i} className="at-char">
-          {char === ' ' ? '\u00A0' : char}
-        </span>
+      {words.map((word, wi) => (
+        <Fragment key={wi}>
+          <span className="at-word">
+            {word.split('').map((char, ci) => (
+              <span key={ci} className="at-char">{char}</span>
+            ))}
+          </span>
+          {wi < words.length - 1 && (
+            <span className="at-char">{'\u00A0'}</span>
+          )}
+        </Fragment>
       ))}
     </Tag>
   )

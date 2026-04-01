@@ -51,7 +51,7 @@ export default function Hero({ isLoaded, onOpenModal }) {
       {/* Headline — two lines, mixed weight */}
       <h1 style={{
         fontFamily: '"Bodoni Moda", serif',
-        fontSize: 'clamp(3rem, 11vw, 10rem)',
+        fontSize: 'clamp(2.5rem, 7.5vw, 7rem)',
         lineHeight: 0.95,
         margin: 0,
       }}>
@@ -74,6 +74,7 @@ export default function Hero({ isLoaded, onOpenModal }) {
             fontWeight: 800,
             fontStyle: 'italic',
             color: 'var(--gold)',
+            whiteSpace: 'nowrap',
           }}
           delay={isLoaded ? 0.5 : 999}
         >

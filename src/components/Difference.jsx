@@ -19,7 +19,7 @@ export default function Difference() {
             fontFamily: '"Bodoni Moda", serif',
             fontStyle: 'italic',
             fontWeight: 400,
-            fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
+            fontSize: 'clamp(1.8rem, 4.5vw, 4rem)',
             color: 'var(--muted-strong)',
             lineHeight: 1.25,
             maxWidth: 800,
@@ -44,7 +44,7 @@ export default function Difference() {
             fontFamily: '"Bodoni Moda", serif',
             fontStyle: 'italic',
             fontWeight: 400,
-            fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
+            fontSize: 'clamp(1.8rem, 4.5vw, 4rem)',
             color: 'var(--white)',
             lineHeight: 1.25,
             maxWidth: 800,
@@ -68,9 +68,10 @@ export default function Difference() {
           style={{
             fontFamily: '"Bodoni Moda", serif',
             fontWeight: 900,
-            fontSize: 'clamp(4rem, 12vw, 11rem)',
+            fontSize: 'clamp(3rem, 10vw, 9rem)',
             color: 'var(--gold)',
             lineHeight: 1,
+            whiteSpace: 'nowrap',
           }}
           delay={0.05}
         >

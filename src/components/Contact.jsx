@@ -74,10 +74,11 @@ export default function Contact() {
             style={{
               fontFamily: '"Bodoni Moda", serif',
               fontWeight: 800,
-              fontSize: 'clamp(3rem, 7vw, 6rem)',
+              fontSize: 'clamp(2.5rem, 6vw, 5.5rem)',
               color: 'var(--white)',
               lineHeight: 1.0,
               marginBottom: '1.5rem',
+              whiteSpace: 'nowrap',
             }}
           >
             Let&apos;s Build.

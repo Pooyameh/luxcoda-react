@@ -70,7 +70,7 @@ function PlanRow({ name, price, pitch, desc, includes, index, onOpenModal }) {
         style={{
           fontFamily: '"Bodoni Moda", serif',
           fontWeight: 700,
-          fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+          fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
           color: 'var(--white)',
           lineHeight: 1,
           marginBottom: '0.6rem',

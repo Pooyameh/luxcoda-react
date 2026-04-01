@@ -109,10 +109,23 @@ body {
   border-color: rgba(201, 169, 110, 0.6);
 }
 
+/* ─── Prevent mid-word line breaks on all headings ───────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
 /* ─── Animated text chars ────────────────────────────────────────────────────── */
 .at-char {
   display: inline-block;
   white-space: pre;
+}
+
+/* ─── Word-level break protection (wraps each word) ─────────────────────────── */
+.at-word {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 /* ─── Scroll indicator ───────────────────────────────────────────────────────── */
