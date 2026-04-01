@@ -159,7 +159,7 @@ function ParticleField({ scrollProgress }) {
         <bufferGeometry ref={geoRef}>
           <bufferAttribute attach="attributes-position" args={[initialPositions, 3]} />
         </bufferGeometry>
-        <pointsMaterial color="#ffffff" size={0.012} sizeAttenuation transparent opacity={0.55} />
+        <pointsMaterial color="#ffffff" size={0.012} sizeAttenuation transparent opacity={0.3} />
       </points>
     </group>
   )
@@ -242,8 +242,8 @@ function Scene({ scrollProgress, mouseRef }) {
       <LuxuryOrb scrollProgress={scrollProgress} mouseRef={mouseRef} />
       <HorizontalLines />
       <EffectComposer>
-        <Bloom intensity={0.8} luminanceThreshold={0.6} luminanceSmoothing={0.9} />
-        <Vignette darkness={0.7} offset={0.3} />
+        <Bloom intensity={0.4} luminanceThreshold={0.6} luminanceSmoothing={0.9} />
+        <Vignette darkness={0.5} offset={0.3} />
       </EffectComposer>
     </>
   )

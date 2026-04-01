@@ -1,149 +1,121 @@
 import { useRef, useLayoutEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import AnimatedText from './AnimatedText'
 
-const statements = [
+const steps = [
   {
-    number: '72',
-    label: 'hours',
-    body: 'Average time from first call to live preview.',
+    num: '01',
+    label: 'Discovery',
+    body: 'We learn your business, your customers, and what makes you different. No templates. No assumptions.',
+    flip: false,
   },
   {
-    number: '100%',
-    label: 'bespoke',
-    body: 'Every site is built from scratch. No templates. No shortcuts.',
+    num: '02',
+    label: 'Design',
+    body: 'A bespoke visual identity built from scratch. Every pixel considered, every interaction intentional.',
+    flip: true,
   },
   {
-    number: '3×',
-    label: 'more leads',
-    body: 'Average result our clients see in the first 90 days.',
+    num: '03',
+    label: 'Develop',
+    body: 'Built on modern frameworks. Fast, responsive, and engineered to perform.',
+    flip: false,
   },
   {
-    number: '01',
-    label: 'point of contact',
-    body: 'You talk to the person building your site. Always.',
+    num: '04',
+    label: 'Launch',
+    body: 'Go live with confidence. Ongoing support to keep you ahead.',
+    flip: true,
   },
 ]
 
-function Statement({ number, label, body, index }) {
-  const wrapRef  = useRef(null)
-  const numRef   = useRef(null)
-  const fgRef    = useRef(null)   // foreground wrapper — parallax target
-  const labelRef = useRef(null)
-  const bodyRef  = useRef(null)
+function Step({ num, label, body, flip }) {
+  const numRef     = useRef(null)
+  const contentRef = useRef(null)
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // ── Entrance animation ──────────────────────────────────────────────
-      gsap.set(numRef.current,   { opacity: 0, scale: 1.1 })
-      gsap.set(labelRef.current, { opacity: 0, y: 20 })
-      gsap.set(bodyRef.current,  { opacity: 0, y: 20 })
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top 70%',
-          once: true,
-        },
-      })
-
-      tl.to(numRef.current,   { opacity: 1, scale: 1, duration: 1,   ease: 'power3.out' })
-        .to(labelRef.current, { opacity: 1, y: 0,     duration: 0.7, ease: 'power3.out' }, '-=0.5')
-        .to(bodyRef.current,  { opacity: 1, y: 0,     duration: 0.7, ease: 'power3.out' }, '-=0.45')
-
-      // ── Parallax — watermark number (deeper plane) ──────────────────────
-      // Drifts up faster + horizontal based on index (even right, odd left)
+      // Parallax on watermark number — scrolls at ~0.5x speed
       gsap.to(numRef.current, {
-        y: -60,
-        x: index % 2 === 0 ? 30 : -30,
+        y: -120,
         ease: 'none',
         scrollTrigger: {
-          trigger: wrapRef.current,
+          trigger: numRef.current,
           start: 'top bottom',
           end: 'bottom top',
           scrub: true,
         },
       })
 
-      // ── Parallax — foreground text (closer plane, subtler shift) ────────
-      gsap.to(fgRef.current, {
-        y: -20,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
+      // Content fade in
+      gsap.set(contentRef.current, { opacity: 0, y: 30 })
+      ScrollTrigger.create({
+        trigger: contentRef.current,
+        start: 'top 80%',
+        once: true,
+        onEnter: () => {
+          gsap.to(contentRef.current, {
+            opacity: 1, y: 0, duration: 1, ease: 'power2.out',
+          })
         },
       })
-    }, wrapRef)
-
+    })
     return () => ctx.revert()
-  }, [index])
+  }, [])
 
   return (
-    <div
-      ref={wrapRef}
-      style={{
-        position: 'relative',
-        minHeight: '80vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: '0 clamp(2rem, 10vw, 16rem)',
-        overflow: 'hidden',
-      }}
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: flip ? '1fr 1fr' : '1fr 1fr',
+      gap: 'clamp(2rem, 6vw, 8rem)',
+      alignItems: 'center',
+      padding: '10vh clamp(1.5rem, 5vw, 4rem)',
+      maxWidth: 1200,
+      margin: '0 auto',
+    }}
+    className="process-step"
     >
-      {/* Watermark number — deep plane */}
-      <div
-        ref={numRef}
-        style={{
-          fontFamily: 'var(--serif)',
-          fontWeight: 900,
-          fontSize: 'clamp(120px, 18vw, 220px)',
-          color: 'var(--white)',
-          opacity: 0,
-          lineHeight: 1,
-          userSelect: 'none',
-          pointerEvents: 'none',
-          position: 'absolute',
-          left: 'clamp(1rem, 8vw, 12rem)',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 0,
-          willChange: 'transform',
-        }}
-      >
-        {number}
+      {/* Number side */}
+      <div style={{ order: flip ? 2 : 1, display: 'flex', justifyContent: flip ? 'flex-end' : 'flex-start' }}>
+        <div
+          ref={numRef}
+          style={{
+            fontFamily: 'var(--display)',
+            fontWeight: 300,
+            fontSize: 'clamp(4rem, 12vw, 11rem)',
+            lineHeight: 1,
+            color: 'var(--white)',
+            opacity: 0.15,
+            userSelect: 'none',
+            willChange: 'transform',
+          }}
+        >
+          {num}
+        </div>
       </div>
 
-      {/* Foreground content — closer plane */}
-      <div ref={fgRef} style={{ position: 'relative', zIndex: 1, willChange: 'transform' }}>
-        <p
-          ref={labelRef}
-          style={{
-            fontFamily: 'var(--sans)',
-            fontWeight: 300,
-            fontSize: 14,
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            color: 'var(--gold)',
-            marginBottom: '1rem',
-          }}
-        >
+      {/* Content side */}
+      <div ref={contentRef} style={{ order: flip ? 1 : 2 }}>
+        <p style={{
+          fontFamily: 'var(--sans)',
+          fontWeight: 500,
+          fontSize: 10,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: 'var(--gold)',
+          marginBottom: '1.25rem',
+        }}>
           {label}
         </p>
-        <p
-          ref={bodyRef}
-          style={{
-            fontFamily: 'var(--sans)',
-            fontWeight: 300,
-            fontSize: 18,
-            color: 'rgba(255,255,255,0.7)',
-            lineHeight: 1.6,
-            maxWidth: 420,
-          }}
-        >
+        <p style={{
+          fontFamily: 'var(--sans)',
+          fontWeight: 300,
+          fontSize: 'clamp(0.9rem, 1.1vw, 1.1rem)',
+          color: 'var(--text-body)',
+          lineHeight: 1.7,
+          maxWidth: 500,
+        }}>
           {body}
         </p>
       </div>
@@ -152,40 +124,20 @@ function Statement({ number, label, body, index }) {
 }
 
 export default function Process() {
-  const btnRef = useRef(null)
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.set(btnRef.current, { opacity: 0, y: 20 })
-      ScrollTrigger.create({
-        trigger: btnRef.current,
-        start: 'top 85%',
-        once: true,
-        onEnter: () => {
-          gsap.to(btnRef.current, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
-        },
-      })
-    })
-    return () => ctx.revert()
-  }, [])
-
   return (
-    <section style={{ background: 'transparent', padding: 'clamp(4rem, 8vh, 8rem) 0' }}>
-      {statements.map((s, i) => (
-        <Statement key={i} index={i} {...s} />
+    <section id="process" style={{ background: 'transparent', padding: '5vh 0' }}>
+      {steps.map((s, i) => (
+        <Step key={i} {...s} />
       ))}
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          padding: 'clamp(2rem, 5vh, 4rem) 2rem',
-        }}
-      >
-        <button ref={btnRef} className="btn-outline-gold" data-magnetic>
-          See our work →
-        </button>
-      </div>
+      <style>{`
+        @media (max-width: 640px) {
+          .process-step {
+            grid-template-columns: 1fr !important;
+          }
+          .process-step > div { order: unset !important; }
+        }
+      `}</style>
     </section>
   )
 }

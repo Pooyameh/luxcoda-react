@@ -1,28 +1,34 @@
-import { useEffect, useLayoutEffect, useState, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Cursor from './components/Cursor'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Difference from './components/Difference'
-import Process from './components/Process'
-import Pricing from './components/Pricing'
-import TechStack from './components/TechStack'
-import Cta from './components/Cta'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import MockupModal from './components/MockupModal'
-import Background3D from './components/Background3D'
+
+import Background3D    from './components/Background3D'
+import Cursor          from './components/Cursor'
+import LoadingScreen   from './components/LoadingScreen'
+import Navbar          from './components/Navbar'
+import Hero            from './components/Hero'
+import Difference      from './components/Difference'
+import Process         from './components/Process'
+import TechStack       from './components/TechStack'
+import Pricing         from './components/Pricing'
+import Cta             from './components/Cta'
+import Contact         from './components/Contact'
+import Footer          from './components/Footer'
+import MockupModal     from './components/MockupModal'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function App() {
-  const [modalOpen, setModalOpen] = useState(false)
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const scrollLineRef = useRef(null)
+  const [loading,       setLoading]       = useState(true)
+  const [isLoaded,      setIsLoaded]      = useState(false)
+  const [modalOpen,     setModalOpen]     = useState(false)
+  const [scrollProg,    setScrollProg]    = useState(0)
+  const progressLineRef = useRef(null)
 
+  // ── Lenis + GSAP ScrollTrigger sync ───────────────────────────────────────
   useLayoutEffect(() => {
     const lenis = new Lenis({
       duration: 1.4,
@@ -42,108 +48,64 @@ export default function App() {
     }
   }, [])
 
+  // ── Scroll progress → 3D canvas + progress line ───────────────────────────
   useEffect(() => {
-    const handleScroll = () => {
+    const onScroll = () => {
       const scrolled = window.scrollY
-      const total = document.body.scrollHeight - window.innerHeight
-      setScrollProgress(total > 0 ? scrolled / total : 0)
+      const total    = document.body.scrollHeight - window.innerHeight
+      const prog     = total > 0 ? scrolled / total : 0
+      setScrollProg(prog)
+      if (progressLineRef.current) {
+        progressLineRef.current.style.height = `${prog * 100}%`
+      }
     }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // ── Refresh ScrollTrigger after load ─────────────────────────────────────
   useEffect(() => {
-    const timer = setTimeout(() => ScrollTrigger.refresh(), 300)
-    return () => clearTimeout(timer)
-  }, [])
+    if (isLoaded) {
+      const t = setTimeout(() => ScrollTrigger.refresh(), 300)
+      return () => clearTimeout(t)
+    }
+  }, [isLoaded])
 
-  // Gold scroll-progress line
-  useEffect(() => {
-    const line = scrollLineRef.current
-    if (!line) return
-    const ctx = gsap.context(() => {
-      gsap.to(line, {
-        scaleY: 1,
-        opacity: 0.3,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: document.body,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: true,
-        },
-      })
-    })
-    return () => ctx.revert()
-  }, [])
-
-  // Global GSAP hover underline for all .hover-underline elements
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const els = document.querySelectorAll('.hover-underline')
-      const cleanup = []
-
-      els.forEach((el) => {
-        const bar = el.querySelector('.underline-bar')
-        if (!bar) return
-
-        const enter = () => gsap.to(bar, { scaleX: 1, duration: 0.4, ease: 'power2.out', overwrite: true })
-        const leave = () => gsap.to(bar, { scaleX: 0, duration: 0.3, ease: 'power2.in', overwrite: true })
-
-        el.addEventListener('mouseenter', enter)
-        el.addEventListener('mouseleave', leave)
-        cleanup.push(() => {
-          el.removeEventListener('mouseenter', enter)
-          el.removeEventListener('mouseleave', leave)
-        })
-      })
-
-      return () => cleanup.forEach(fn => fn())
-    }, 800)
-
-    return () => clearTimeout(timer)
-  }, [])
+  const handleLoadingComplete = () => {
+    setLoading(false)
+    setTimeout(() => setIsLoaded(true), 200)
+  }
 
   return (
-    <div style={{ background: '#0a0a0a', color: '#fff', overflowX: 'hidden' }}>
-      <Background3D scrollProgress={scrollProgress} />
-      <div className="scroll-line" ref={scrollLineRef} />
+    <div style={{ background: 'var(--black)', color: 'var(--white)', overflowX: 'hidden' }}>
 
+      {/* Fixed 3D canvas behind everything */}
+      <Background3D scrollProgress={scrollProg} />
+
+      {/* Film grain */}
+      <div className="grain-overlay" />
+
+      {/* Gold scroll progress line */}
+      <div className="scroll-progress-line" ref={progressLineRef} />
+
+      {/* Custom cursor */}
       <Cursor />
 
+      {/* Loading screen */}
+      <AnimatePresence>
+        {loading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      </AnimatePresence>
+
+      {/* Page content — all above the canvas */}
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar onOpenModal={() => setModalOpen(true)} />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <Hero onOpenModal={() => setModalOpen(true)} isLoaded={true} />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Hero isLoaded={isLoaded} onOpenModal={() => setModalOpen(true)} />
         <Difference />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
         <Process />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <Pricing onOpenModal={() => setModalOpen(true)} />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
         <TechStack />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Pricing onOpenModal={() => setModalOpen(true)} />
         <Cta onOpenModal={() => setModalOpen(true)} />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
         <Contact />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
         <Footer />
       </div>
 

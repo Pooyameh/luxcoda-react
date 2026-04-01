@@ -1,179 +1,132 @@
 import { useRef, useLayoutEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import AnimatedText from './AnimatedText'
 
-const tiers = [
+const plans = [
   {
-    name: 'Sprint',
-    nameSize: 80,
-    nameStyle: 'italic',
-    nameWeight: 400,
-    price: 'From $1,500',
-    priceSize: 24,
-    body: 'A sharp, focused site. Live in two weeks.',
-    bodyOpacity: 0.6,
+    name:  'Starter',
+    price: '$999 + $59/mo',
+    desc:  'A sharp, custom-designed site for businesses ready to look professional online.',
   },
   {
-    name: 'Build',
-    nameSize: 120,
-    nameStyle: 'normal',
-    nameWeight: 700,
-    price: 'From $3,500',
-    priceSize: 32,
-    body: 'Full custom design and development. The one they remember.',
-    bodyOpacity: 1,
-    featured: true,
+    name:  'Growth',
+    price: '$1,499 + $129/mo',
+    desc:  'Everything in Starter plus active SEO to get found by the right people.',
   },
   {
-    name: 'Scale',
-    nameSize: 80,
-    nameStyle: 'italic',
-    nameWeight: 400,
-    price: 'From $6,000',
-    priceSize: 24,
-    body: 'Ongoing partnership. Strategy, design, and growth.',
-    bodyOpacity: 0.6,
+    name:  'Pro',
+    price: '$1,999 + $249/mo',
+    desc:  'Content calendars, lead forms, and ongoing optimisation. Your full digital engine.',
+  },
+  {
+    name:  'Custom',
+    price: 'By quote',
+    desc:  'Paywalls, bookings, complex integrations. If you can imagine it, we\'ll build it.',
   },
 ]
 
-function Tier({ tier }) {
-  const ref = useRef(null)
+function PlanRow({ name, price, desc, index }) {
+  const rowRef = useRef(null)
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(ref.current, { opacity: 0, x: -40 })
+      gsap.set(rowRef.current, { opacity: 0, y: 20 })
       ScrollTrigger.create({
-        trigger: ref.current,
-        start: 'top 80%',
+        trigger: rowRef.current,
+        start: 'top 85%',
         once: true,
         onEnter: () => {
-          gsap.to(ref.current, {
-            opacity: 1,
-            x: 0,
-            duration: 0.9,
-            ease: 'power3.out',
+          gsap.to(rowRef.current, {
+            opacity: 1, y: 0,
+            duration: 0.9, ease: 'power2.out',
+            delay: index * 0.08,
           })
         },
       })
-    }, ref)
+    }, rowRef)
     return () => ctx.revert()
-  }, [])
+  }, [index])
 
   return (
     <div
-      ref={ref}
-      className="pricing-type"
-      style={{ cursor: 'default' }}
+      ref={rowRef}
+      style={{
+        borderTop: '1px solid rgba(255,255,255,0.08)',
+        padding: 'clamp(2rem, 4vh, 3.5rem) 0',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        gap: 'clamp(1rem, 3vw, 4rem)',
+        alignItems: 'start',
+      }}
+      className="plan-row"
     >
-      <h2
-        style={{
-          fontFamily: 'var(--serif)',
-          fontWeight: tier.nameWeight,
-          fontStyle: tier.nameStyle,
-          fontSize: `clamp(${tier.nameSize * 0.55}px, ${tier.nameSize * 0.08}vw, ${tier.nameSize}px)`,
-          color: 'var(--white)',
-          lineHeight: 1,
-          margin: 0,
-          transition: 'color 0.3s ease',
-        }}
-      >
-        {tier.name}
-      </h2>
-
-      <p
-        className="pricing-price"
-        style={{
+      <div>
+        <AnimatedText
+          as="h3"
+          style={{
+            fontFamily: 'var(--display)',
+            fontWeight: 600,
+            fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+            color: 'var(--white)',
+            lineHeight: 1,
+            marginBottom: '0.75rem',
+          }}
+          start="top 90%"
+        >
+          {name}
+        </AnimatedText>
+        <p style={{
           fontFamily: 'var(--sans)',
           fontWeight: 300,
-          fontSize: `clamp(${tier.priceSize * 0.7}px, ${tier.priceSize * 0.1}vw, ${tier.priceSize}px)`,
-          color: 'var(--gold)',
-          margin: '0.6rem 0 0.8rem',
-          transition: 'transform 0.3s ease',
-        }}
-      >
-        {tier.price}
-      </p>
-
-      <p
-        style={{
-          fontFamily: 'var(--sans)',
-          fontWeight: 300,
-          fontSize: 16,
-          color: 'var(--white)',
-          opacity: tier.bodyOpacity,
-          margin: 0,
-          maxWidth: 480,
+          fontSize: 14,
+          color: 'var(--text-muted)',
+          maxWidth: 400,
           lineHeight: 1.6,
-        }}
-      >
-        {tier.body}
-      </p>
+          marginTop: '0.5rem',
+        }}>
+          {desc}
+        </p>
+      </div>
+
+      <div style={{ textAlign: 'right', paddingTop: '0.5rem' }}>
+        <p style={{
+          fontFamily: 'var(--sans)',
+          fontWeight: 500,
+          fontSize: 14,
+          color: 'var(--gold)',
+          whiteSpace: 'nowrap',
+        }}>
+          {price}
+        </p>
+      </div>
     </div>
   )
 }
 
-export default function Pricing() {
-  const btnRef     = useRef(null)
-  const lastRef    = useRef(null)
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.set(btnRef.current, { opacity: 0, y: 20 })
-      ScrollTrigger.create({
-        trigger: lastRef.current,
-        start: 'top 75%',
-        once: true,
-        onEnter: () => {
-          gsap.to(btnRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power3.out',
-            delay: 0.4,
-          })
-        },
-      })
-    })
-    return () => ctx.revert()
-  }, [])
-
+export default function Pricing({ onOpenModal }) {
   return (
-    <section
-      id="pricing"
-      style={{
-        background: 'transparent',
-        padding: 'clamp(4rem, 8vh, 8rem) clamp(2rem, 10vw, 16rem)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 120,
-        }}
-      >
-        {tiers.map((tier, i) => (
-          <div key={tier.name} ref={i === tiers.length - 1 ? lastRef : null}>
-            <Tier tier={tier} />
-          </div>
+    <section id="pricing" style={{ background: 'transparent', padding: '15vh 0' }}>
+      <div className="content-wrap">
+        {plans.map((p, i) => (
+          <PlanRow key={p.name} index={i} {...p} />
         ))}
-      </div>
 
-      <div
-        style={{
-          marginTop: 'clamp(4rem, 8vh, 8rem)',
-          display: 'flex',
-          justifyContent: 'flex-start',
-        }}
-      >
-        <button ref={btnRef} className="btn-outline-gold" data-magnetic>
-          Let's talk about your project →
-        </button>
+        {/* Bottom border */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }} />
+
+        <div style={{ marginTop: '3rem' }}>
+          <button className="btn-gold" onClick={onOpenModal}>
+            Start with a free mock-up →
+          </button>
+        </div>
       </div>
 
       <style>{`
-        .pricing-type:hover h2 { color: var(--gold) !important; }
-        .pricing-type:hover .pricing-price { transform: translateY(-4px); }
+        @media (max-width: 480px) {
+          .plan-row { grid-template-columns: 1fr !important; }
+          .plan-row > div:last-child { text-align: left !important; padding-top: 0 !important; }
+        }
       `}</style>
     </section>
   )
