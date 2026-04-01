@@ -63,7 +63,7 @@ export default function Contact() {
             fontSize: 11,
             letterSpacing: '0.25em',
             textTransform: 'uppercase',
-            color: 'var(--gold)',
+            color: 'var(--accent)',
             marginBottom: '1.5rem',
           }}>
             Get in Touch
@@ -102,7 +102,7 @@ export default function Contact() {
             <span style={{
               width: 6, height: 6,
               borderRadius: '50%',
-              background: 'var(--gold)',
+              background: 'var(--accent)',
               flexShrink: 0,
             }} />
             <span style={{
@@ -131,14 +131,14 @@ export default function Contact() {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: 'clamp(1rem, 2vh, 1.5rem) 0',
-                borderBottom: '1px solid rgba(240,236,228,0.06)',
+                borderBottom: '1px solid rgba(232,237,242,0.06)',
                 textDecoration: 'none',
                 opacity: 0,
                 transition: 'opacity 0.2s',
               }}
               onMouseEnter={e => {
                 const arrow = e.currentTarget.querySelector('.c-arrow')
-                if (arrow) arrow.style.color = 'var(--gold)'
+                if (arrow) arrow.style.color = 'var(--accent)'
               }}
               onMouseLeave={e => {
                 const arrow = e.currentTarget.querySelector('.c-arrow')
@@ -152,7 +152,7 @@ export default function Contact() {
                   fontSize: 10,
                   letterSpacing: '0.2em',
                   textTransform: 'uppercase',
-                  color: 'var(--gold)',
+                  color: 'var(--accent)',
                   marginBottom: '0.3rem',
                 }}>
                   {m.label}

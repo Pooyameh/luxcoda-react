@@ -56,11 +56,11 @@ export default function TechStack() {
 
   const handlePillEnter = (e) => {
     const p = e.currentTarget.querySelector('.t-pill')
-    if (p) { p.style.borderColor = 'rgba(201,169,110,0.35)'; p.style.background = 'rgba(201,169,110,0.08)'; p.style.transform = 'scale(1.08)' }
+    if (p) { p.style.borderColor = 'rgba(111,163,199,0.35)'; p.style.background = 'rgba(111,163,199,0.08)'; p.style.transform = 'scale(1.08)' }
   }
   const handlePillLeave = (e) => {
     const p = e.currentTarget.querySelector('.t-pill')
-    if (p) { p.style.borderColor = 'rgba(201,169,110,0.1)'; p.style.background = 'rgba(240,236,228,0.04)'; p.style.transform = 'scale(1)' }
+    if (p) { p.style.borderColor = 'rgba(111,163,199,0.1)'; p.style.background = 'rgba(232,237,242,0.04)'; p.style.transform = 'scale(1)' }
   }
 
   return (
@@ -77,7 +77,7 @@ export default function TechStack() {
           fontSize: 10,
           letterSpacing: '0.3em',
           textTransform: 'uppercase',
-          color: 'var(--gold)',
+          color: 'var(--accent)',
         }}>
           The Tools
         </p>
@@ -97,8 +97,8 @@ export default function TechStack() {
             style={{
               width: 200, height: 200,
               borderRadius: '50%',
-              background: 'rgba(240,236,228,0.03)',
-              border: '1px solid rgba(201,169,110,0.12)',
+              background: 'rgba(232,237,242,0.03)',
+              border: '1px solid rgba(111,163,199,0.12)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               display: 'flex', flexDirection: 'column',
@@ -109,7 +109,7 @@ export default function TechStack() {
             <span style={{
               fontFamily: '"DM Sans", sans-serif', fontWeight: 500,
               fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase',
-              color: 'var(--gold)',
+              color: 'var(--accent)',
             }}>Our</span>
             <span style={{
               fontFamily: '"Bodoni Moda", serif', fontWeight: 700,
@@ -129,8 +129,8 @@ export default function TechStack() {
               >
                 <div className="t-pill" style={{
                   padding: '8px 20px',
-                  background: 'rgba(240,236,228,0.04)',
-                  border: '1px solid rgba(201,169,110,0.1)',
+                  background: 'rgba(232,237,242,0.04)',
+                  border: '1px solid rgba(111,163,199,0.1)',
                   borderRadius: 100,
                   backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
                   whiteSpace: 'nowrap',
@@ -150,21 +150,21 @@ export default function TechStack() {
         <div className="mobile-stack-layout" style={{ display: 'none' }}>
           <div style={{
             width: 140, height: 140, borderRadius: '50%',
-            background: 'rgba(240,236,228,0.03)',
-            border: '1px solid rgba(201,169,110,0.12)',
+            background: 'rgba(232,237,242,0.03)',
+            border: '1px solid rgba(111,163,199,0.12)',
             backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: '0.2rem', margin: '0 auto 2rem',
           }}>
-            <span style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 500, fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold)' }}>Our</span>
+            <span style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 500, fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--accent)' }}>Our</span>
             <span style={{ fontFamily: '"Bodoni Moda", serif', fontWeight: 700, fontSize: '1.4rem', color: 'var(--white)', lineHeight: 1 }}>Stack</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, auto)', gap: '0.6rem', justifyContent: 'center' }}>
             {techs.map(tech => (
               <div key={tech} style={{
                 padding: '8px 18px',
-                background: 'rgba(240,236,228,0.04)',
-                border: '1px solid rgba(201,169,110,0.1)',
+                background: 'rgba(232,237,242,0.04)',
+                border: '1px solid rgba(111,163,199,0.1)',
                 borderRadius: 100,
                 fontFamily: '"DM Sans", sans-serif', fontWeight: 400,
                 fontSize: 12, color: 'var(--muted-strong)',

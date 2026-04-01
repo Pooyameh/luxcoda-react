@@ -40,7 +40,7 @@ export default function Hero({ isLoaded, onOpenModal }) {
           fontSize: 11,
           letterSpacing: '0.3em',
           textTransform: 'uppercase',
-          color: 'var(--gold)',
+          color: 'var(--accent)',
           marginBottom: '3rem',
           opacity: 0,
         }}
@@ -73,7 +73,7 @@ export default function Hero({ isLoaded, onOpenModal }) {
             display: 'block',
             fontWeight: 800,
             fontStyle: 'italic',
-            color: 'var(--gold)',
+            color: 'var(--accent)',
             whiteSpace: 'nowrap',
           }}
           delay={isLoaded ? 0.5 : 999}
@@ -121,7 +121,7 @@ export default function Hero({ isLoaded, onOpenModal }) {
           fontSize: 10,
           letterSpacing: '0.3em',
           textTransform: 'uppercase',
-          color: 'var(--gold)',
+          color: 'var(--accent)',
         }}>
           Scroll
         </span>
@@ -129,7 +129,7 @@ export default function Hero({ isLoaded, onOpenModal }) {
           className="scroll-indicator-line"
           style={{
             width: 1,
-            background: 'var(--gold)',
+            background: 'var(--accent)',
           }}
         />
       </div>

@@ -35,8 +35,8 @@ export default function MockupModal({ isOpen, onClose }) {
 
   const inputBase = {
     width: '100%',
-    background: 'rgba(240,236,228,0.03)',
-    border: '1px solid rgba(240,236,228,0.09)',
+    background: 'rgba(232,237,242,0.03)',
+    border: '1px solid rgba(232,237,242,0.09)',
     borderRadius: 4,
     padding: '0.9rem 1.1rem',
     fontSize: '0.95rem',
@@ -83,7 +83,7 @@ export default function MockupModal({ isOpen, onClose }) {
               background: 'rgba(5,5,5,0.96)',
               backdropFilter: 'blur(40px)',
               WebkitBackdropFilter: 'blur(40px)',
-              border: '1px solid rgba(201,169,110,0.15)',
+              border: '1px solid rgba(111,163,199,0.15)',
               boxShadow: '0 40px 100px rgba(0,0,0,0.75)',
               borderRadius: 4,
               padding: 'clamp(2rem, 5vw, 3rem)',
@@ -95,16 +95,16 @@ export default function MockupModal({ isOpen, onClose }) {
               aria-label="Close"
               style={{
                 position: 'absolute', top: '1.1rem', right: '1.1rem',
-                background: 'rgba(240,236,228,0.04)',
-                border: '1px solid rgba(240,236,228,0.08)',
+                background: 'rgba(232,237,242,0.04)',
+                border: '1px solid rgba(232,237,242,0.08)',
                 borderRadius: '50%', width: 34, height: 34,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', transition: 'background 0.2s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,236,228,0.08)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(240,236,228,0.04)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(232,237,242,0.08)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(232,237,242,0.04)' }}
             >
-              <X size={14} color="rgba(240,236,228,0.5)" />
+              <X size={14} color="rgba(232,237,242,0.5)" />
             </button>
 
             {!submitted ? (
@@ -117,7 +117,7 @@ export default function MockupModal({ isOpen, onClose }) {
                     fontSize: 10,
                     letterSpacing: '0.25em',
                     textTransform: 'uppercase',
-                    color: 'var(--gold)',
+                    color: 'var(--accent)',
                     marginBottom: '1rem',
                   }}>
                     Free &amp; No Commitment
@@ -169,13 +169,13 @@ export default function MockupModal({ isOpen, onClose }) {
                         style={{
                           ...inputBase,
                           borderColor: focused === field.key
-                            ? 'rgba(201,169,110,0.4)'
-                            : 'rgba(240,236,228,0.09)',
+                            ? 'rgba(111,163,199,0.4)'
+                            : 'rgba(232,237,242,0.09)',
                           background: focused === field.key
-                            ? 'rgba(201,169,110,0.04)'
-                            : 'rgba(240,236,228,0.03)',
+                            ? 'rgba(111,163,199,0.04)'
+                            : 'rgba(232,237,242,0.03)',
                           boxShadow: focused === field.key
-                            ? '0 0 0 3px rgba(201,169,110,0.06)'
+                            ? '0 0 0 3px rgba(111,163,199,0.06)'
                             : 'none',
                         }}
                       />
@@ -215,12 +215,12 @@ export default function MockupModal({ isOpen, onClose }) {
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
                   style={{
                     width: 76, height: 76, borderRadius: '50%',
-                    background: 'rgba(201,169,110,0.06)',
-                    border: '1px solid rgba(201,169,110,0.25)',
+                    background: 'rgba(111,163,199,0.06)',
+                    border: '1px solid rgba(111,163,199,0.25)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
                 >
-                  <CheckCircle size={32} strokeWidth={1.5} color="var(--gold)" />
+                  <CheckCircle size={32} strokeWidth={1.5} color="var(--accent)" />
                 </motion.div>
 
                 <h2 style={{
@@ -246,8 +246,8 @@ export default function MockupModal({ isOpen, onClose }) {
                   display: 'flex', gap: '2rem',
                   padding: '1rem 1.5rem',
                   borderRadius: 4,
-                  background: 'rgba(240,236,228,0.02)',
-                  border: '1px solid rgba(201,169,110,0.1)',
+                  background: 'rgba(232,237,242,0.02)',
+                  border: '1px solid rgba(111,163,199,0.1)',
                   marginTop: '0.25rem',
                 }}>
                   {[
@@ -259,7 +259,7 @@ export default function MockupModal({ isOpen, onClose }) {
                         fontFamily: '"Bodoni Moda", serif',
                         fontSize: '1.4rem',
                         fontWeight: 700,
-                        color: 'var(--gold)',
+                        color: 'var(--accent)',
                       }}>
                         {value}
                       </div>

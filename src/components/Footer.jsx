@@ -10,7 +10,7 @@ const dimStyle = {
   fontSize: 11,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  color: 'rgba(240,236,228,0.25)',
+  color: 'rgba(232,237,242,0.25)',
   textDecoration: 'none',
   transition: 'color 0.2s',
 }
@@ -19,7 +19,7 @@ export default function Footer() {
   return (
     <footer style={{
       background: 'var(--black)',
-      borderTop: '1px solid rgba(240,236,228,0.04)',
+      borderTop: '1px solid rgba(232,237,242,0.04)',
     }}>
       <div style={{
         maxWidth: 1100,
@@ -52,12 +52,12 @@ export default function Footer() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }} className="footer-nav">
           {links.map((l, i) => (
             <span key={l.href} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              {i > 0 && <span style={{ color: 'rgba(240,236,228,0.15)', fontSize: 10 }}>·</span>}
+              {i > 0 && <span style={{ color: 'rgba(232,237,242,0.15)', fontSize: 10 }}>·</span>}
               <a
                 href={l.href}
                 style={dimStyle}
                 onMouseEnter={e => e.currentTarget.style.color = 'var(--white)'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(240,236,228,0.25)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(232,237,242,0.25)'}
               >
                 {l.label}
               </a>
@@ -66,7 +66,7 @@ export default function Footer() {
         </div>
 
         {/* Right */}
-        <span style={{ ...dimStyle, color: 'rgba(240,236,228,0.2)' }}>Built by Luxcoda</span>
+        <span style={{ ...dimStyle, color: 'rgba(232,237,242,0.2)' }}>Built by Luxcoda</span>
       </div>
 
       <style>{`

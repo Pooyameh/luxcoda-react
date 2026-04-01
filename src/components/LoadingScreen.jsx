@@ -55,7 +55,7 @@ export default function LoadingScreen({ onComplete }) {
       <div style={{
         width: 60,
         height: 1,
-        background: 'rgba(201,169,110,0.15)',
+        background: 'rgba(111,163,199,0.15)',
         overflow: 'hidden',
         position: 'relative',
       }}>
@@ -67,7 +67,7 @@ export default function LoadingScreen({ onComplete }) {
             top: 0,
             height: '100%',
             width: '0px',
-            background: 'var(--gold)',
+            background: 'var(--accent)',
           }}
         />
       </div>

@@ -18,6 +18,7 @@ import Cta             from './components/Cta'
 import Contact         from './components/Contact'
 import Footer          from './components/Footer'
 import MockupModal     from './components/MockupModal'
+import InteractiveMorph from './components/InteractiveMorph'
 import { useScrollStore } from './useScrollEvents'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -27,7 +28,7 @@ function SectionDivider() {
     <div style={{
       width: '100%',
       height: '1px',
-      background: 'linear-gradient(90deg, transparent 0%, rgba(201,169,110,0.15) 30%, rgba(201,169,110,0.15) 70%, transparent 100%)',
+      background: 'linear-gradient(90deg, transparent 0%, rgba(111,163,199,0.15) 30%, rgba(111,163,199,0.15) 70%, transparent 100%)',
     }} />
   )
 }
@@ -119,7 +120,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: '#050505', color: 'var(--white)', overflowX: 'hidden' }}>
+    <div style={{ background: '#050508', color: 'var(--white)', overflowX: 'hidden' }}>
 
       {/* Fixed 3D canvas */}
       <Background3D />
@@ -153,6 +154,17 @@ export default function App() {
 
         <div data-section="difference">
           <Difference />
+        </div>
+
+        {/* Interactive 3D morph — interlude between Difference and Process */}
+        <div style={{
+          padding: '6vh 0 8vh',
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'relative',
+          zIndex: 1,
+        }}>
+          <InteractiveMorph />
         </div>
 
         <div data-section="process">

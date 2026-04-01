@@ -69,7 +69,7 @@ export default function Difference() {
             fontFamily: '"Bodoni Moda", serif',
             fontWeight: 900,
             fontSize: 'clamp(3rem, 10vw, 9rem)',
-            color: 'var(--gold)',
+            color: 'var(--white)',
             lineHeight: 1,
             whiteSpace: 'nowrap',
           }}

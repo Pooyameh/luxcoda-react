@@ -60,7 +60,7 @@ function PlanRow({ name, price, pitch, desc, includes, index, onOpenModal }) {
     <div
       ref={rowRef}
       style={{
-        borderBottom: '1px solid rgba(240,236,228,0.06)',
+        borderBottom: '1px solid rgba(232,237,242,0.06)',
         padding: 'clamp(3rem, 8vh, 5rem) 0',
       }}
     >
@@ -85,7 +85,7 @@ function PlanRow({ name, price, pitch, desc, includes, index, onOpenModal }) {
         fontFamily: '"DM Sans", sans-serif',
         fontWeight: 500,
         fontSize: 15,
-        color: 'var(--gold)',
+        color: 'var(--accent)',
         letterSpacing: '0.05em',
         marginBottom: '0.75rem',
       }}>
@@ -142,7 +142,7 @@ function PlanRow({ name, price, pitch, desc, includes, index, onOpenModal }) {
           fontSize: 11,
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: 'var(--gold)',
+          color: 'var(--accent)',
           cursor: 'pointer',
           transition: 'opacity 0.2s',
           textDecoration: 'none',

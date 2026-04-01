@@ -112,7 +112,7 @@ function Step({ num, label, heading, body, flip }) {
           fontSize: 11,
           letterSpacing: '0.25em',
           textTransform: 'uppercase',
-          color: 'var(--gold)',
+          color: 'var(--accent)',
           marginBottom: '1.25rem',
         }}>
           {label}

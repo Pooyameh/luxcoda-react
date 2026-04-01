@@ -20,7 +20,7 @@ export default function Cta({ onOpenModal }) {
         fontSize: 11,
         letterSpacing: '0.3em',
         textTransform: 'uppercase',
-        color: 'var(--gold)',
+        color: 'var(--accent)',
         marginBottom: '2rem',
       }}>
         The Next Step

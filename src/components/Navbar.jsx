@@ -32,7 +32,7 @@ export default function Navbar({ onOpenModal }) {
         background: scrolled ? 'rgba(5,5,5,0.7)' : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
         WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(201,169,110,0.08)' : '1px solid transparent',
+        borderBottom: scrolled ? '1px solid rgba(111,163,199,0.08)' : '1px solid transparent',
       }}>
         <div style={{
           maxWidth: 1100,
@@ -65,7 +65,7 @@ export default function Navbar({ onOpenModal }) {
             {links.map((l, i) => (
               <span key={l.href} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 {i > 0 && (
-                  <span style={{ color: 'var(--gold)', fontSize: 10, lineHeight: 1 }}>·</span>
+                  <span style={{ color: 'var(--accent)', fontSize: 10, lineHeight: 1 }}>·</span>
                 )}
                 <a
                   href={l.href}
