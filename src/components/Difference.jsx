@@ -55,7 +55,7 @@ export default function Difference() {
       </div>
 
       {/* Beat 3 — the punch, ~70vh */}
-      <div style={{
+      <div data-section="notUs" style={{
         minHeight: '70vh',
         display: 'flex',
         alignItems: 'center',

@@ -18,6 +18,7 @@ import Cta             from './components/Cta'
 import Contact         from './components/Contact'
 import Footer          from './components/Footer'
 import MockupModal     from './components/MockupModal'
+import { useScrollStore } from './useScrollEvents'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -31,11 +32,44 @@ function SectionDivider() {
   )
 }
 
+// ── Tracks scroll progress + section visibility → zustand store ───────────────
+function ScrollTracker() {
+  useEffect(() => {
+    const { setScroll, setActiveSection } = useScrollStore.getState()
+
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      setScroll(max > 0 ? window.scrollY / max : 0)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    // IntersectionObserver on every element with [data-section]
+    const sections = document.querySelectorAll('[data-section]')
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
+            setActiveSection(entry.target.dataset.section)
+          }
+        })
+      },
+      { threshold: [0.3, 0.5, 0.7] },
+    )
+    sections.forEach((el) => observer.observe(el))
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      observer.disconnect()
+    }
+  }, [])
+
+  return null
+}
+
 export default function App() {
-  const [loading,       setLoading]       = useState(true)
-  const [isLoaded,      setIsLoaded]      = useState(false)
-  const [modalOpen,     setModalOpen]     = useState(false)
-  const [scrollProg,    setScrollProg]    = useState(0)
+  const [loading,    setLoading]    = useState(true)
+  const [isLoaded,   setIsLoaded]   = useState(false)
+  const [modalOpen,  setModalOpen]  = useState(false)
   const progressLineRef = useRef(null)
 
   // ── Lenis + GSAP ScrollTrigger sync ───────────────────────────────────────
@@ -58,13 +92,11 @@ export default function App() {
     }
   }, [])
 
-  // ── Scroll progress → 3D canvas + progress line ───────────────────────────
+  // ── Gold scroll progress line ─────────────────────────────────────────────
   useEffect(() => {
     const onScroll = () => {
-      const scrolled = window.scrollY
-      const total    = document.body.scrollHeight - window.innerHeight
-      const prog     = total > 0 ? scrolled / total : 0
-      setScrollProg(prog)
+      const total = document.body.scrollHeight - window.innerHeight
+      const prog  = total > 0 ? window.scrollY / total : 0
       if (progressLineRef.current) {
         progressLineRef.current.style.height = `${prog * 100}%`
       }
@@ -89,8 +121,8 @@ export default function App() {
   return (
     <div style={{ background: '#050505', color: 'var(--white)', overflowX: 'hidden' }}>
 
-      {/* Fixed 3D canvas behind everything */}
-      <Background3D scrollProgress={scrollProg} />
+      {/* Fixed 3D canvas */}
+      <Background3D />
 
       {/* Film grain */}
       <div className="grain-overlay" />
@@ -101,25 +133,54 @@ export default function App() {
       {/* Custom cursor */}
       <Cursor />
 
+      {/* Scroll tracker — must be inside the component tree but renders nothing */}
+      <ScrollTracker />
+
       {/* Loading screen */}
       <AnimatePresence>
         {loading && <LoadingScreen onComplete={handleLoadingComplete} />}
       </AnimatePresence>
 
-      {/* Page content — all above the canvas */}
+      {/* Page content */}
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar onOpenModal={() => setModalOpen(true)} />
-        <Hero isLoaded={isLoaded} onOpenModal={() => setModalOpen(true)} />
+
+        <div data-section="hero">
+          <Hero isLoaded={isLoaded} onOpenModal={() => setModalOpen(true)} />
+        </div>
+
         <SectionDivider />
-        <Difference />
-        <Process />
+
+        <div data-section="difference">
+          <Difference />
+        </div>
+
+        <div data-section="process">
+          <Process />
+        </div>
+
         <SectionDivider />
-        <Pricing onOpenModal={() => setModalOpen(true)} />
-        <Cta onOpenModal={() => setModalOpen(true)} />
+
+        <div data-section="pricing">
+          <Pricing onOpenModal={() => setModalOpen(true)} />
+        </div>
+
+        <div data-section="cta">
+          <Cta onOpenModal={() => setModalOpen(true)} />
+        </div>
+
         <SectionDivider />
-        <TechStack />
+
+        <div data-section="techstack">
+          <TechStack />
+        </div>
+
         <SectionDivider />
-        <Contact />
+
+        <div data-section="contact">
+          <Contact />
+        </div>
+
         <Footer />
       </div>
 
