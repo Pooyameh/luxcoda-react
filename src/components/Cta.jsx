@@ -6,26 +6,59 @@ export default function Cta({ onOpenModal }) {
       background: 'transparent',
       padding: '20vh clamp(1.5rem, 8vw, 8rem)',
       textAlign: 'center',
+      minHeight: '60vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
+
+      {/* Label */}
+      <p style={{
+        fontFamily: '"DM Sans", sans-serif',
+        fontWeight: 500,
+        fontSize: 11,
+        letterSpacing: '0.3em',
+        textTransform: 'uppercase',
+        color: 'var(--gold)',
+        marginBottom: '2rem',
+      }}>
+        The Next Step
+      </p>
 
       <AnimatedText
         as="h2"
         style={{
-          fontFamily: 'var(--display)',
+          fontFamily: '"Bodoni Moda", serif',
           fontStyle: 'italic',
-          fontWeight: 300,
-          fontSize: 'clamp(2rem, 6vw, 5.5rem)',
+          fontWeight: 400,
+          fontSize: 'clamp(2rem, 5vw, 4.5rem)',
           color: 'var(--white)',
           lineHeight: 1.15,
+          maxWidth: 800,
           marginBottom: '3rem',
         }}
       >
-        Ready to stand out?
+        Your competitors already look the same. You won&apos;t.
       </AnimatedText>
 
-      <a href="#contact" className="btn-gold" onClick={onOpenModal}>
-        Free Mock-Up
-      </a>
+      <button
+        className="btn-gold"
+        onClick={onOpenModal}
+        style={{ fontSize: 11, letterSpacing: '0.2em', padding: '16px 40px' }}
+      >
+        Claim Your Free Mock-Up →
+      </button>
+
+      <p style={{
+        fontFamily: '"DM Sans", sans-serif',
+        fontWeight: 300,
+        fontSize: 13,
+        color: 'var(--muted)',
+        marginTop: '1.25rem',
+      }}>
+        Free. No commitment. Delivered in 72 hours.
+      </p>
 
     </section>
   )

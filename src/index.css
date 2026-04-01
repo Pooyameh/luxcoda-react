@@ -3,20 +3,28 @@
 
 /* ─── Tailwind v4 theme ─────────────────────────────────────────────────────── */
 @theme inline {
-  --font-display: 'Cormorant Garamond', serif;
-  --font-sans: 'Manrope', sans-serif;
+  --font-display: '"Bodoni Moda"', serif;
+  --font-body: '"DM Sans"', sans-serif;
 }
 
 /* ─── Design tokens ─────────────────────────────────────────────────────────── */
 :root {
-  --black:      #0a0a0a;
-  --white:      #ffffff;
-  --gold:       #c9a96e;
-  --warm-gray:  #f5f0e8;
-  --text-muted: rgba(255, 255, 255, 0.5);
-  --text-body:  rgba(255, 255, 255, 0.6);
-  --display:    'Cormorant Garamond', serif;
-  --sans:       'Manrope', sans-serif;
+  --black:        #050505;
+  --white:        #f0ece4;
+  --gold:         #c9a96e;
+  --gold-light:   #e2d1a8;
+  --warm-gray:    #f5f0e8;
+  --muted:        rgba(240, 236, 228, 0.4);
+  --muted-strong: rgba(240, 236, 228, 0.6);
+  --glass-bg:     rgba(240, 236, 228, 0.03);
+  --glass-border: rgba(201, 169, 110, 0.12);
+
+  /* Backward-compat aliases used in existing components */
+  --text-muted: rgba(240, 236, 228, 0.4);
+  --text-body:  rgba(240, 236, 228, 0.6);
+
+  --display: '"Bodoni Moda"', serif;
+  --sans:    '"DM Sans"', sans-serif;
 }
 
 /* ─── Reset ─────────────────────────────────────────────────────────────────── */
@@ -26,7 +34,7 @@ html { scroll-behavior: auto; }
 body {
   background: var(--black);
   color: var(--white);
-  font-family: var(--sans);
+  font-family: "DM Sans", sans-serif;
   font-weight: 400;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -40,17 +48,17 @@ body {
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 9998;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  animation: grain 0.8s steps(1) infinite;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background: repeating-conic-gradient(
+    rgba(240, 236, 228, 0.08) 0% 25%,
+    transparent 0% 50%
+  ) 0 0 / 3px 3px;
+  animation: grainShift 0.4s steps(2) infinite;
 }
-@keyframes grain {
-  0%  { transform: translate(0, 0); }
-  20% { transform: translate(-2%, -3%); }
-  40% { transform: translate(3%, 1%); }
-  60% { transform: translate(-1%, 3%); }
-  80% { transform: translate(2%, -1%); }
-  100%{ transform: translate(0, 0); }
+@keyframes grainShift {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(-2px, -2px); }
 }
 
 /* ─── Gold scroll progress line ─────────────────────────────────────────────── */
@@ -59,7 +67,7 @@ body {
   left: 0;
   top: 0;
   width: 2px;
-  background: var(--gold);
+  background: linear-gradient(to bottom, var(--gold), transparent);
   z-index: 100;
   pointer-events: none;
   height: 0%;
@@ -85,20 +93,20 @@ body {
   display: inline-block;
   background: transparent;
   color: var(--white);
-  border: 1px solid rgba(201, 169, 110, 0.5);
-  font-family: var(--sans);
+  border: 1px solid rgba(201, 169, 110, 0.4);
+  font-family: "DM Sans", sans-serif;
   font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  padding: 14px 40px;
+  padding: 16px 40px;
   cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease;
   text-decoration: none;
 }
 .btn-gold:hover {
-  background: rgba(201, 169, 110, 0.1);
-  border-color: rgba(201, 169, 110, 0.8);
+  background: rgba(201, 169, 110, 0.08);
+  border-color: rgba(201, 169, 110, 0.6);
 }
 
 /* ─── Animated text chars ────────────────────────────────────────────────────── */
@@ -107,18 +115,20 @@ body {
   white-space: pre;
 }
 
-/* ─── Scroll indicator pulse ─────────────────────────────────────────────────── */
-@keyframes scrollPulse {
-  0%, 100% { opacity: 1; transform: scaleY(1); }
-  50%       { opacity: 0.3; transform: scaleY(0.6); }
+/* ─── Scroll indicator ───────────────────────────────────────────────────────── */
+@keyframes scrollGrow {
+  0%   { height: 0;    opacity: 1; }
+  60%  { height: 40px; opacity: 1; }
+  100% { height: 40px; opacity: 0; }
 }
 .scroll-indicator-line {
-  animation: scrollPulse 1.8s ease-in-out infinite;
+  animation: scrollGrow 2s ease-in-out infinite;
+  height: 0;
 }
 
 /* ─── Utility: section content wrapper ───────────────────────────────────────── */
 .content-wrap {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 5vw, 4rem);
 }

@@ -2,46 +2,79 @@ import AnimatedText from './AnimatedText'
 
 export default function Difference() {
   return (
-    <section style={{ background: 'transparent', padding: '15vh 0' }}>
+    <section style={{ background: 'transparent' }}>
 
-      {/* Statement 1 — left aligned */}
+      {/* Beat 1 — italic, muted, ~80vh */}
       <div style={{
-        paddingLeft: 'clamp(1.5rem, 10vw, 14rem)',
-        paddingRight: 'clamp(1.5rem, 5vw, 4rem)',
-        paddingBottom: '25vh',
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 clamp(1.5rem, 8vw, 10rem)',
+        textAlign: 'center',
       }}>
         <AnimatedText
           as="p"
           style={{
-            fontFamily: 'var(--display)',
+            fontFamily: '"Bodoni Moda", serif',
             fontStyle: 'italic',
-            fontWeight: 300,
-            fontSize: 'clamp(2rem, 5.5vw, 5rem)',
-            color: 'var(--white)',
-            lineHeight: 1.15,
+            fontWeight: 400,
+            fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
+            color: 'var(--muted-strong)',
+            lineHeight: 1.25,
+            maxWidth: 800,
           }}
         >
-          Most agency websites look the same.
+          Every local business deserves a website that works as hard as they do.
         </AnimatedText>
       </div>
 
-      {/* Statement 2 — right aligned */}
+      {/* Beat 2 — white, italic, ~80vh */}
       <div style={{
-        paddingRight: 'clamp(1.5rem, 10vw, 14rem)',
-        paddingLeft: 'clamp(1.5rem, 5vw, 4rem)',
-        textAlign: 'right',
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 clamp(1.5rem, 8vw, 10rem)',
+        textAlign: 'center',
       }}>
         <AnimatedText
           as="p"
           style={{
-            fontFamily: 'var(--display)',
-            fontWeight: 700,
-            fontSize: 'clamp(2.5rem, 7vw, 6.5rem)',
-            color: 'var(--gold)',
-            lineHeight: 1.05,
+            fontFamily: '"Bodoni Moda", serif',
+            fontStyle: 'italic',
+            fontWeight: 400,
+            fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
+            color: 'var(--white)',
+            lineHeight: 1.25,
+            maxWidth: 800,
           }}
         >
-          Yours won't.
+          But most agencies hand you a template, slap your logo on it, and call it done.
+        </AnimatedText>
+      </div>
+
+      {/* Beat 3 — the punch, ~70vh */}
+      <div style={{
+        minHeight: '70vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 clamp(1.5rem, 8vw, 10rem)',
+        textAlign: 'center',
+      }}>
+        <AnimatedText
+          as="p"
+          style={{
+            fontFamily: '"Bodoni Moda", serif',
+            fontWeight: 900,
+            fontSize: 'clamp(4rem, 12vw, 11rem)',
+            color: 'var(--gold)',
+            lineHeight: 1,
+          }}
+          delay={0.05}
+        >
+          Not us.
         </AnimatedText>
       </div>
 

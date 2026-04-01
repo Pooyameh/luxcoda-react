@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle } from 'lucide-react'
 
 export default function MockupModal({ isOpen, onClose }) {
-  const [form, setForm] = useState({ name: '', business: '', phone: '', email: '' })
+  const [form,      setForm]      = useState({ name: '', business: '', phone: '', email: '' })
   const [submitted, setSubmitted] = useState(false)
-  const [focused, setFocused] = useState(null)
+  const [focused,   setFocused]   = useState(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -27,21 +27,21 @@ export default function MockupModal({ isOpen, onClose }) {
   }
 
   const fields = [
-    { key: 'name',     label: 'Your Name',      placeholder: 'Jane Smith',         type: 'text'  },
-    { key: 'business', label: 'Business Name',   placeholder: 'Smith & Co.',        type: 'text'  },
-    { key: 'phone',    label: 'Phone Number',    placeholder: '04xx xxx xxx',       type: 'tel'   },
+    { key: 'name',     label: 'Your Name',      placeholder: 'Jane Smith',          type: 'text'  },
+    { key: 'business', label: 'Business Name',   placeholder: 'Smith & Co.',         type: 'text'  },
+    { key: 'phone',    label: 'Phone Number',    placeholder: '04xx xxx xxx',        type: 'tel'   },
     { key: 'email',    label: 'Email Address',   placeholder: 'jane@smithco.com.au', type: 'email' },
   ]
 
   const inputBase = {
     width: '100%',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.09)',
-    borderRadius: 14,
+    background: 'rgba(240,236,228,0.03)',
+    border: '1px solid rgba(240,236,228,0.09)',
+    borderRadius: 4,
     padding: '0.9rem 1.1rem',
     fontSize: '0.95rem',
-    color: '#fff',
-    fontFamily: 'inherit',
+    color: 'var(--white)',
+    fontFamily: '"DM Sans", sans-serif',
     outline: 'none',
     transition: 'border-color 0.25s, box-shadow 0.25s, background 0.25s',
     WebkitAppearance: 'none',
@@ -68,8 +68,8 @@ export default function MockupModal({ isOpen, onClose }) {
 
           {/* Panel */}
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.96, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+            initial={{ opacity: 0, y: 40, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             style={{
@@ -80,12 +80,12 @@ export default function MockupModal({ isOpen, onClose }) {
               width: 'min(520px, calc(100vw - 2rem))',
               maxHeight: 'calc(100svh - 2rem)',
               overflowY: 'auto',
-              background: 'rgba(4,4,20,0.94)',
-              backdropFilter: 'blur(52px)',
-              WebkitBackdropFilter: 'blur(52px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 40px 100px rgba(0,0,0,0.75), 0 0 80px rgba(34,211,238,0.04)',
-              borderRadius: 28,
+              background: 'rgba(5,5,5,0.96)',
+              backdropFilter: 'blur(40px)',
+              WebkitBackdropFilter: 'blur(40px)',
+              border: '1px solid rgba(201,169,110,0.15)',
+              boxShadow: '0 40px 100px rgba(0,0,0,0.75)',
+              borderRadius: 4,
               padding: 'clamp(2rem, 5vw, 3rem)',
             }}
           >
@@ -95,55 +95,51 @@ export default function MockupModal({ isOpen, onClose }) {
               aria-label="Close"
               style={{
                 position: 'absolute', top: '1.1rem', right: '1.1rem',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(240,236,228,0.04)',
+                border: '1px solid rgba(240,236,228,0.08)',
                 borderRadius: '50%', width: 34, height: 34,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', transition: 'background 0.2s, border-color 0.2s',
+                cursor: 'pointer', transition: 'background 0.2s',
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
-              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,236,228,0.08)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(240,236,228,0.04)' }}
             >
-              <X size={14} color="rgba(255,255,255,0.6)" />
+              <X size={14} color="rgba(240,236,228,0.5)" />
             </button>
 
             {!submitted ? (
               <>
                 {/* Header */}
                 <div style={{ marginBottom: '1.75rem' }}>
-                  <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '0.45rem',
-                    fontSize: '0.63rem', fontWeight: 700,
-                    letterSpacing: '0.12em', textTransform: 'uppercase',
-                    padding: '0.28rem 0.8rem', borderRadius: 100,
-                    background: 'rgba(34,211,238,0.07)',
-                    border: '1px solid rgba(34,211,238,0.22)',
+                  <p style={{
+                    fontFamily: '"DM Sans", sans-serif',
+                    fontWeight: 500,
+                    fontSize: 10,
+                    letterSpacing: '0.25em',
+                    textTransform: 'uppercase',
+                    color: 'var(--gold)',
                     marginBottom: '1rem',
                   }}>
-                    <span style={{
-                      width: 5, height: 5, borderRadius: '50%',
-                      background: '#22d3ee',
-                      boxShadow: '0 0 6px rgba(34,211,238,0.9)',
-                    }} />
-                    <span className="gradient-text-cyan">Free &amp; No Commitment</span>
-                  </div>
+                    Free &amp; No Commitment
+                  </p>
                   <h2 style={{
+                    fontFamily: '"Bodoni Moda", serif',
                     fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-                    fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15,
-                    color: '#fff', marginBottom: '0.5rem',
+                    fontWeight: 700,
+                    lineHeight: 1.15,
+                    color: 'var(--white)',
+                    marginBottom: '0.5rem',
                   }}>
                     Claim Your Free Mock-Up
                   </h2>
                   <p style={{
-                    fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65,
+                    fontFamily: '"DM Sans", sans-serif',
+                    fontWeight: 300,
+                    fontSize: '0.88rem',
+                    color: 'var(--muted)',
+                    lineHeight: 1.65,
                   }}>
-                    Tell us about your business and we'll design a custom preview — no cost, no obligation.
+                    Tell us about your business and we&apos;ll design a custom preview — no cost, no obligation.
                   </p>
                 </div>
 
@@ -151,9 +147,14 @@ export default function MockupModal({ isOpen, onClose }) {
                   {fields.map(field => (
                     <div key={field.key}>
                       <label style={{
-                        display: 'block', fontSize: '0.72rem', fontWeight: 600,
-                        letterSpacing: '0.06em', color: 'rgba(255,255,255,0.45)',
-                        marginBottom: '0.4rem', textTransform: 'uppercase',
+                        display: 'block',
+                        fontFamily: '"DM Sans", sans-serif',
+                        fontSize: '0.72rem',
+                        fontWeight: 500,
+                        letterSpacing: '0.15em',
+                        color: 'var(--muted)',
+                        marginBottom: '0.4rem',
+                        textTransform: 'uppercase',
                       }}>
                         {field.label}
                       </label>
@@ -168,13 +169,13 @@ export default function MockupModal({ isOpen, onClose }) {
                         style={{
                           ...inputBase,
                           borderColor: focused === field.key
-                            ? 'rgba(34,211,238,0.45)'
-                            : 'rgba(255,255,255,0.09)',
+                            ? 'rgba(201,169,110,0.4)'
+                            : 'rgba(240,236,228,0.09)',
                           background: focused === field.key
-                            ? 'rgba(34,211,238,0.05)'
-                            : 'rgba(255,255,255,0.04)',
+                            ? 'rgba(201,169,110,0.04)'
+                            : 'rgba(240,236,228,0.03)',
                           boxShadow: focused === field.key
-                            ? '0 0 0 3px rgba(34,211,238,0.08)'
+                            ? '0 0 0 3px rgba(201,169,110,0.06)'
                             : 'none',
                         }}
                       />
@@ -183,16 +184,16 @@ export default function MockupModal({ isOpen, onClose }) {
 
                   <button
                     type="submit"
-                    className="btn-primary"
+                    className="btn-gold"
                     style={{
                       marginTop: '0.4rem',
                       padding: '1rem',
-                      fontSize: '1rem',
+                      fontSize: '0.88rem',
                       width: '100%',
-                      boxShadow: '0 0 40px rgba(34,211,238,0.18), 0 0 80px rgba(94,174,255,0.12)',
+                      textAlign: 'center',
                     }}
                   >
-                    <span>Send My Request →</span>
+                    Send My Request →
                   </button>
                 </form>
               </>
@@ -208,55 +209,66 @@ export default function MockupModal({ isOpen, onClose }) {
                   alignItems: 'center', gap: '1rem',
                 }}
               >
-                {/* Success icon */}
                 <motion.div
                   initial={{ scale: 0, rotate: -30 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
                   style={{
                     width: 76, height: 76, borderRadius: '50%',
-                    background: 'rgba(34,211,238,0.08)',
-                    border: '1px solid rgba(34,211,238,0.28)',
+                    background: 'rgba(201,169,110,0.06)',
+                    border: '1px solid rgba(201,169,110,0.25)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 0 40px rgba(34,211,238,0.15)',
                   }}
                 >
-                  <CheckCircle size={32} strokeWidth={1.5} color="#22d3ee" />
+                  <CheckCircle size={32} strokeWidth={1.5} color="var(--gold)" />
                 </motion.div>
 
                 <h2 style={{
+                  fontFamily: '"Bodoni Moda", serif',
                   fontSize: 'clamp(1.4rem, 4vw, 1.85rem)',
-                  fontWeight: 800, letterSpacing: '-0.03em', color: '#fff',
+                  fontWeight: 700,
+                  color: 'var(--white)',
                 }}>
-                  You're all set!
+                  You&apos;re all set!
                 </h2>
                 <p style={{
-                  fontSize: '0.95rem', color: 'rgba(255,255,255,0.55)',
-                  lineHeight: 1.65, maxWidth: 340,
+                  fontFamily: '"DM Sans", sans-serif',
+                  fontWeight: 300,
+                  fontSize: '0.95rem',
+                  color: 'var(--muted-strong)',
+                  lineHeight: 1.65,
+                  maxWidth: 340,
                 }}>
-                  Thanks for reaching out. We'll be in touch within 24 hours with your custom mock-up.
+                  Thanks for reaching out. We&apos;ll be in touch within 24 hours with your custom mock-up.
                 </p>
 
-                {/* Mini stats row */}
                 <div style={{
                   display: 'flex', gap: '2rem',
                   padding: '1rem 1.5rem',
-                  borderRadius: 14,
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: 4,
+                  background: 'rgba(240,236,228,0.02)',
+                  border: '1px solid rgba(201,169,110,0.1)',
                   marginTop: '0.25rem',
                 }}>
                   {[
                     { value: '24h', label: 'Response time' },
-                    { value: '7d', label: 'To launch' },
+                    { value: '7d',  label: 'To launch' },
                   ].map(({ value, label }) => (
                     <div key={label} style={{ textAlign: 'center' }}>
-                      <div className="gradient-text-cyan" style={{
-                        fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.03em',
+                      <div style={{
+                        fontFamily: '"Bodoni Moda", serif',
+                        fontSize: '1.4rem',
+                        fontWeight: 700,
+                        color: 'var(--gold)',
                       }}>
                         {value}
                       </div>
-                      <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.35)', marginTop: '0.1rem' }}>
+                      <div style={{
+                        fontFamily: '"DM Sans", sans-serif',
+                        fontSize: '0.68rem',
+                        color: 'var(--muted)',
+                        marginTop: '0.1rem',
+                      }}>
                         {label}
                       </div>
                     </div>
@@ -265,12 +277,8 @@ export default function MockupModal({ isOpen, onClose }) {
 
                 <button
                   onClick={onClose}
-                  className="btn-ghost"
-                  style={{
-                    marginTop: '0.25rem',
-                    padding: '0.75rem 2rem',
-                    fontSize: '0.9rem',
-                  }}
+                  className="btn-gold"
+                  style={{ marginTop: '0.25rem', padding: '0.75rem 2rem', fontSize: '0.85rem' }}
                 >
                   Close
                 </button>

@@ -77,7 +77,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: 'var(--black)', color: 'var(--white)', overflowX: 'hidden' }}>
+    <div style={{ background: '#050505', color: 'var(--white)', overflowX: 'hidden' }}>
 
       {/* Fixed 3D canvas behind everything */}
       <Background3D scrollProgress={scrollProg} />

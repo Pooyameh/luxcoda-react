@@ -1,16 +1,16 @@
 const links = [
-  { label: 'How It Works', href: '#process' },
-  { label: 'Pricing',      href: '#pricing'  },
-  { label: 'Contact',      href: '#contact'  },
+  { label: 'Process', href: '#process' },
+  { label: 'Pricing', href: '#pricing'  },
+  { label: 'Contact', href: '#contact'  },
 ]
 
-const labelStyle = {
-  fontFamily: 'var(--sans)',
+const dimStyle = {
+  fontFamily: '"DM Sans", sans-serif',
   fontWeight: 500,
   fontSize: 11,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  color: 'rgba(255,255,255,0.3)',
+  color: 'rgba(240,236,228,0.25)',
   textDecoration: 'none',
   transition: 'color 0.2s',
 }
@@ -19,12 +19,13 @@ export default function Footer() {
   return (
     <footer style={{
       background: 'var(--black)',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
+      borderTop: '1px solid rgba(240,236,228,0.04)',
     }}>
       <div style={{
-        maxWidth: 1200,
+        maxWidth: 1100,
         margin: '0 auto',
-        padding: 'clamp(1.5rem, 3vh, 2rem) clamp(1.5rem, 5vw, 4rem)',
+        padding: '0 clamp(1.5rem, 5vw, 4rem)',
+        height: 80,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -34,29 +35,38 @@ export default function Footer() {
 
         {/* Left */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ ...labelStyle, fontFamily: 'var(--display)', fontWeight: 600, fontSize: 14, letterSpacing: '0.05em' }}>
+          <span style={{
+            fontFamily: '"DM Sans", sans-serif',
+            fontWeight: 600,
+            fontSize: 12,
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: 'var(--muted)',
+          }}>
             Luxcoda
           </span>
-          <span style={labelStyle}>© 2026 Luxcoda</span>
+          <span style={{ ...dimStyle, letterSpacing: '0.05em' }}>© 2026</span>
         </div>
 
         {/* Center nav */}
-        <div style={{ display: 'flex', gap: '2rem' }} className="footer-nav">
-          {links.map(l => (
-            <a
-              key={l.href}
-              href={l.href}
-              style={labelStyle}
-              onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.3)'}
-            >
-              {l.label}
-            </a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }} className="footer-nav">
+          {links.map((l, i) => (
+            <span key={l.href} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              {i > 0 && <span style={{ color: 'rgba(240,236,228,0.15)', fontSize: 10 }}>·</span>}
+              <a
+                href={l.href}
+                style={dimStyle}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--white)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(240,236,228,0.25)'}
+              >
+                {l.label}
+              </a>
+            </span>
           ))}
         </div>
 
         {/* Right */}
-        <span style={labelStyle}>Built by Luxcoda</span>
+        <span style={{ ...dimStyle, color: 'rgba(240,236,228,0.2)' }}>Built by Luxcoda</span>
       </div>
 
       <style>{`

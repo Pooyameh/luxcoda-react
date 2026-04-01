@@ -4,10 +4,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import AnimatedText from './AnimatedText'
 
 const methods = [
-  { label: 'Phone',     value: '0414 758 891',          href: 'tel:0414758891'                    },
-  { label: 'Email',     value: 'enquiries@luxcoda.com',  href: 'mailto:enquiries@luxcoda.com'      },
-  { label: 'Instagram', value: '@luxcoda',               href: 'https://instagram.com/luxcoda'     },
-  { label: 'Facebook',  value: 'facebook.com/luxcoda',   href: 'https://facebook.com/luxcoda'      },
+  { label: 'Phone',     value: '0414 758 891',          href: 'tel:0414758891'                },
+  { label: 'Email',     value: 'enquiries@luxcoda.com',  href: 'mailto:enquiries@luxcoda.com'  },
+  { label: 'Instagram', value: '@luxcoda',               href: 'https://instagram.com/luxcoda' },
+  { label: 'Facebook',  value: 'facebook.com/luxcoda',   href: 'https://facebook.com/luxcoda'  },
 ]
 
 export default function Contact() {
@@ -37,28 +37,31 @@ export default function Contact() {
     <section
       id="contact"
       style={{
-        background: 'rgba(10,10,10,0.85)',
-        padding: '15vh clamp(1.5rem, 5vw, 4rem)',
+        background: 'rgba(5,5,5,0.88)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        padding: 'min(18vh, 160px) clamp(1.5rem, 5vw, 4rem)',
       }}
     >
-      <div style={{
-        maxWidth: 1200,
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 'clamp(3rem, 8vw, 8rem)',
-        alignItems: 'start',
-      }}
-      className="contact-grid"
+      <div
+        className="contact-grid"
+        style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 'clamp(3rem, 8vw, 8rem)',
+          alignItems: 'start',
+        }}
       >
 
         {/* Left */}
         <div>
           <p style={{
-            fontFamily: 'var(--sans)',
+            fontFamily: '"DM Sans", sans-serif',
             fontWeight: 500,
-            fontSize: 10,
-            letterSpacing: '0.2em',
+            fontSize: 11,
+            letterSpacing: '0.25em',
             textTransform: 'uppercase',
             color: 'var(--gold)',
             marginBottom: '1.5rem',
@@ -69,34 +72,32 @@ export default function Contact() {
           <AnimatedText
             as="h2"
             style={{
-              fontFamily: 'var(--display)',
-              fontWeight: 700,
-              fontSize: 'clamp(2.5rem, 6vw, 5.5rem)',
+              fontFamily: '"Bodoni Moda", serif',
+              fontWeight: 800,
+              fontSize: 'clamp(3rem, 7vw, 6rem)',
               color: 'var(--white)',
               lineHeight: 1.0,
               marginBottom: '1.5rem',
             }}
           >
-            Let's Build.
+            Let&apos;s Build.
           </AnimatedText>
 
           <p style={{
-            fontFamily: 'var(--sans)',
+            fontFamily: '"DM Sans", sans-serif',
             fontWeight: 300,
-            fontSize: 'clamp(0.9rem, 1.1vw, 1.05rem)',
-            color: 'var(--text-body)',
-            lineHeight: 1.7,
-            maxWidth: 360,
+            fontSize: 15,
+            color: 'var(--muted-strong)',
+            lineHeight: 1.8,
+            maxWidth: 440,
             marginBottom: '2rem',
           }}>
-            Brisbane-based and ready to build. Reach out by phone, email, or social — we respond fast.
+            Brisbane-based. Obsessively focused on craft. Whether you need a new site
+            from scratch or want to take your existing one from forgettable to remarkable
+            — reach out. We respond fast.
           </p>
 
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <span style={{
               width: 6, height: 6,
               borderRadius: '50%',
@@ -104,11 +105,11 @@ export default function Contact() {
               flexShrink: 0,
             }} />
             <span style={{
-              fontFamily: 'var(--sans)',
+              fontFamily: '"DM Sans", sans-serif',
               fontWeight: 400,
-              fontSize: 12,
-              color: 'var(--text-muted)',
-              letterSpacing: '0.05em',
+              fontSize: 13,
+              color: 'var(--white)',
+              letterSpacing: '0.03em',
             }}>
               Brisbane, Queensland, Australia
             </span>
@@ -129,7 +130,7 @@ export default function Contact() {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: 'clamp(1rem, 2vh, 1.5rem) 0',
-                borderBottom: i < methods.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                borderBottom: '1px solid rgba(240,236,228,0.06)',
                 textDecoration: 'none',
                 opacity: 0,
                 transition: 'opacity 0.2s',
@@ -140,12 +141,12 @@ export default function Contact() {
               }}
               onMouseLeave={e => {
                 const arrow = e.currentTarget.querySelector('.c-arrow')
-                if (arrow) arrow.style.color = 'var(--text-muted)'
+                if (arrow) arrow.style.color = 'var(--muted)'
               }}
             >
               <div>
                 <p style={{
-                  fontFamily: 'var(--sans)',
+                  fontFamily: '"DM Sans", sans-serif',
                   fontWeight: 500,
                   fontSize: 10,
                   letterSpacing: '0.2em',
@@ -156,7 +157,7 @@ export default function Contact() {
                   {m.label}
                 </p>
                 <p style={{
-                  fontFamily: 'var(--sans)',
+                  fontFamily: '"DM Sans", sans-serif',
                   fontWeight: 400,
                   fontSize: 16,
                   color: 'var(--white)',
@@ -167,8 +168,8 @@ export default function Contact() {
               <span
                 className="c-arrow"
                 style={{
-                  color: 'var(--text-muted)',
-                  fontSize: 16,
+                  color: 'var(--muted)',
+                  fontSize: 14,
                   transition: 'color 0.2s',
                 }}
               >

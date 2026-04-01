@@ -2,7 +2,7 @@ import { useRef, useLayoutEffect } from 'react'
 import gsap from 'gsap'
 import AnimatedText from './AnimatedText'
 
-export default function Hero({ isLoaded }) {
+export default function Hero({ isLoaded, onOpenModal }) {
   const labelRef  = useRef(null)
   const subRef    = useRef(null)
   const scrollRef = useRef(null)
@@ -13,10 +13,9 @@ export default function Hero({ isLoaded }) {
     gsap.set([labelRef.current, subRef.current, scrollRef.current], { opacity: 0, y: 20 })
 
     const tl = gsap.timeline({ delay: 0.2 })
-    tl.to(labelRef.current, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
-    // chars animate themselves via AnimatedText; sub and scroll follow after
-    tl.to(subRef.current,   { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' }, '+=0.6')
-    tl.to(scrollRef.current,{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.4')
+    tl.to(labelRef.current,  { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+    tl.to(subRef.current,    { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' }, '+=0.6')
+    tl.to(scrollRef.current, { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.4')
   }, [isLoaded])
 
   return (
@@ -36,9 +35,9 @@ export default function Hero({ isLoaded }) {
       <p
         ref={labelRef}
         style={{
-          fontFamily: 'var(--sans)',
+          fontFamily: '"DM Sans", sans-serif',
           fontWeight: 500,
-          fontSize: 10,
+          fontSize: 11,
           letterSpacing: '0.3em',
           textTransform: 'uppercase',
           color: 'var(--gold)',
@@ -49,38 +48,13 @@ export default function Hero({ isLoaded }) {
         Website Design — Est. 2026
       </p>
 
-      {/* Headline with mixed weight/style per line */}
+      {/* Headline — two lines, mixed weight */}
       <h1 style={{
-        fontFamily: 'var(--display)',
-        fontSize: 'clamp(2.5rem, 10vw, 9rem)',
-        lineHeight: 1.05,
+        fontFamily: '"Bodoni Moda", serif',
+        fontSize: 'clamp(3rem, 11vw, 10rem)',
+        lineHeight: 0.95,
         margin: 0,
       }}>
-        <AnimatedText
-          as="span"
-          style={{
-            display: 'block',
-            fontWeight: 300,
-            color: 'var(--white)',
-          }}
-          delay={isLoaded ? 0.1 : 999}
-        >
-          We build
-        </AnimatedText>
-
-        <AnimatedText
-          as="span"
-          style={{
-            display: 'block',
-            fontWeight: 700,
-            fontStyle: 'italic',
-            color: 'var(--gold)',
-          }}
-          delay={isLoaded ? 0.4 : 999}
-        >
-          digital presence
-        </AnimatedText>
-
         <AnimatedText
           as="span"
           style={{
@@ -88,9 +62,22 @@ export default function Hero({ isLoaded }) {
             fontWeight: 400,
             color: 'var(--white)',
           }}
-          delay={isLoaded ? 0.7 : 999}
+          delay={isLoaded ? 0.1 : 999}
         >
-          that commands rooms.
+          We don&apos;t build websites.
+        </AnimatedText>
+
+        <AnimatedText
+          as="span"
+          style={{
+            display: 'block',
+            fontWeight: 800,
+            fontStyle: 'italic',
+            color: 'var(--gold)',
+          }}
+          delay={isLoaded ? 0.5 : 999}
+        >
+          We build legacies.
         </AnimatedText>
       </h1>
 
@@ -98,17 +85,18 @@ export default function Hero({ isLoaded }) {
       <p
         ref={subRef}
         style={{
-          fontFamily: 'var(--sans)',
+          fontFamily: '"DM Sans", sans-serif',
           fontWeight: 300,
-          fontSize: 'clamp(0.85rem, 1.2vw, 1.1rem)',
-          color: 'rgba(255,255,255,0.5)',
-          marginTop: '2rem',
+          fontSize: 16,
+          color: 'var(--muted)',
+          marginTop: '2.5rem',
           opacity: 0,
-          maxWidth: 480,
-          lineHeight: 1.7,
+          maxWidth: 520,
+          lineHeight: 1.8,
         }}
       >
-        For local businesses ready to be taken seriously.
+        For the businesses that refuse to blend in. Custom-designed, hand-coded
+        digital experiences for Brisbane&apos;s most ambitious brands.
       </p>
 
       {/* Scroll indicator */}
@@ -127,7 +115,7 @@ export default function Hero({ isLoaded }) {
         }}
       >
         <span style={{
-          fontFamily: 'var(--sans)',
+          fontFamily: '"DM Sans", sans-serif',
           fontWeight: 500,
           fontSize: 10,
           letterSpacing: '0.3em',
@@ -140,7 +128,6 @@ export default function Hero({ isLoaded }) {
           className="scroll-indicator-line"
           style={{
             width: 1,
-            height: 30,
             background: 'var(--gold)',
           }}
         />

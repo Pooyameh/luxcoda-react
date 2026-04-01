@@ -5,28 +5,36 @@ import AnimatedText from './AnimatedText'
 
 const plans = [
   {
-    name:  'Starter',
+    name: 'Starter',
     price: '$999 + $59/mo',
-    desc:  'A sharp, custom-designed site for businesses ready to look professional online.',
+    pitch: 'Your foundation. Clean, fast, unforgettable.',
+    desc: 'A fully custom-designed website built from scratch — no templates, no page builders. Includes a bespoke homepage, up to 4 inner pages, mobile-first responsive design, basic SEO setup, contact form integration, and deployment on blazing-fast hosting. Perfect for new businesses or anyone ready to replace their DIY site with something professional.',
+    includes: ['Custom design', 'Up to 5 pages', 'Mobile responsive', 'Contact form', 'Basic SEO', 'Fast hosting', 'SSL certificate', '30 days post-launch support'],
   },
   {
-    name:  'Growth',
+    name: 'Growth',
     price: '$1,499 + $129/mo',
-    desc:  'Everything in Starter plus active SEO to get found by the right people.',
+    pitch: 'Everything in Starter, plus the strategy to get found.',
+    desc: 'Your site should be working for you around the clock. Growth includes everything in Starter plus active monthly SEO — keyword research, on-page optimisation, Google Business Profile setup, monthly performance reporting, and local search strategy. We don\'t just build your site; we make sure the right people find it.',
+    includes: ['Everything in Starter', 'Monthly SEO', 'Keyword strategy', 'Google Business Profile', 'Analytics dashboard', 'Performance reports', 'Priority support'],
   },
   {
-    name:  'Pro',
+    name: 'Pro',
     price: '$1,999 + $249/mo',
-    desc:  'Content calendars, lead forms, and ongoing optimisation. Your full digital engine.',
+    pitch: 'Your full digital engine. Design, content, and growth — handled.',
+    desc: 'For businesses that want to go beyond a website. Pro includes everything in Growth plus a monthly content calendar, social media template designs, lead capture forms with automated email follow-ups, blog setup, and quarterly strategy calls. Think of it as having a digital marketing team on retainer — without the overhead.',
+    includes: ['Everything in Growth', 'Content calendar', 'Social media templates', 'Lead capture', 'Email automation', 'Blog setup', 'Quarterly strategy calls'],
   },
   {
-    name:  'Custom',
+    name: 'Custom',
     price: 'By quote',
-    desc:  'Paywalls, bookings, complex integrations. If you can imagine it, we\'ll build it.',
+    pitch: 'If you can imagine it, we\'ll engineer it.',
+    desc: 'For projects that need more. Membership paywalls, appointment booking systems, e-commerce with custom product configurators, interactive 3D experiences, multi-language support, API integrations, complex forms and workflows — whatever your business needs, we\'ll scope it, design it, and build it to spec. Every Custom project starts with a free discovery session.',
+    includes: ['Tailored to your needs', 'Free discovery session', 'Dedicated project manager', 'Custom integrations', 'Ongoing development'],
   },
 ]
 
-function PlanRow({ name, price, desc, index }) {
+function PlanRow({ name, price, pitch, desc, includes, index, onOpenModal }) {
   const rowRef = useRef(null)
 
   useLayoutEffect(() => {
@@ -40,7 +48,7 @@ function PlanRow({ name, price, desc, index }) {
           gsap.to(rowRef.current, {
             opacity: 1, y: 0,
             duration: 0.9, ease: 'power2.out',
-            delay: index * 0.08,
+            delay: index * 0.06,
           })
         },
       })
@@ -52,82 +60,123 @@ function PlanRow({ name, price, desc, index }) {
     <div
       ref={rowRef}
       style={{
-        borderTop: '1px solid rgba(255,255,255,0.08)',
-        padding: 'clamp(2rem, 4vh, 3.5rem) 0',
-        display: 'grid',
-        gridTemplateColumns: '1fr auto',
-        gap: 'clamp(1rem, 3vw, 4rem)',
-        alignItems: 'start',
+        borderBottom: '1px solid rgba(240,236,228,0.06)',
+        padding: 'clamp(3rem, 8vh, 5rem) 0',
       }}
-      className="plan-row"
     >
-      <div>
-        <AnimatedText
-          as="h3"
-          style={{
-            fontFamily: 'var(--display)',
-            fontWeight: 600,
-            fontSize: 'clamp(2rem, 5vw, 4.5rem)',
-            color: 'var(--white)',
-            lineHeight: 1,
-            marginBottom: '0.75rem',
-          }}
-          start="top 90%"
-        >
-          {name}
-        </AnimatedText>
-        <p style={{
-          fontFamily: 'var(--sans)',
-          fontWeight: 300,
-          fontSize: 14,
-          color: 'var(--text-muted)',
-          maxWidth: 400,
-          lineHeight: 1.6,
-          marginTop: '0.5rem',
-        }}>
-          {desc}
-        </p>
-      </div>
+      {/* Plan name */}
+      <AnimatedText
+        as="h3"
+        style={{
+          fontFamily: '"Bodoni Moda", serif',
+          fontWeight: 700,
+          fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+          color: 'var(--white)',
+          lineHeight: 1,
+          marginBottom: '0.6rem',
+        }}
+        start="top 90%"
+      >
+        {name}
+      </AnimatedText>
 
-      <div style={{ textAlign: 'right', paddingTop: '0.5rem' }}>
-        <p style={{
-          fontFamily: 'var(--sans)',
+      {/* Price */}
+      <p style={{
+        fontFamily: '"DM Sans", sans-serif',
+        fontWeight: 500,
+        fontSize: 15,
+        color: 'var(--gold)',
+        letterSpacing: '0.05em',
+        marginBottom: '0.75rem',
+      }}>
+        {price}
+      </p>
+
+      {/* Pitch */}
+      <p style={{
+        fontFamily: '"Bodoni Moda", serif',
+        fontStyle: 'italic',
+        fontWeight: 400,
+        fontSize: 'clamp(1.1rem, 1.5vw, 1.3rem)',
+        color: 'var(--muted-strong)',
+        marginBottom: '1.25rem',
+        lineHeight: 1.4,
+      }}>
+        {pitch}
+      </p>
+
+      {/* Description */}
+      <p style={{
+        fontFamily: '"DM Sans", sans-serif',
+        fontWeight: 300,
+        fontSize: 14,
+        color: 'var(--muted)',
+        maxWidth: 520,
+        lineHeight: 1.8,
+        marginBottom: '1.25rem',
+      }}>
+        {desc}
+      </p>
+
+      {/* Includes — inline list */}
+      <p style={{
+        fontFamily: '"DM Sans", sans-serif',
+        fontWeight: 400,
+        fontSize: 13,
+        color: 'var(--muted)',
+        marginBottom: '1.5rem',
+        lineHeight: 1.6,
+      }}>
+        {includes.join(' · ')}
+      </p>
+
+      {/* CTA */}
+      <button
+        onClick={onOpenModal}
+        style={{
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          fontFamily: '"DM Sans", sans-serif',
           fontWeight: 500,
-          fontSize: 14,
+          fontSize: 11,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
           color: 'var(--gold)',
-          whiteSpace: 'nowrap',
-        }}>
-          {price}
-        </p>
-      </div>
+          cursor: 'pointer',
+          transition: 'opacity 0.2s',
+          textDecoration: 'none',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline' }}
+        onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none' }}
+      >
+        Get Started →
+      </button>
     </div>
   )
 }
 
 export default function Pricing({ onOpenModal }) {
   return (
-    <section id="pricing" style={{ background: 'transparent', padding: '15vh 0' }}>
+    <section id="pricing" style={{ background: 'transparent', padding: 'min(18vh, 160px) 0' }}>
       <div className="content-wrap">
         {plans.map((p, i) => (
-          <PlanRow key={p.name} index={i} {...p} />
+          <PlanRow key={p.name} index={i} onOpenModal={onOpenModal} {...p} />
         ))}
 
-        {/* Bottom border */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }} />
-
-        <div style={{ marginTop: '3rem' }}>
-          <button className="btn-gold" onClick={onOpenModal}>
-            Start with a free mock-up →
-          </button>
-        </div>
+        {/* Closing note */}
+        <p style={{
+          fontFamily: '"DM Sans", sans-serif',
+          fontStyle: 'italic',
+          fontWeight: 300,
+          fontSize: 14,
+          color: 'var(--muted)',
+          marginTop: '8vh',
+          lineHeight: 1.8,
+        }}>
+          Every project starts with a free mock-up. No commitment. No invoice until you&apos;re thrilled.
+        </p>
       </div>
-
-      <style>{`
-        @media (max-width: 480px) {
-          .plan-row { grid-template-columns: 1fr !important; }
-          .plan-row > div:last-child { text-align: left !important; padding-top: 0 !important; }
-        }
-      `}</style>
     </section>
   )
 }

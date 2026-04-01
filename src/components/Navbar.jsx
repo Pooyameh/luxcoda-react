@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const links = [
-  { label: 'How It Works', href: '#process' },
-  { label: 'Pricing',      href: '#pricing'  },
-  { label: 'Contact',      href: '#contact'  },
+  { label: 'Process', href: '#process' },
+  { label: 'Pricing', href: '#pricing'  },
+  { label: 'Contact', href: '#contact'  },
 ]
 
 export default function Navbar({ onOpenModal }) {
-  const [scrolled,    setScrolled]    = useState(false)
-  const [mobileOpen,  setMobileOpen]  = useState(false)
+  const [scrolled,   setScrolled]   = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 100)
@@ -28,13 +28,14 @@ export default function Navbar({ onOpenModal }) {
         position: 'fixed',
         top: 0, left: 0, right: 0,
         zIndex: 50,
-        transition: 'background 0.5s ease, backdrop-filter 0.5s ease',
-        background: scrolled ? 'rgba(10,10,10,0.8)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(10px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(10px)' : 'none',
+        transition: 'background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease',
+        background: scrolled ? 'rgba(5,5,5,0.7)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(16px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(201,169,110,0.08)' : '1px solid transparent',
       }}>
         <div style={{
-          maxWidth: 1200,
+          maxWidth: 1100,
           margin: '0 auto',
           padding: '0 clamp(1.5rem, 5vw, 4rem)',
           height: 64,
@@ -47,50 +48,54 @@ export default function Navbar({ onOpenModal }) {
           <a
             href="#"
             style={{
-              fontFamily: 'var(--display)',
+              fontFamily: '"DM Sans", sans-serif',
               fontWeight: 600,
-              fontSize: 18,
+              fontSize: 12,
               color: 'var(--white)',
               textDecoration: 'none',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.3em',
+              textTransform: 'uppercase',
             }}
           >
             Luxcoda
           </a>
 
           {/* Desktop center links */}
-          <div className="nav-links" style={{ display: 'none', gap: '2.5rem' }}>
-            {links.map(l => (
-              <a
-                key={l.href}
-                href={l.href}
-                style={{
-                  fontFamily: 'var(--sans)',
-                  fontWeight: 400,
-                  fontSize: 11,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: 'rgba(255,255,255,0.5)',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
-              >
-                {l.label}
-              </a>
+          <div className="nav-links" style={{ display: 'none', alignItems: 'center', gap: '0.75rem' }}>
+            {links.map((l, i) => (
+              <span key={l.href} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {i > 0 && (
+                  <span style={{ color: 'var(--gold)', fontSize: 10, lineHeight: 1 }}>·</span>
+                )}
+                <a
+                  href={l.href}
+                  style={{
+                    fontFamily: '"DM Sans", sans-serif',
+                    fontWeight: 400,
+                    fontSize: 11,
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    color: 'var(--muted)',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--white)'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}
+                >
+                  {l.label}
+                </a>
+              </span>
             ))}
           </div>
 
           {/* Right side */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* CTA */}
             <button
               className="btn-gold nav-cta"
               onClick={onOpenModal}
-              style={{ display: 'none', padding: '8px 20px', fontSize: 11 }}
+              style={{ display: 'none', padding: '10px 24px', fontSize: 11 }}
             >
-              Free Mock-Up
+              Free Mock-Up →
             </button>
 
             {/* Hamburger */}
@@ -107,8 +112,8 @@ export default function Navbar({ onOpenModal }) {
             >
               {[0, 1, 2].map(i => (
                 <span key={i} style={{
-                  display: 'block', width: 22, height: 1,
-                  background: 'var(--white)', borderRadius: 1,
+                  display: 'block', width: 20, height: 1,
+                  background: 'var(--white)',
                   transition: 'transform 0.3s ease, opacity 0.3s ease',
                   ...(mobileOpen && i === 0 ? { transform: 'translateY(6px) rotate(45deg)' } : {}),
                   ...(mobileOpen && i === 1 ? { opacity: 0 } : {}),
@@ -130,7 +135,7 @@ export default function Navbar({ onOpenModal }) {
             transition={{ duration: 0.3 }}
             style={{
               position: 'fixed', inset: 0, zIndex: 49,
-              background: 'rgba(10,10,10,0.97)',
+              background: 'rgba(5,5,5,0.97)',
               backdropFilter: 'blur(20px)',
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
@@ -146,17 +151,17 @@ export default function Navbar({ onOpenModal }) {
                 transition={{ delay: 0.05 + i * 0.07, duration: 0.5 }}
                 onClick={() => setMobileOpen(false)}
                 style={{
-                  fontFamily: 'var(--display)',
-                  fontWeight: 300,
+                  fontFamily: '"Bodoni Moda", serif',
+                  fontWeight: 400,
                   fontSize: 'clamp(2rem, 9vw, 3.5rem)',
-                  color: 'rgba(255,255,255,0.7)',
+                  color: 'var(--muted-strong)',
                   textDecoration: 'none',
                   letterSpacing: '-0.02em',
                   transition: 'color 0.2s',
                   padding: '0.3rem 0',
                 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--white)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--muted-strong)'}
               >
                 {l.label}
               </motion.a>
@@ -169,7 +174,7 @@ export default function Navbar({ onOpenModal }) {
               onClick={() => { setMobileOpen(false); onOpenModal() }}
               style={{ marginTop: '2rem' }}
             >
-              Free Mock-Up
+              Free Mock-Up →
             </motion.button>
           </motion.div>
         )}

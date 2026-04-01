@@ -3,12 +3,13 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const words = [
-  { text: 'WebGL',    size: 'clamp(2rem, 5vw, 4.5rem)',    weight: 600, font: 'display', top: '8%',  left: '5%'  },
-  { text: 'React',    size: 'clamp(2rem, 5vw, 4.5rem)',    weight: 600, font: 'display', top: '55%', left: '55%' },
-  { text: 'GSAP',     size: 'clamp(1.2rem, 2.5vw, 2rem)',  weight: 400, font: 'display', top: '20%', left: '62%' },
-  { text: 'Vite',     size: 'clamp(1.2rem, 2.5vw, 2rem)',  weight: 400, font: 'display', top: '72%', left: '12%' },
-  { text: 'Tailwind', size: 'clamp(0.9rem, 1.5vw, 1.3rem)',weight: 300, font: 'sans',    top: '40%', left: '75%' },
-  { text: 'Motion',   size: 'clamp(0.9rem, 1.5vw, 1.3rem)',weight: 300, font: 'sans',    top: '85%', left: '50%' },
+  { text: 'React',    size: 'clamp(2rem, 5vw, 4.5rem)',    weight: 600, font: 'display', top: '55%', left: '55%', color: 'var(--white)'                     },
+  { text: 'Three.js', size: 'clamp(2.5rem, 6vw, 5rem)',    weight: 700, font: 'display', top: '20%', left: '45%', color: 'var(--white)'                     },
+  { text: 'GSAP',     size: 'clamp(1.2rem, 2.5vw, 2rem)',  weight: 400, font: 'display', top: '70%', left: '18%', color: 'var(--muted-strong)'              },
+  { text: 'Vite',     size: 'clamp(1.2rem, 2.5vw, 2rem)',  weight: 400, font: 'display', top: '15%', left: '8%',  color: 'var(--muted-strong)'              },
+  { text: 'Tailwind', size: 'clamp(0.9rem, 1.5vw, 1.3rem)',weight: 300, font: 'sans',    top: '40%', left: '75%', color: 'rgba(240,236,228,0.25)'           },
+  { text: 'WebGL',    size: 'clamp(3rem, 8vw, 7rem)',       weight: 800, font: 'display', top: '38%', left: '18%', color: 'rgba(240,236,228,0.07)'           },
+  { text: 'Motion',   size: 'clamp(0.9rem, 1.5vw, 1.3rem)',weight: 300, font: 'sans',    top: '85%', left: '50%', color: 'rgba(240,236,228,0.25)'           },
 ]
 
 export default function TechStack() {
@@ -55,10 +56,10 @@ export default function TechStack() {
               position: 'absolute',
               top: w.top,
               left: w.left,
-              fontFamily: w.font === 'display' ? 'var(--display)' : 'var(--sans)',
+              fontFamily: w.font === 'display' ? '"Bodoni Moda", serif' : '"DM Sans", sans-serif',
               fontWeight: w.weight,
               fontSize: w.size,
-              color: 'var(--white)',
+              color: w.color,
               opacity: 0,
               userSelect: 'none',
               whiteSpace: 'nowrap',
@@ -70,15 +71,19 @@ export default function TechStack() {
       </div>
 
       <p style={{
-        fontFamily: 'var(--sans)',
+        fontFamily: '"DM Sans", sans-serif',
         fontWeight: 300,
-        fontSize: 'clamp(0.8rem, 1vw, 0.95rem)',
-        color: 'rgba(255,255,255,0.4)',
+        fontSize: 14,
+        color: 'var(--muted)',
         textAlign: 'center',
         marginTop: '2rem',
         padding: '0 2rem',
+        maxWidth: 500,
+        margin: '2rem auto 0',
+        lineHeight: 1.8,
       }}>
-        Built with the tools the internet's best sites are built with.
+        Built with the same tools as the internet&apos;s most awarded studios.
+        Your local business deserves nothing less.
       </p>
     </section>
   )
