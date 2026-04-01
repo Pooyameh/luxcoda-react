@@ -18,7 +18,12 @@ const vertexShader = /* glsl */`
   }
 `
 
-// ─── Fragment shader — flowing liquid aurora ──────────────────────────────────
+// ─── Fragment shader — scroll-reactive liquid aurora ──────────────────────────
+// Zones:
+//   0.00–0.15  Hero        → deep dark, barely moving, single faint glow right
+//   0.15–0.45  Diff+Process → warming currents emerge, speed increases
+//   0.45–0.70  Pricing+CTA  → rich gold peak, most active, radial light center
+//   0.70–1.00  TechStack+Contact → settling back to dark intimate embers
 const fragmentShader = /* glsl */`
   precision highp float;
 
@@ -49,7 +54,7 @@ const fragmentShader = /* glsl */`
     vec4 p=permute4(permute4(permute4(
       i.z+vec4(0.,i1.z,i2.z,1.))
       +i.y+vec4(0.,i1.y,i2.y,1.))
-      +i.x+vec4(0.,i1.x,i2.x,1.));
+      +i.x+vec4(0.,i1.x,i2.x,1.)));
     float n_=.142857142857;
     vec3 ns=n_*D.wyz-D.xzx;
     vec4 j=p-49.*floor(p*ns.z*ns.z);
@@ -85,39 +90,69 @@ const fragmentShader = /* glsl */`
 
   void main(){
     vec2 uv = vUv;
+    float sp = uScrollProgress;
 
-    // Mouse distortion — push noise field away from cursor position
+    // ── Mouse distortion: push noise field radially away from cursor ──────────
     vec2 toMouse = uv - uMouse;
     float md = length(toMouse);
-    vec2 distort = normalize(toMouse + 0.001) * smoothstep(0.6, 0.0, md) * 0.12;
+    vec2 distort = normalize(toMouse + 0.001) * smoothstep(0.65, 0.0, md) * 0.11;
     vec2 duv = uv + distort;
 
-    // Scroll modulates animation speed and gold warmth
-    float speed    = 1.0 - uScrollProgress * 0.45;
-    float goldBoost = uScrollProgress * 0.38;
+    // ── Scroll-zone parameters (all driven by a sin arch over 0..1) ───────────
+    // sinCurve peaks at sp=0.5 (pricing/CTA zone), is 0 at edges
+    float sinCurve = sin(sp * 3.14159265);
 
-    // Two FBM layers — different scales/time offsets for organic depth
-    float n  = fbm(vec3(duv * 2.2,       uTime * speed));
-    float n2 = fbm(vec3(duv * 1.4 + vec2(3.7, 2.1), uTime * speed * 0.6 + 1.5));
+    // Animation speed: slow at hero/contact, fastest at pricing
+    float speedMult  = 1.0 + sinCurve * 0.90;
 
-    // Remap from [-1,1] to [0,1]
-    n  = (n  + 1.0) * 0.5;
+    // Noise spatial scale: coarser at edges, finer detail at peak
+    float noiseScale = mix(1.55, 2.65, sinCurve);
+
+    // Gold intensity: invisible at hero, peaks at pricing, embers at contact
+    float goldIntens = sinCurve * 0.72;
+
+    // Overall scene brightness: dim at edges, full brightness at peak
+    float brightness = 0.25 + sinCurve * 0.48;
+
+    float animTime = uTime * speedMult;
+
+    // ── Two FBM noise layers ──────────────────────────────────────────────────
+    float n  = fbm(vec3(duv * noiseScale,                          animTime));
+    float n2 = fbm(vec3(duv * noiseScale * 0.62 + vec2(3.7, 2.1), animTime * 0.55 + 1.5));
+
+    n  = (n  + 1.0) * 0.5;   // remap [-1,1] → [0,1]
     n2 = (n2 + 1.0) * 0.5;
 
-    // Color palette
+    // ── Color palette ─────────────────────────────────────────────────────────
     vec3 black     = vec3(0.020, 0.020, 0.020);
     vec3 charcoal  = vec3(0.042, 0.038, 0.033);
     vec3 darkBrown = vec3(0.085, 0.058, 0.024);
-    vec3 warmGold  = vec3(0.185, 0.125, 0.042);
+    vec3 warmGold  = vec3(0.195, 0.130, 0.044);
+    vec3 deepGold  = vec3(0.255, 0.185, 0.062);
 
-    // Composite layers
+    // ── Composite ─────────────────────────────────────────────────────────────
     vec3 col = mix(black, charcoal, smoothstep(0.20, 0.65, n));
-    col = mix(col, darkBrown, smoothstep(0.45, 0.78, n2) * 0.75);
-    col = mix(col, warmGold,  smoothstep(0.62, 0.92, n * n2) * (0.38 + goldBoost));
+    col = mix(col, darkBrown, smoothstep(0.45, 0.78, n2) * brightness);
+    col = mix(col, warmGold,  smoothstep(0.62, 0.92, n * n2) * goldIntens);
 
-    // Vignette
-    float vig = 1.0 - smoothstep(0.3, 0.95, length(uv - 0.5) * 1.45);
+    // Deep gold accent visible only in the pricing/CTA peak zone (0.35–0.70)
+    float peakZone = smoothstep(0.30, 0.52, sp) * smoothstep(0.72, 0.52, sp);
+    col = mix(col, deepGold, smoothstep(0.55, 0.85, n) * peakZone * 0.28);
+
+    // ── Directional warm light — slides from right→left as page scrolls ───────
+    vec2 lightPos   = mix(vec2(0.75, 0.52), vec2(0.28, 0.35), sp);
+    float lightDist = length(uv - lightPos);
+    float lIntens   = brightness * 0.14;
+    float light     = smoothstep(0.88, 0.0, lightDist) * lIntens;
+    col += vec3(light * 0.82, light * 0.60, light * 0.22);  // warm tint
+
+    // ── Vignette ──────────────────────────────────────────────────────────────
+    float vig = 1.0 - smoothstep(0.30, 0.95, length(uv - 0.5) * 1.45);
     col *= mix(0.55, 1.0, vig);
+
+    // ── Edge darkening: first 12% and last 15% of scroll are darkest ──────────
+    float edgeDark = smoothstep(0.0, 0.13, sp) * smoothstep(1.0, 0.85, sp);
+    col *= mix(0.32, 1.0, edgeDark);
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -139,15 +174,15 @@ function FluidBackground({ scrollProgress, mouseRef }) {
     if (!matRef.current) return
     uniforms.uTime.value = clock.getElapsedTime() * 0.08
 
-    // Convert mouseRef coords (-1..1) to UV space (0..1)
+    // Convert mouseRef coords (-1..1) → UV space (0..1)
     uniforms.uMouse.value.set(
       mouseRef.current.x * 0.5 + 0.5,
       mouseRef.current.y * 0.5 + 0.5,
     )
 
-    // Smoothly lerp scroll progress
+    // Lerped scroll — smooth zone transitions, no snapping
     uniforms.uScrollProgress.value +=
-      (scrollRef.current - uniforms.uScrollProgress.value) * 0.05
+      (scrollRef.current - uniforms.uScrollProgress.value) * 0.04
   })
 
   return (
@@ -164,10 +199,15 @@ function FluidBackground({ scrollProgress, mouseRef }) {
   )
 }
 
-// ─── Gold particle field ──────────────────────────────────────────────────────
-function Particles() {
-  const geoRef  = useRef()
-  const count   = 150
+// ─── Gold particle field — reacts to scroll zone ──────────────────────────────
+function Particles({ scrollProgress }) {
+  const geoRef    = useRef()
+  const matRef    = useRef()
+  const scrollRef = useRef(scrollProgress)
+  const lerpedRef = useRef(0)      // internal lerped value avoids re-renders
+  useEffect(() => { scrollRef.current = scrollProgress }, [scrollProgress])
+
+  const count = 150
 
   const { positions, offsets } = useMemo(() => {
     const pos  = new Float32Array(count * 3)
@@ -184,14 +224,34 @@ function Particles() {
   const basePos = useMemo(() => positions.slice(), [positions])
 
   useFrame(({ clock }) => {
-    if (!geoRef.current) return
-    const t   = clock.getElapsedTime()
-    const arr = geoRef.current.attributes.position.array
-    for (let i = 0; i < count; i++) {
-      arr[i * 3]     = basePos[i * 3]     + Math.cos(t * 0.15 + offsets[i]) * 0.18
-      arr[i * 3 + 1] = basePos[i * 3 + 1] + Math.sin(t * 0.20 + offsets[i]) * 0.22
+    const t = clock.getElapsedTime()
+
+    // Lerp scroll internally for ultra-smooth material changes
+    lerpedRef.current += (scrollRef.current - lerpedRef.current) * 0.04
+    const sp       = lerpedRef.current
+    const sinCurve = Math.sin(sp * Math.PI)  // 0 at edges, 1 at middle
+
+    // Drift speed: faster in the warm middle zone
+    const speed = 0.15 + sinCurve * 0.12
+
+    // Position drift
+    if (geoRef.current) {
+      const arr = geoRef.current.attributes.position.array
+      for (let i = 0; i < count; i++) {
+        arr[i * 3]     = basePos[i * 3]     + Math.cos(t * speed + offsets[i]) * 0.20
+        arr[i * 3 + 1] = basePos[i * 3 + 1] + Math.sin(t * speed + offsets[i]) * 0.26
+                         + sinCurve * t * 0.008  // gentle upward drift in middle zone
+      }
+      geoRef.current.attributes.position.needsUpdate = true
     }
-    geoRef.current.attributes.position.needsUpdate = true
+
+    // Material: opacity + size react to scroll zone
+    if (matRef.current) {
+      const targetOpacity = 0.04 + sinCurve * 0.17   // 0.04 (edges) → 0.21 (peak)
+      const targetSize    = 0.012 + sinCurve * 0.018  // 0.012 (edges) → 0.030 (peak)
+      matRef.current.opacity += (targetOpacity - matRef.current.opacity) * 0.03
+      matRef.current.size    += (targetSize    - matRef.current.size)    * 0.03
+    }
   })
 
   return (
@@ -200,11 +260,12 @@ function Particles() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
+        ref={matRef}
         color="#c9a96e"
-        size={0.025}
+        size={0.012}
         sizeAttenuation
         transparent
-        opacity={0.15}
+        opacity={0.04}
         depthWrite={false}
       />
     </points>
@@ -216,10 +277,10 @@ function Scene({ scrollProgress, mouseRef }) {
   return (
     <>
       <FluidBackground scrollProgress={scrollProgress} mouseRef={mouseRef} />
-      <Particles />
+      <Particles scrollProgress={scrollProgress} />
       <EffectComposer>
-        <Bloom intensity={0.15} luminanceThreshold={0.4} luminanceSmoothing={0.95} />
-        <Vignette darkness={0.5} offset={0.3} />
+        <Bloom intensity={0.18} luminanceThreshold={0.38} luminanceSmoothing={0.92} />
+        <Vignette darkness={0.48} offset={0.32} />
       </EffectComposer>
     </>
   )

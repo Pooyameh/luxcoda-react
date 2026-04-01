@@ -21,6 +21,16 @@ import MockupModal     from './components/MockupModal'
 
 gsap.registerPlugin(ScrollTrigger)
 
+function SectionDivider() {
+  return (
+    <div style={{
+      width: '100%',
+      height: '1px',
+      background: 'linear-gradient(90deg, transparent 0%, rgba(201,169,110,0.15) 30%, rgba(201,169,110,0.15) 70%, transparent 100%)',
+    }} />
+  )
+}
+
 export default function App() {
   const [loading,       setLoading]       = useState(true)
   const [isLoaded,      setIsLoaded]      = useState(false)
@@ -100,11 +110,15 @@ export default function App() {
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar onOpenModal={() => setModalOpen(true)} />
         <Hero isLoaded={isLoaded} onOpenModal={() => setModalOpen(true)} />
+        <SectionDivider />
         <Difference />
         <Process />
-        <TechStack />
+        <SectionDivider />
         <Pricing onOpenModal={() => setModalOpen(true)} />
         <Cta onOpenModal={() => setModalOpen(true)} />
+        <SectionDivider />
+        <TechStack />
+        <SectionDivider />
         <Contact />
         <Footer />
       </div>
