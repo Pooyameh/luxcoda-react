@@ -18,7 +18,6 @@ import Cta             from './components/Cta'
 import Contact         from './components/Contact'
 import Footer          from './components/Footer'
 import MockupModal     from './components/MockupModal'
-import InteractiveMorph from './components/InteractiveMorph'
 import { useScrollStore } from './useScrollEvents'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -154,17 +153,6 @@ export default function App() {
 
         <div data-section="difference">
           <Difference />
-        </div>
-
-        {/* Interactive 3D morph — interlude between Difference and Process */}
-        <div style={{
-          padding: '6vh 0 8vh',
-          display: 'flex',
-          justifyContent: 'center',
-          position: 'relative',
-          zIndex: 1,
-        }}>
-          <InteractiveMorph />
         </div>
 
         <div data-section="process">
