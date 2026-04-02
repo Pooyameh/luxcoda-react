@@ -1,252 +1,192 @@
-import { useInView } from '../hooks/useInView';
-import LaptopMockup from './devices/LaptopMockup';
+import { useEffect, useRef } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { gsap } from 'gsap';
+import Laptop3D from './devices/Laptop3D';
 
-function ElectricianMiniSite() {
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+function HeroCanvas() {
   return (
-    <div style={{
-      width: '1200px',
-      transform: 'scale(0.32)',
-      transformOrigin: 'top left',
-      height: '700px',
-      overflow: 'hidden',
-      fontFamily: 'system-ui, sans-serif',
-    }}>
-      {/* Nav */}
-      <div style={{
-        background: '#1e3a5f',
-        padding: '0 40px',
-        height: 64,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <span style={{ color: '#fff', fontWeight: 700, fontSize: 22 }}>PowerUp Electrical</span>
-        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>Services</span>
-          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>About</span>
-          <button style={{
-            background: '#f59e0b', color: '#1a1816', border: 'none',
-            borderRadius: 6, padding: '10px 24px', fontWeight: 700, fontSize: 14, cursor: 'pointer',
-          }}>
-            Call Now
-          </button>
-        </div>
-      </div>
-      {/* Hero */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 100%)',
-        padding: '80px 40px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 20,
-      }}>
-        <div style={{
-          background: 'rgba(245,158,11,0.15)',
-          border: '1px solid rgba(245,158,11,0.3)',
-          borderRadius: 4,
-          padding: '6px 16px',
-          width: 'fit-content',
-          color: '#f59e0b', fontSize: 13, fontWeight: 600,
-        }}>
-          Licensed & Insured · Brisbane
-        </div>
-        <h1 style={{ color: '#fff', fontSize: 56, fontWeight: 800, lineHeight: 1.1, margin: 0 }}>
-          Brisbane's Trusted<br />Electricians
-        </h1>
-        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 18, margin: 0, maxWidth: 480 }}>
-          Residential, commercial, emergency — we handle it all. Licensed electricians available 7 days.
-        </p>
-        <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
-          <button style={{
-            background: '#f59e0b', color: '#1a1816', border: 'none',
-            borderRadius: 8, padding: '16px 36px', fontWeight: 700, fontSize: 16, cursor: 'pointer',
-          }}>
-            Call for a Free Quote
-          </button>
-          <button style={{
-            background: 'transparent', color: '#fff',
-            border: '2px solid rgba(255,255,255,0.3)',
-            borderRadius: 8, padding: '16px 36px', fontWeight: 600, fontSize: 16, cursor: 'pointer',
-          }}>
-            Our Services
-          </button>
-        </div>
-      </div>
-      {/* Service cards */}
-      <div style={{
-        background: '#f8f9fa',
-        padding: '40px',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr 1fr',
-        gap: 20,
-      }}>
-        {[
-          { title: 'Residential', desc: 'New builds, rewires, fault finding' },
-          { title: 'Commercial', desc: 'Offices, retail, warehouses' },
-          { title: 'Emergency', desc: '24/7 callouts, same-day service' },
-        ].map(card => (
-          <div key={card.title} style={{
-            background: '#fff',
-            borderRadius: 10,
-            padding: '24px',
-            border: '1px solid #e5e7eb',
-          }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 8,
-              background: 'rgba(30,58,95,0.08)',
-              marginBottom: 12,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e3a5f" strokeWidth="2">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-            </div>
-            <h3 style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 700, color: '#1a1816' }}>{card.title}</h3>
-            <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>{card.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Canvas
+      camera={{ position: [0, 0.5, 5.5], fov: 38 }}
+      gl={{ antialias: true, alpha: true }}
+      dpr={[1, 2]}
+      style={{ background: 'transparent' }}
+    >
+      <ambientLight intensity={0.2} color="#111" />
+      <pointLight position={[3, 3, 3]} intensity={1.2} color="#c8d8f0" />
+      <pointLight position={[-3, -1, 2]} intensity={0.4} color="#c45a2d" />
+      <Environment preset="city" />
+
+      <Laptop3D
+        screenColor="#2d5fa8"
+        rotation={[0.28, -0.25, 0]}
+        position={[0, -0.3, 0]}
+        scale={0.8}
+        mouseTrack={true}
+        mouseIntensity={0.1}
+      />
+
+      <EffectComposer>
+        <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} intensity={0.5} />
+      </EffectComposer>
+    </Canvas>
   );
 }
 
-function scrollTo(id) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
-}
-
 export default function Hero() {
-  const [ref, isVisible] = useInView({ threshold: 0.05 });
+  const tagRef = useRef(null);
+  const h1Ref = useRef(null);
+  const subRef = useRef(null);
+  const ctaRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const els = [tagRef.current, h1Ref.current, subRef.current, ctaRef.current, canvasRef.current];
+    gsap.set(els, { opacity: 0, y: 24 });
+
+    const tl = gsap.timeline({ delay: 0.1 });
+    tl.to(tagRef.current,    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+      .to(h1Ref.current,     { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.55')
+      .to(subRef.current,    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.55')
+      .to(ctaRef.current,    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.5')
+      .to(canvasRef.current, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, '-=0.45');
+
+    return () => tl.kill();
+  }, []);
 
   return (
     <section style={{
-      background: 'var(--bg-primary)',
-      paddingTop: 64,
-      minHeight: 'calc(100vh - 0px)',
+      minHeight: '100svh',
       display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: 64,
+      padding: `clamp(100px, 15vh, 160px) var(--content-padding) 60px`,
+      textAlign: 'center',
+      position: 'relative',
     }}>
-      <div
-        ref={ref}
-        className="content-wrap"
-        style={{
-          width: '100%',
-          padding: 'var(--section-padding) var(--content-padding)',
-        }}
-      >
-        <div className="hero-inner" style={{
-          display: 'grid',
-          gridTemplateColumns: '55fr 45fr',
-          gap: 'clamp(3rem, 6vw, 6rem)',
-          alignItems: 'center',
-        }}>
-          {/* Left: copy */}
-          <div>
-            <h1 style={{
-              fontFamily: 'Sora, sans-serif',
-              fontWeight: 700,
-              fontSize: 'var(--h1)',
-              color: 'var(--text-primary)',
-              lineHeight: 1.1,
-              letterSpacing: '-0.02em',
-              margin: 0,
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 0.7s ease, transform 0.7s ease',
-            }}>
-              Your work speaks for itself.
-              <br />
-              Your website should too.
-            </h1>
+      {/* Tag */}
+      <p ref={tagRef} style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontWeight: 500,
+        fontSize: 'var(--small-size)',
+        color: 'var(--text-muted)',
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        marginBottom: '1.5rem',
+      }}>
+        Web Design — Est. 2026 · Brisbane
+      </p>
 
-            <p style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontWeight: 400,
-              fontSize: 'var(--body)',
-              color: 'var(--text-body)',
-              lineHeight: 1.6,
-              maxWidth: 480,
-              marginTop: '1.25rem',
-              marginBottom: 0,
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 0.7s ease 0.15s, transform 0.7s ease 0.15s',
-            }}>
-              We build websites for Brisbane tradies and local businesses that actually get you more work.
-            </p>
+      {/* Headline */}
+      <h1 ref={h1Ref} style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontWeight: 600,
+        fontSize: 'var(--h1-size)',
+        color: 'var(--text-primary)',
+        letterSpacing: 'var(--h1-spacing)',
+        lineHeight: 'var(--h1-line-height)',
+        maxWidth: 900,
+        margin: '0 auto',
+      }}>
+        Your work speaks for itself.
+        <br />
+        Your website should too.
+      </h1>
 
-            <div style={{
-              marginTop: '2rem',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s',
-            }}>
-              <button
-                onClick={() => scrollTo('contact')}
-                style={{
-                  background: 'var(--accent)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '16px 32px',
-                  fontFamily: 'Sora, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  cursor: 'pointer',
-                  transition: 'background 0.25s ease, transform 0.25s ease',
-                  display: 'inline-block',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'var(--accent-hover)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'var(--accent)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                Let's Talk
-              </button>
-            </div>
-          </div>
+      {/* Subtext */}
+      <p ref={subRef} style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontWeight: 400,
+        fontSize: 'var(--body-size)',
+        color: 'var(--text-secondary)',
+        lineHeight: 1.65,
+        maxWidth: 520,
+        margin: '1.75rem auto 0',
+        letterSpacing: '-0.01em',
+      }}>
+        We build websites for Brisbane tradies and local businesses that actually get you more work.
+      </p>
 
-          {/* Right: laptop mockup */}
-          <div
-            className="hero-mockup"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible
-                ? 'perspective(1000px) rotateY(-5deg) rotateX(2deg)'
-                : 'perspective(1000px) rotateY(-5deg) rotateX(2deg) translateY(24px)',
-              transition: 'opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s',
-              animation: isVisible ? 'heroFloat 3s ease-in-out infinite alternate' : 'none',
-            }}
-          >
-            <LaptopMockup>
-              <ElectricianMiniSite />
-            </LaptopMockup>
-          </div>
-        </div>
+      {/* CTAs */}
+      <div ref={ctaRef} style={{
+        display: 'flex',
+        gap: '0.75rem',
+        marginTop: '2.25rem',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+      }}>
+        <button
+          onClick={() => scrollTo('contact')}
+          style={{
+            background: 'var(--accent)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 100,
+            padding: '14px 36px',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'background 0.2s ease, box-shadow 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'var(--accent-hover)';
+            e.currentTarget.style.boxShadow = '0 0 30px var(--accent-glow)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'var(--accent)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+        >
+          Let's Talk
+        </button>
+        <button
+          onClick={() => scrollTo('work')}
+          style={{
+            background: 'transparent',
+            color: 'var(--text-secondary)',
+            border: '1px solid var(--border)',
+            borderRadius: 100,
+            padding: '14px 36px',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+            e.currentTarget.style.borderColor = 'var(--border-hover)';
+            e.currentTarget.style.color = 'var(--text-primary)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.borderColor = 'var(--border)';
+            e.currentTarget.style.color = 'var(--text-secondary)';
+          }}
+        >
+          See Our Work
+        </button>
       </div>
 
-      <style>{`
-        @keyframes heroFloat {
-          from { transform: perspective(1000px) rotateY(-5deg) rotateX(2deg) translateY(0px); }
-          to   { transform: perspective(1000px) rotateY(-5deg) rotateX(2deg) translateY(-8px); }
-        }
-        @media (max-width: 1023px) {
-          .hero-inner { grid-template-columns: 1fr !important; }
-          .hero-mockup {
-            transform: none !important;
-            animation: none !important;
-            max-width: 560px;
-            margin: 0 auto;
-          }
-        }
-        @media (max-width: 1023px) {
-          .hero-cta-btn { width: 100%; display: block; text-align: center; }
-        }
-      `}</style>
+      {/* 3D Laptop canvas */}
+      <div ref={canvasRef} style={{
+        width: '100%',
+        maxWidth: 700,
+        height: 'clamp(320px, 45vw, 520px)',
+        margin: '3rem auto 0',
+        borderRadius: 16,
+        overflow: 'hidden',
+      }}>
+        <HeroCanvas />
+      </div>
     </section>
   );
 }

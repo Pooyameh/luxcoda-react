@@ -1,10 +1,12 @@
 {
   "permissions": {
-    "additionalDirectories": [
-      "c:\\Users\\pooya\\Documents\\Luxcoda\\luxcoda-react\\src\\components"
-    ],
     "allow": [
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npm run:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\pooya\\Documents\\Luxcoda\\luxcoda-react\\src\\components",
+      "C:\\Users\\pooya\\Documents\\Luxcoda\\luxcoda-react\\src\\components"
     ]
   }
 }

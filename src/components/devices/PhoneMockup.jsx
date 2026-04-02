@@ -2,89 +2,72 @@ export default function PhoneMockup({ children, style = {} }) {
   return (
     <div style={{
       display: 'inline-block',
-      background: '#1a1816',
-      borderRadius: '2.5rem',
-      padding: '12px 5px 10px 5px',
-      boxShadow: 'var(--shadow-lg)',
+      background: '#1a1a1a',
+      borderRadius: '2.25rem',
+      padding: '12px 5px 10px',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)',
       width: '100%',
-      maxWidth: '280px',
+      maxWidth: 280,
       ...style,
     }}>
       {/* Dynamic island */}
       <div style={{
-        width: '35%',
-        height: '14px',
-        background: '#1a1816',
-        borderRadius: '999px',
-        margin: '0 auto 4px auto',
-        position: 'relative',
-        zIndex: 2,
+        width: '34%',
+        height: 14,
+        background: '#0a0a0a',
+        borderRadius: 999,
+        margin: '0 auto 4px',
       }} />
-
       {/* Screen */}
       <div style={{
-        background: '#ffffff',
+        background: '#fff',
         borderRadius: '1.75rem',
         overflow: 'hidden',
         position: 'relative',
-        aspectRatio: '9 / 19.5',
+        aspectRatio: '9/19.5',
       }}>
         {/* Status bar */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '6px 14px 4px',
-          fontSize: '9px',
-          fontFamily: 'Sora, sans-serif',
-          fontWeight: 600,
-          color: '#1a1816',
+          padding: '6px 14px 2px',
           position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
+          top: 0, left: 0, right: 0,
           zIndex: 10,
+          fontSize: 9,
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          fontWeight: 600,
+          color: '#111',
         }}>
           <span>9:41</span>
-          <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-            {/* Signal */}
-            <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-              <rect x="0" y="5" width="2" height="3" rx="0.5" fill="#1a1816"/>
-              <rect x="3" y="3" width="2" height="5" rx="0.5" fill="#1a1816"/>
-              <rect x="6" y="1" width="2" height="7" rx="0.5" fill="#1a1816"/>
-              <rect x="9" y="0" width="2" height="8" rx="0.5" fill="#1a1816"/>
-            </svg>
-            {/* Wifi */}
-            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-              <path d="M5 6.5a1 1 0 110 2 1 1 0 010-2z" fill="#1a1816"/>
-              <path d="M2.5 4.5C3.2 3.8 4.05 3.5 5 3.5s1.8.3 2.5 1" stroke="#1a1816" strokeWidth="1" strokeLinecap="round"/>
-              <path d="M.5 2.5C1.9 1.1 3.35.5 5 .5s3.1.6 4.5 2" stroke="#1a1816" strokeWidth="1" strokeLinecap="round"/>
-            </svg>
-            {/* Battery */}
-            <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
-              <rect x="0.5" y="0.5" width="11" height="7" rx="1.5" stroke="#1a1816"/>
-              <rect x="1.5" y="1.5" width="8" height="5" rx="1" fill="#1a1816"/>
-              <path d="M12.5 3v2" stroke="#1a1816" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </div>
+          <svg width="40" height="10" viewBox="0 0 40 10" fill="#111">
+            <rect x="0" y="5" width="3" height="5" rx="0.5"/>
+            <rect x="5" y="3" width="3" height="7" rx="0.5"/>
+            <rect x="10" y="1" width="3" height="9" rx="0.5"/>
+            <rect x="18" y="2" width="6" height="6" rx="1" fill="none" stroke="#111" strokeWidth="1"/>
+            <rect x="24" y="4" width="2" height="2" rx="0.5"/>
+            <rect x="19" y="3" width="4" height="4" rx="0.5"/>
+            <rect x="30" y="1" width="8" height="7" rx="1.5" fill="none" stroke="#111" strokeWidth="1"/>
+            <rect x="31.5" y="2.5" width="5" height="4" rx="0.5"/>
+            <rect x="38.5" y="3" width="1.5" height="3" rx="0.5"/>
+          </svg>
         </div>
-
-        {/* Screen content */}
-        <div style={{ paddingTop: '22px', height: '100%', overflow: 'hidden' }}>
+        {/* Content */}
+        <div style={{ paddingTop: 20, height: '100%', overflow: 'hidden' }}>
           {children}
         </div>
-
         {/* Home indicator */}
         <div style={{
           position: 'absolute',
-          bottom: '6px',
+          bottom: 6,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '40px',
-          height: '4px',
-          background: '#1a1816',
-          borderRadius: '2px',
-          opacity: 0.3,
+          width: 40,
+          height: 4,
+          background: '#1a1a1a',
+          borderRadius: 2,
+          opacity: 0.25,
         }} />
       </div>
     </div>

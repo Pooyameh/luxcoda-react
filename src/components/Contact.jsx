@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useInView } from '../hooks/useInView';
+import { useState, useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 function PhoneIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.16 6.16l1.27-.45a2 2 0 012.11.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
     </svg>
   );
@@ -11,226 +12,188 @@ function PhoneIcon() {
 
 function MailIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
       <polyline points="22,6 12,13 2,6"/>
     </svg>
   );
 }
 
-function ContactCard({ icon, label, value, href, sublabel, isVisible, delay }) {
-  return (
-    <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border)',
-      borderRadius: 12,
-      padding: 32,
-      opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-      transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
-    }}>
-      <div style={{ marginBottom: 12 }}>{icon}</div>
-      <div style={{
-        fontFamily: 'Sora, sans-serif',
-        fontWeight: 600,
-        fontSize: 'var(--small)',
-        color: 'var(--text-muted)',
-        marginBottom: 6,
-      }}>
-        {label}
-      </div>
-      <a
-        href={href}
-        style={{
-          display: 'block',
-          fontFamily: 'Sora, sans-serif',
-          fontWeight: 700,
-          fontSize: 'var(--h3)',
-          color: 'var(--text-primary)',
-          textDecoration: 'none',
-          transition: 'color 0.25s ease',
-          lineHeight: 1.2,
-          wordBreak: 'break-all',
-        }}
-        onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
-        onMouseLeave={e => e.currentTarget.style.color = 'var(--text-primary)'}
-      >
-        {value}
-      </a>
-      <div style={{
-        fontFamily: 'DM Sans, sans-serif',
-        fontSize: 'var(--small)',
-        color: 'var(--text-muted)',
-        marginTop: 8,
-      }}>
-        {sublabel}
-      </div>
-    </div>
-  );
-}
-
 export default function Contact() {
-  const [ref, isVisible] = useInView({ threshold: 0.05 });
-  const [formRef, formVisible] = useInView({ threshold: 0.05 });
+  const sectionRef = useRef(null);
   const [form, setForm] = useState({ name: '', email: '', message: '' });
 
-  const inputStyle = (focused) => ({
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(sectionRef.current.querySelectorAll('.contact-anim'), {
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true },
+        opacity: 0, y: 28, duration: 0.8, ease: 'power3.out', stagger: 0.1,
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  const inputStyle = {
     width: '100%',
-    border: `1px solid ${focused ? 'var(--accent)' : 'var(--border)'}`,
+    background: 'var(--bg-elevated)',
+    border: '1px solid var(--border)',
     borderRadius: 8,
     padding: '14px 16px',
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
     fontSize: '1rem',
     color: 'var(--text-primary)',
-    background: '#fff',
     outline: 'none',
-    boxShadow: focused ? '0 0 0 3px var(--accent-light)' : 'none',
-    transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
     boxSizing: 'border-box',
-  });
+  };
+
+  const handleFocus = (e) => {
+    e.target.style.borderColor = 'var(--accent)';
+    e.target.style.boxShadow = '0 0 0 3px var(--accent-subtle)';
+  };
+  const handleBlur = (e) => {
+    e.target.style.borderColor = 'var(--border)';
+    e.target.style.boxShadow = 'none';
+  };
 
   return (
-    <section
-      id="contact"
-      style={{
-        background: 'var(--bg-primary)',
-        padding: 'var(--section-padding) var(--content-padding)',
-      }}
-    >
-      <div className="content-wrap">
+    <section id="contact" ref={sectionRef} style={{
+      background: 'var(--bg-primary)',
+      padding: 'var(--section-padding) var(--content-padding)',
+    }}>
+      <div className="content-wrap" style={{ maxWidth: 800 }}>
         {/* Heading */}
-        <div ref={ref}>
+        <div className="contact-anim" style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 7vw, 5rem)' }}>
           <h2 style={{
-            fontFamily: 'Sora, sans-serif',
-            fontWeight: 700,
-            fontSize: 'var(--h2)',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: 'var(--h2-size)',
             color: 'var(--text-primary)',
-            marginBottom: '1rem',
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.6s ease, transform 0.6s ease',
+            letterSpacing: 'var(--h2-spacing)',
+            lineHeight: 'var(--h2-line-height)',
+            marginBottom: '0.75rem',
           }}>
             Let's talk.
           </h2>
           <p style={{
-            fontFamily: 'DM Sans, sans-serif',
-            fontSize: 'var(--body)',
-            color: 'var(--text-body)',
-            maxWidth: 500,
-            lineHeight: 1.6,
-            marginBottom: 'clamp(2rem, 5vw, 3.5rem)',
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontSize: 'var(--body-size)',
+            color: 'var(--text-secondary)',
+            maxWidth: 480,
+            margin: '0 auto',
+            lineHeight: 1.65,
           }}>
             Give us a call or shoot us an email. No pressure, no jargon — just a straight conversation about what you need.
           </p>
         </div>
 
         {/* Contact cards */}
-        <div className="contact-cards" style={{
+        <div className="contact-cards contact-anim" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          gap: 'clamp(1rem, 2vw, 1.5rem)',
-          marginBottom: 'clamp(2rem, 5vw, 3.5rem)',
+          gap: '1rem',
+          marginBottom: '1.5rem',
         }}>
-          <ContactCard
-            icon={<PhoneIcon />}
-            label="Call us"
-            value="0414 758 891"
-            href="tel:0414758891"
-            sublabel="Mon–Fri, 8am–6pm"
-            isVisible={isVisible}
-            delay={0.15}
-          />
-          <ContactCard
-            icon={<MailIcon />}
-            label="Email us"
-            value="enquiries@luxcoda.com"
-            href="mailto:enquiries@luxcoda.com"
-            sublabel="We'll reply within 24 hours"
-            isVisible={isVisible}
-            delay={0.25}
-          />
+          {/* Phone */}
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: 16,
+            padding: 32,
+          }}>
+            <div style={{ marginBottom: 16 }}><PhoneIcon /></div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 'var(--small-size)', color: 'var(--text-muted)', marginBottom: 8 }}>Call us</div>
+            <a href="tel:0414758891" style={{
+              display: 'block',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 700,
+              fontSize: 'var(--h3-size)',
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+              marginBottom: 10,
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-primary)'}
+            >
+              0414 758 891
+            </a>
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'var(--small-size)', color: 'var(--text-muted)' }}>Mon–Fri, 8am–6pm</div>
+          </div>
+
+          {/* Email */}
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: 16,
+            padding: 32,
+          }}>
+            <div style={{ marginBottom: 16 }}><MailIcon /></div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 'var(--small-size)', color: 'var(--text-muted)', marginBottom: 8 }}>Email us</div>
+            <a href="mailto:enquiries@luxcoda.com" style={{
+              display: 'block',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 600,
+              fontSize: 'clamp(0.9rem, 1.5vw, 1.2rem)',
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+              marginBottom: 10,
+              wordBreak: 'break-all',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-primary)'}
+            >
+              enquiries@luxcoda.com
+            </a>
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'var(--small-size)', color: 'var(--text-muted)' }}>We reply within 24 hours</div>
+          </div>
         </div>
 
         {/* Form */}
-        <div
-          ref={formRef}
-          style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 12,
-            padding: 'clamp(1.5rem, 4vw, 3rem)',
-            opacity: formVisible ? 1 : 0,
-            transform: formVisible ? 'translateY(0)' : 'translateY(24px)',
-            transition: 'opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s',
-          }}
-        >
-          <p style={{
-            fontFamily: 'Sora, sans-serif',
-            fontWeight: 600,
-            fontSize: '1rem',
-            color: 'var(--text-primary)',
-            marginBottom: '1.5rem',
-          }}>
-            Or send us a message:
-          </p>
-
-          <form
-            onSubmit={e => e.preventDefault()}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-          >
+        <div className="contact-anim" style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: 16,
+          padding: 'clamp(24px, 5vw, 40px)',
+        }}>
+          <form onSubmit={e => e.preventDefault()} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {[
+              { key: 'name', label: 'Name', type: 'text', placeholder: 'Your name' },
+              { key: 'email', label: 'Email', type: 'email', placeholder: 'your@email.com' },
+            ].map(field => (
+              <div key={field.key}>
+                <label style={{
+                  display: 'block',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 500,
+                  fontSize: 'var(--small-size)',
+                  color: 'var(--text-muted)',
+                  marginBottom: 8,
+                }}>
+                  {field.label}
+                </label>
+                <input
+                  type={field.type}
+                  placeholder={field.placeholder}
+                  value={form[field.key]}
+                  onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
+                  style={{ ...inputStyle, '::placeholder': { color: 'var(--text-muted)' } }}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+              </div>
+            ))}
             <div>
               <label style={{
                 display: 'block',
-                fontFamily: 'DM Sans, sans-serif',
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 500,
-                fontSize: 'var(--small)',
+                fontSize: 'var(--small-size)',
                 color: 'var(--text-muted)',
-                marginBottom: 6,
-              }}>
-                Name
-              </label>
-              <input
-                type="text"
-                placeholder="Your name"
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                style={inputStyle(false)}
-                onFocus={e => Object.assign(e.target.style, { borderColor: 'var(--accent)', boxShadow: '0 0 0 3px var(--accent-light)' })}
-                onBlur={e => Object.assign(e.target.style, { borderColor: 'var(--border)', boxShadow: 'none' })}
-              />
-            </div>
-            <div>
-              <label style={{
-                display: 'block',
-                fontFamily: 'DM Sans, sans-serif',
-                fontWeight: 500,
-                fontSize: 'var(--small)',
-                color: 'var(--text-muted)',
-                marginBottom: 6,
-              }}>
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="your@email.com"
-                value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                style={inputStyle(false)}
-                onFocus={e => Object.assign(e.target.style, { borderColor: 'var(--accent)', boxShadow: '0 0 0 3px var(--accent-light)' })}
-                onBlur={e => Object.assign(e.target.style, { borderColor: 'var(--border)', boxShadow: 'none' })}
-              />
-            </div>
-            <div>
-              <label style={{
-                display: 'block',
-                fontFamily: 'DM Sans, sans-serif',
-                fontWeight: 500,
-                fontSize: 'var(--small)',
-                color: 'var(--text-muted)',
-                marginBottom: 6,
+                marginBottom: 8,
               }}>
                 Message
               </label>
@@ -239,35 +202,34 @@ export default function Contact() {
                 placeholder="Tell us about your business and what you're after..."
                 value={form.message}
                 onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                style={{ ...inputStyle(false), resize: 'vertical', minHeight: 120 }}
-                onFocus={e => Object.assign(e.target.style, { borderColor: 'var(--accent)', boxShadow: '0 0 0 3px var(--accent-light)' })}
-                onBlur={e => Object.assign(e.target.style, { borderColor: 'var(--border)', boxShadow: 'none' })}
+                style={{ ...inputStyle, resize: 'vertical', minHeight: 110 }}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
               />
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 type="submit"
-                className="contact-submit-btn"
+                className="contact-btn"
                 style={{
                   background: 'var(--accent)',
                   color: '#fff',
                   border: 'none',
-                  borderRadius: 8,
-                  padding: '14px 32px',
-                  fontFamily: 'Sora, sans-serif',
+                  borderRadius: 100,
+                  padding: '14px 36px',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 600,
                   fontSize: '1rem',
                   cursor: 'pointer',
-                  transition: 'background 0.25s ease, transform 0.25s ease',
+                  transition: 'background 0.2s ease, box-shadow 0.2s ease',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'var(--accent-hover)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 0 28px var(--accent-glow)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'var(--accent)';
-                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 Send Message
@@ -276,28 +238,31 @@ export default function Contact() {
           </form>
 
           <p style={{
-            fontFamily: 'DM Sans, sans-serif',
-            fontSize: 'var(--small)',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontSize: 'var(--small-size)',
             color: 'var(--text-muted)',
-            marginTop: '1.25rem',
+            marginTop: '1.5rem',
+            textAlign: 'center',
           }}>
-            Or find us on Instagram{' '}
-            <a
-              href="https://instagram.com/luxcoda"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--accent)', fontWeight: 500 }}
-            >
-              @luxcoda
+            Or find us on{' '}
+            <a href="https://instagram.com/luxcoda" target="_blank" rel="noopener noreferrer"
+              style={{ color: 'var(--accent)', fontWeight: 500 }}>
+              Instagram @luxcoda
+            </a>
+            {' · '}
+            <a href="https://facebook.com/luxcoda" target="_blank" rel="noopener noreferrer"
+              style={{ color: 'var(--accent)', fontWeight: 500 }}>
+              Facebook
             </a>
           </p>
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 767px) {
+        input::placeholder, textarea::placeholder { color: var(--text-muted); opacity: 1; }
+        @media (max-width: 640px) {
           .contact-cards { grid-template-columns: 1fr !important; }
-          .contact-submit-btn { width: 100%; }
+          .contact-btn { width: 100%; }
         }
       `}</style>
     </section>
