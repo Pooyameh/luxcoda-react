@@ -61,7 +61,7 @@ html { scroll-behavior: auto; }
 
   /* Layout */
   --max-width:       1200px;
-  --section-padding: clamp(100px, 15vh, 180px);
+  --section-padding: clamp(80px, 10vh, 120px);
   --content-padding: clamp(20px, 5vw, 48px);
 }
 

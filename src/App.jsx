@@ -3,7 +3,6 @@ import { useScrollProgress } from './hooks/useScrollProgress';
 import Scene3D from './components/Scene3D';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Showcase from './components/Showcase';
 import BeforeAfter from './components/BeforeAfter';
 import Services from './components/Services';
 import Portfolio from './components/Portfolio';
@@ -29,14 +28,10 @@ export default function App() {
 
   return (
     <>
-      {/* Fixed 3D atmospheric canvas */}
       <Scene3D />
-
-      {/* Scrollable content sits above the canvas */}
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar />
         <Hero />
-        <Showcase />
         <BeforeAfter />
         <Services />
         <Portfolio />

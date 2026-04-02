@@ -1,38 +1,66 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Canvas } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
-import Phone3D from './devices/Phone3D';
-import LaptopMockup from './devices/LaptopMockup';
-import PhoneMockup from './devices/PhoneMockup';
+import ScreenCard from './ScreenCard';
+import SparksElectrical from './mini-sites/SparksElectrical';
+import ReliablePlumbing from './mini-sites/ReliablePlumbing';
+import ReliablePlumbingMobile from './mini-sites/ReliablePlumbingMobile';
 
-/* ── Reusable scroll-animated row ── */
+/* Visual side = 55% of 1200px ≈ 660px → scale = 660/1400 ≈ 0.47 */
+const SCALE_FULL = 0.47;
+const INNER_H    = Math.round(1400 * (10 / 16)); // 875
+
+/* For the responsive pair:
+   - laptop card ~380px wide → scale 380/1400 ≈ 0.27
+   - phone card  ~220px wide → 9/16 aspect, scale 220/560 ≈ 0.39 */
+const SCALE_LAPTOP = 0.27;
+const SCALE_PHONE  = 0.39;
+const INNER_H_PHONE = Math.round(560 * (16 / 9)); // 996
+
 function FeatureRow({ textLeft, title, description, visual, index }) {
-  const rowRef = useRef(null);
+  const rowRef  = useRef(null);
   const textRef = useRef(null);
-  const visRef = useRef(null);
+  const visRef  = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(textRef.current, {
         scrollTrigger: { trigger: rowRef.current, start: 'top 78%', once: true },
-        opacity: 0,
-        x: textLeft ? -36 : 36,
-        duration: 0.85,
-        ease: 'power3.out',
+        opacity: 0, x: textLeft ? -30 : 30, duration: 0.85, ease: 'power3.out',
       });
       gsap.from(visRef.current, {
         scrollTrigger: { trigger: rowRef.current, start: 'top 78%', once: true },
-        opacity: 0,
-        x: textLeft ? 36 : -36,
-        duration: 0.85,
-        ease: 'power3.out',
-        delay: 0.18,
+        opacity: 0, x: textLeft ? 30 : -30, duration: 0.85, ease: 'power3.out', delay: 0.18,
       });
     });
     return () => ctx.revert();
   }, [textLeft]);
+
+  const TextBlock = () => (
+    <div ref={textRef}>
+      <h3 style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontWeight: 600,
+        fontSize: 'var(--h3-size)',
+        color: 'var(--text-primary)',
+        letterSpacing: 'var(--h3-spacing)',
+        lineHeight: 'var(--h3-line-height)',
+        marginBottom: '1rem',
+      }}>
+        {title}
+      </h3>
+      <p style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontSize: 'var(--body-size)',
+        color: 'var(--text-secondary)',
+        lineHeight: 1.65,
+      }}>
+        {description}
+      </p>
+    </div>
+  );
+
+  const VisBlock = () => <div ref={visRef}>{visual}</div>;
 
   return (
     <div
@@ -41,165 +69,62 @@ function FeatureRow({ textLeft, title, description, visual, index }) {
       style={{
         display: 'grid',
         gridTemplateColumns: '45fr 55fr',
-        gap: 'clamp(3rem, 6vw, 6rem)',
+        gap: 'clamp(3rem, 5vw, 5rem)',
         alignItems: 'center',
-        padding: 'clamp(60px, 8vh, 90px) 0',
+        padding: 'clamp(56px, 7vh, 80px) 0',
         borderBottom: '1px solid var(--border)',
       }}
     >
-      {/* Order depends on textLeft */}
-      {textLeft ? (
-        <>
-          <div ref={textRef}>
-            <h3 style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600,
-              fontSize: 'var(--h3-size)',
-              color: 'var(--text-primary)',
-              letterSpacing: 'var(--h3-spacing)',
-              lineHeight: 'var(--h3-line-height)',
-              marginBottom: '1rem',
-            }}>
-              {title}
-            </h3>
-            <p style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: 'var(--body-size)',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.65,
-            }}>
-              {description}
-            </p>
-          </div>
-          <div ref={visRef}>{visual}</div>
-        </>
-      ) : (
-        <>
-          <div ref={visRef}>{visual}</div>
-          <div ref={textRef}>
-            <h3 style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600,
-              fontSize: 'var(--h3-size)',
-              color: 'var(--text-primary)',
-              letterSpacing: 'var(--h3-spacing)',
-              lineHeight: 'var(--h3-line-height)',
-              marginBottom: '1rem',
-            }}>
-              {title}
-            </h3>
-            <p style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: 'var(--body-size)',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.65,
-            }}>
-              {description}
-            </p>
-          </div>
-        </>
-      )}
+      {textLeft ? <><TextBlock /><VisBlock /></> : <><VisBlock /><TextBlock /></>}
     </div>
   );
 }
 
-/* ── Feature visuals ── */
+/* ── Visuals ── */
 
-function PhoneCanvas() {
+function CustomDesignVisual() {
   return (
-    <div style={{ width: '100%', height: 360, borderRadius: 16, overflow: 'hidden' }}>
-      <Canvas camera={{ position: [0, 0, 3.8], fov: 40 }} gl={{ antialias: true, alpha: true }}>
-        <ambientLight intensity={0.3} color="#111" />
-        <pointLight position={[3, 3, 3]} intensity={1.2} color="#c8d8f0" />
-        <pointLight position={[-2, -1, 2]} intensity={0.4} color="#c45a2d" />
-        <Environment preset="city" />
-        <Phone3D
-          screenColor="#16a34a"
-          rotation={[0.1, 0.3, 0]}
-          position={[0, 0, 0]}
-          scale={0.9}
-          mouseTrack={true}
-          mouseIntensity={0.09}
-        />
-      </Canvas>
+    <ScreenCard>
+      <div style={{ width: '1400px', height: `${INNER_H}px`, transform: `scale(${SCALE_FULL})`, transformOrigin: 'top left' }}>
+        <SparksElectrical />
+      </div>
+    </ScreenCard>
+  );
+}
+
+function ResponsiveVisual() {
+  return (
+    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+      {/* Laptop card */}
+      <div style={{ flex: 1 }}>
+        <div style={{ marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Desktop</div>
+        <ScreenCard aspectRatio="16/10">
+          <div style={{ width: '1400px', height: `${INNER_H}px`, transform: `scale(${SCALE_LAPTOP})`, transformOrigin: 'top left' }}>
+            <ReliablePlumbing />
+          </div>
+        </ScreenCard>
+      </div>
+      {/* Phone card */}
+      <div style={{ width: 140 }}>
+        <div style={{ marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Mobile</div>
+        <ScreenCard aspectRatio="9/16">
+          <div style={{ width: '560px', height: `${INNER_H_PHONE}px`, transform: `scale(${SCALE_PHONE})`, transformOrigin: 'top left' }}>
+            <ReliablePlumbingMobile />
+          </div>
+        </ScreenCard>
+      </div>
     </div>
   );
 }
 
-function ResponsiveMockups() {
-  const miniLaptop = (
-    <div style={{
-      width: '500px',
-      transform: 'scale(0.58)',
-      transformOrigin: 'top left',
-      height: '320px',
-      overflow: 'hidden',
-      fontFamily: 'system-ui, sans-serif',
-    }}>
-      <div style={{ background: '#1d4ed8', padding: '0 20px', height: 36, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Dave's Plumbing</span>
-        <button style={{ background: '#fff', color: '#1d4ed8', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 700, fontSize: 11 }}>Call Now</button>
-      </div>
-      <div style={{ background: '#eff6ff', padding: '28px 20px' }}>
-        <h2 style={{ fontSize: 26, fontWeight: 800, color: '#111', margin: '0 0 8px', letterSpacing: '-0.03em' }}>Plumbing done right.<br />First time.</h2>
-        <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 14px' }}>Licensed · Brisbane · 20 years experience</p>
-        <button style={{ background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 6, padding: '10px 20px', fontWeight: 700, fontSize: 12 }}>Get a Free Quote</button>
-      </div>
-    </div>
-  );
-
-  const mobileInner = (
-    <div style={{
-      width: '240px',
-      transform: 'scale(0.82)',
-      transformOrigin: 'top left',
-      height: '560px',
-      overflow: 'hidden',
-      fontFamily: 'system-ui, sans-serif',
-      background: '#eff6ff',
-    }}>
-      <div style={{ background: '#1d4ed8', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Dave's Plumbing</span>
-        <button style={{ background: '#fff', color: '#1d4ed8', border: 'none', borderRadius: 4, padding: '4px 10px', fontWeight: 700, fontSize: 10 }}>Call</button>
-      </div>
-      <div style={{ padding: '24px 14px' }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: '0 0 8px', letterSpacing: '-0.02em' }}>Plumbing done right.</h2>
-        <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 16px' }}>Licensed · Brisbane</p>
-        <button style={{ background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 6, padding: '12px', fontWeight: 700, fontSize: 13, width: '100%' }}>Get a Free Quote</button>
-      </div>
-    </div>
-  );
-
+function GoogleResultVisual() {
   return (
     <div style={{
       background: 'var(--bg-card)',
       border: '1px solid var(--border)',
       borderRadius: 16,
       padding: 28,
-      display: 'flex',
-      gap: 20,
-      alignItems: 'flex-start',
-    }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, fontWeight: 500 }}>DESKTOP</p>
-        <LaptopMockup>{miniLaptop}</LaptopMockup>
-      </div>
-      <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, fontWeight: 500 }}>MOBILE</p>
-        <PhoneMockup style={{ maxWidth: 160 }}>{mobileInner}</PhoneMockup>
-      </div>
-    </div>
-  );
-}
-
-function GoogleResult() {
-  return (
-    <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border)',
-      borderRadius: 16,
-      padding: 28,
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
     }}>
       {/* Search bar */}
       <div style={{
@@ -213,38 +138,23 @@ function GoogleResult() {
         </svg>
         <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>plumber brisbane</span>
       </div>
-
-      {/* #1 result — our client */}
-      <div style={{
-        padding: '14px 16px',
-        background: 'var(--bg-elevated)',
-        borderRadius: 8,
-        marginBottom: 8,
-        borderLeft: '3px solid var(--accent)',
-      }}>
+      {/* #1 — our client */}
+      <div style={{ padding: '14px 16px', background: 'var(--bg-elevated)', borderRadius: 8, marginBottom: 8, borderLeft: '3px solid var(--accent)' }}>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>davesplumbing.com.au</div>
-        <div style={{ fontSize: 16, color: '#4a9eff', fontWeight: 600, marginBottom: 4 }}>Dave's Plumbing — Brisbane's Trusted Plumber</div>
-        <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6, lineHeight: 1.4 }}>
-          Fast, reliable plumbing for Brisbane homes and businesses. Licensed, insured. Same-day...
+        <div style={{ fontSize: 15, color: '#4a9eff', fontWeight: 600, marginBottom: 4 }}>Dave's Plumbing — Brisbane's Trusted Plumber</div>
+        <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.45, marginBottom: 6 }}>
+          Fast, reliable plumbing for Brisbane homes & businesses. Licensed, insured. Same-day...
         </div>
-        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-          {[1,2,3,4,5].map(s => (
-            <span key={s} style={{ color: '#f59e0b', fontSize: 12 }}>★</span>
-          ))}
-          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 4 }}>4.9 (127 reviews)</span>
+        <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+          {[1,2,3,4,5].map(s => <span key={s} style={{ color: '#f59e0b', fontSize: 13 }}>★</span>)}
+          <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>4.9 · 127 reviews</span>
         </div>
       </div>
-
-      {/* #2, #3 — greyed out */}
-      {['Competitor Plumbing Co.', 'Another Plumber Pty Ltd'].map((name, i) => (
-        <div key={name} style={{
-          padding: '12px 16px',
-          borderRadius: 8,
-          marginBottom: 6,
-          opacity: 0.35,
-        }}>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>competitor{i + 1}.com.au</div>
-          <div style={{ fontSize: 14, color: '#4a9eff', marginBottom: 3 }}>{name}</div>
+      {/* #2, #3 greyed */}
+      {['Competitor Plumbing Co.', 'Another Plumber Pty Ltd'].map(name => (
+        <div key={name} style={{ padding: '10px 16px', borderRadius: 8, marginBottom: 6, opacity: 0.28 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>competitor.com.au</div>
+          <div style={{ fontSize: 14, color: '#4a9eff' }}>{name}</div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>Plumbing services Brisbane...</div>
         </div>
       ))}
@@ -252,77 +162,34 @@ function GoogleResult() {
   );
 }
 
-function LighthouseScores() {
+function LighthouseVisual() {
   const scores = [
     { label: 'Performance', value: 99, color: '#22c55e' },
     { label: 'Accessibility', value: 100, color: '#22c55e' },
     { label: 'SEO', value: 98, color: '#22c55e' },
   ];
-  const R = 38;
-  const C = 2 * Math.PI * R;
-
+  const R = 38, C = 2 * Math.PI * R;
   return (
-    <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border)',
-      borderRadius: 16,
-      padding: '32px 28px',
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        marginBottom: 24,
-      }}>
-        <div style={{ width: 20, height: 20, background: '#f59e0b', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 10, color: '#000', fontWeight: 800 }}>L</span>
-        </div>
-        <span style={{
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontWeight: 600,
-          fontSize: 14,
-          color: 'var(--text-primary)',
-        }}>
-          Google Lighthouse Report
-        </span>
+    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px 24px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+        <div style={{ width: 20, height: 20, background: '#f59e0b', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#000' }}>L</div>
+        <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>Google Lighthouse</span>
       </div>
-      <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 20, justifyContent: 'center' }}>
         {scores.map(({ label, value, color }) => {
           const offset = C - (value / 100) * C;
           return (
             <div key={label} style={{ textAlign: 'center' }}>
-              <svg width="100" height="100" viewBox="0 0 100 100">
-                {/* Track */}
+              <svg width="96" height="96" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-                {/* Arc */}
-                <circle
-                  cx="50" cy="50" r={R} fill="none"
-                  stroke={color} strokeWidth="8"
-                  strokeDasharray={C}
-                  strokeDashoffset={offset}
-                  strokeLinecap="round"
-                  transform="rotate(-90 50 50)"
-                  style={{
-                    '--arc-total': C,
-                    '--arc-offset': offset,
-                    animation: 'arcDraw 1.2s ease-out forwards',
-                  }}
+                <circle cx="50" cy="50" r={R} fill="none" stroke={color} strokeWidth="8"
+                  strokeDasharray={C} strokeDashoffset={offset}
+                  strokeLinecap="round" transform="rotate(-90 50 50)"
+                  style={{ animation: 'arcDraw 1.2s ease-out forwards', '--arc-total': C, '--arc-offset': offset }}
                 />
-                <text x="50" y="50" textAnchor="middle" dominantBaseline="central"
-                  fill={color} fontSize="22" fontWeight="700"
-                  style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                  {value}
-                </text>
+                <text x="50" y="50" textAnchor="middle" dominantBaseline="central" fill={color} fontSize="22" fontWeight="700" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{value}</text>
               </svg>
-              <p style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 11,
-                color: 'var(--text-muted)',
-                marginTop: 4,
-                fontWeight: 500,
-              }}>
-                {label}
-              </p>
+              <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', marginTop: 4, fontWeight: 500 }}>{label}</p>
             </div>
           );
         })}
@@ -331,52 +198,35 @@ function LighthouseScores() {
   );
 }
 
-function ChatMockup() {
+function ChatVisual() {
+  const msgs = [
+    { from: 'client', text: 'Hey, can we add a booking page to the site?' },
+    { from: 'luxcoda', text: "Absolutely. I'll have a draft up tonight. Any specific fields you need on the form?" },
+    { from: 'client', text: 'Just name, phone, and preferred date works.' },
+    { from: 'luxcoda', text: 'Done. ✓  Live by tomorrow morning.' },
+  ];
   return (
-    <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border)',
-      borderRadius: 16,
-      padding: 28,
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
-    }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        borderBottom: '1px solid var(--border)',
-        paddingBottom: 16, marginBottom: 20,
-      }}>
+    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 28, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid var(--border)', paddingBottom: 16, marginBottom: 18 }}>
         <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff' }}>L</div>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Luxcoda Support</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#22c55e' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#22c55e', marginTop: 2 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
-            Online
+            Online now
           </div>
         </div>
       </div>
-
-      {[
-        { from: 'client', text: 'Hey can we add a booking page to the site?' },
-        { from: 'luxcoda', text: "Absolutely. I'll have a draft ready by tonight. Any specific fields you need on the form?" },
-        { from: 'client', text: 'Just name, phone, and preferred time works.' },
-        { from: 'luxcoda', text: 'Done. ✓ Live by tomorrow morning.' },
-      ].map((msg, i) => (
-        <div key={i} style={{
-          display: 'flex',
-          justifyContent: msg.from === 'client' ? 'flex-end' : 'flex-start',
-          marginBottom: 10,
-        }}>
+      {msgs.map((m, i) => (
+        <div key={i} style={{ display: 'flex', justifyContent: m.from === 'client' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
           <div style={{
-            background: msg.from === 'client' ? 'var(--accent)' : 'var(--bg-elevated)',
-            color: msg.from === 'client' ? '#fff' : 'var(--text-secondary)',
-            border: msg.from === 'client' ? 'none' : '1px solid var(--border)',
-            borderRadius: msg.from === 'client' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-            padding: '10px 14px',
-            fontSize: 13,
-            lineHeight: 1.5,
-            maxWidth: '78%',
+            background: m.from === 'client' ? 'var(--accent)' : 'var(--bg-elevated)',
+            color: m.from === 'client' ? '#fff' : 'var(--text-secondary)',
+            border: m.from === 'client' ? 'none' : '1px solid var(--border)',
+            borderRadius: m.from === 'client' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+            padding: '10px 14px', fontSize: 13, lineHeight: 1.5, maxWidth: '80%',
           }}>
-            {msg.text}
+            {m.text}
           </div>
         </div>
       ))}
@@ -388,32 +238,32 @@ const features = [
   {
     textLeft: true,
     title: 'Custom Design',
-    description: 'No templates. Every site is designed from scratch to match your business, your customers, and your city.',
-    visual: <PhoneCanvas />,
+    description: 'No templates. Every site is designed from scratch to match your business, your customers, and your trade.',
+    visual: <CustomDesignVisual />,
   },
   {
     textLeft: false,
     title: 'Works on Every Device',
     description: "Same site. Perfect on a laptop, tablet, or phone. Because 80% of your customers are searching on mobile.",
-    visual: <ResponsiveMockups />,
+    visual: <ResponsiveVisual />,
   },
   {
     textLeft: true,
     title: 'Shows Up on Google',
-    description: 'SEO done right from day one. Your site is built so customers can actually find you when they search.',
-    visual: <GoogleResult />,
+    description: 'SEO done right from day one. Your site is built to rank so customers find you when they search.',
+    visual: <GoogleResultVisual />,
   },
   {
     textLeft: false,
     title: 'Fast & Reliable',
-    description: 'No slow loading, no downtime. We build fast sites because slow sites cost you jobs.',
-    visual: <LighthouseScores />,
+    description: 'No slow loading, no downtime. A fast site means more customers stay on the page — and more calls.',
+    visual: <LighthouseVisual />,
   },
   {
     textLeft: true,
     title: 'Ongoing Support',
-    description: "We don't disappear after launch. Need changes? Got questions? We respond fast — like a teammate, not a vendor.",
-    visual: <ChatMockup />,
+    description: "We don't disappear after launch. Need a change? Got a question? We respond fast — like a teammate, not a vendor.",
+    visual: <ChatVisual />,
   },
 ];
 
@@ -424,8 +274,7 @@ export default function Services() {
       padding: 'var(--section-padding) var(--content-padding)',
     }}>
       <div className="content-wrap">
-        {/* Section heading */}
-        <div style={{ textAlign: 'center', marginBottom: 'clamp(4rem, 8vw, 7rem)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 6vw, 5rem)' }}>
           <h2 style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 600,
@@ -441,7 +290,7 @@ export default function Services() {
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontSize: 'var(--body-size)',
             color: 'var(--text-secondary)',
-            maxWidth: 520,
+            maxWidth: 500,
             margin: '0 auto',
             lineHeight: 1.65,
           }}>
@@ -449,17 +298,12 @@ export default function Services() {
           </p>
         </div>
 
-        {/* Feature rows */}
-        {features.map((f, i) => (
-          <FeatureRow key={f.title} {...f} index={i} />
-        ))}
+        {features.map(f => <FeatureRow key={f.title} {...f} />)}
       </div>
 
       <style>{`
         @media (max-width: 767px) {
-          .feature-row {
-            grid-template-columns: 1fr !important;
-          }
+          .feature-row { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </section>
