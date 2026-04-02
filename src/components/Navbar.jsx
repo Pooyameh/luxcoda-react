@@ -1,212 +1,105 @@
-import { useEffect, useState, useRef } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
 
-const links = [
-  { label: 'Process', href: '#process' },
-  { label: 'Pricing', href: '#pricing'  },
-  { label: 'Contact', href: '#contact'  },
-]
-
-export default function Navbar({ onOpenModal }) {
-  const [scrolled,   setScrolled]   = useState(false)
-  const [visible,    setVisible]    = useState(true)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const lastScrollY  = useRef(0)
-  const ticking      = useRef(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (ticking.current) return
-      ticking.current = true
-      requestAnimationFrame(() => {
-        const currentY = window.scrollY
-        if (currentY < 100) {
-          setVisible(true)
-        } else if (currentY < lastScrollY.current - 5) {
-          setVisible(true)
-        } else if (currentY > lastScrollY.current + 5) {
-          setVisible(false)
-        }
-        setScrolled(currentY > 100)
-        lastScrollY.current = currentY
-        ticking.current = false
-      })
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [mobileOpen])
-
+export default function Navbar() {
   return (
     <>
       <nav style={{
         position: 'fixed',
         top: 0, left: 0, right: 0,
         zIndex: 50,
-        transform: visible ? 'translateY(0)' : 'translateY(-100%)',
-        transition: 'transform 0.4s cubic-bezier(0.23,1,0.32,1), background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease',
-        background: scrolled ? 'rgba(5,5,5,0.7)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(111,163,199,0.08)' : '1px solid transparent',
+        height: 64,
+        background: 'var(--bg-primary)',
+        borderBottom: '1px solid var(--border)',
       }}>
         <div style={{
-          maxWidth: 1100,
+          maxWidth: 'var(--max-width)',
           margin: '0 auto',
-          padding: '0 clamp(1.5rem, 5vw, 4rem)',
-          height: 64,
+          padding: '0 var(--content-padding)',
+          height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-
-          {/* Wordmark */}
           <a
             href="#"
             style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontWeight: 600,
-              fontSize: 12,
-              color: 'var(--white)',
+              fontFamily: 'Sora, sans-serif',
+              fontWeight: 700,
+              fontSize: '1.25rem',
+              color: 'var(--text-primary)',
+              letterSpacing: '0.05em',
               textDecoration: 'none',
-              letterSpacing: '0.3em',
-              textTransform: 'uppercase',
             }}
           >
             Luxcoda
           </a>
 
-          {/* Desktop center links */}
-          <div className="nav-links" style={{ display: 'none', alignItems: 'center', gap: '0.75rem' }}>
-            {links.map((l, i) => (
-              <span key={l.href} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                {i > 0 && (
-                  <span style={{ color: 'var(--accent)', fontSize: 10, lineHeight: 1 }}>·</span>
-                )}
-                <a
-                  href={l.href}
-                  style={{
-                    fontFamily: '"DM Sans", sans-serif',
-                    fontWeight: 400,
-                    fontSize: 11,
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    color: 'var(--muted)',
-                    textDecoration: 'none',
-                    transition: 'color 0.2s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.color = 'var(--white)'}
-                  onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}
-                >
-                  {l.label}
-                </a>
-              </span>
-            ))}
-          </div>
-
-          {/* Right side */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {/* Desktop nav links */}
+          <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
             <button
-              className="btn-gold nav-cta"
-              onClick={onOpenModal}
-              style={{ display: 'none', padding: '10px 24px', fontSize: 11 }}
-            >
-              Free Mock-Up →
-            </button>
-
-            {/* Hamburger */}
-            <button
-              className="nav-hamburger"
-              onClick={() => setMobileOpen(v => !v)}
-              aria-label="Toggle menu"
+              onClick={() => scrollTo('work')}
               style={{
-                background: 'none', border: 'none',
-                padding: '0.5rem', cursor: 'pointer',
-                display: 'flex', flexDirection: 'column',
-                gap: 5, alignItems: 'center',
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontFamily: 'Sora, sans-serif', fontWeight: 500,
+                fontSize: 'var(--small)', color: 'var(--text-muted)',
+                transition: 'color 0.25s ease',
+                padding: 0,
               }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
             >
-              {[0, 1, 2].map(i => (
-                <span key={i} style={{
-                  display: 'block', width: 20, height: 1,
-                  background: 'var(--white)',
-                  transition: 'transform 0.3s ease, opacity 0.3s ease',
-                  ...(mobileOpen && i === 0 ? { transform: 'translateY(6px) rotate(45deg)' } : {}),
-                  ...(mobileOpen && i === 1 ? { opacity: 0 } : {}),
-                  ...(mobileOpen && i === 2 ? { transform: 'translateY(-6px) rotate(-45deg)' } : {}),
-                }} />
-              ))}
+              Work
+            </button>
+            <button
+              onClick={() => scrollTo('contact')}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontFamily: 'Sora, sans-serif', fontWeight: 500,
+                fontSize: 'var(--small)', color: 'var(--text-muted)',
+                transition: 'color 0.25s ease',
+                padding: 0,
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+            >
+              Contact
             </button>
           </div>
+
+          {/* Mobile CTA */}
+          <button
+            className="nav-mobile"
+            onClick={() => scrollTo('contact')}
+            style={{
+              display: 'none',
+              background: 'var(--accent)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              padding: '8px 16px',
+              fontFamily: 'Sora, sans-serif',
+              fontWeight: 600,
+              fontSize: '0.8rem',
+              cursor: 'pointer',
+              transition: 'background 0.25s ease',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-hover)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'var(--accent)'}
+          >
+            Let's Talk
+          </button>
         </div>
       </nav>
 
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              position: 'fixed', inset: 0, zIndex: 49,
-              background: 'rgba(5,5,5,0.97)',
-              backdropFilter: 'blur(20px)',
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: '0.25rem',
-            }}
-          >
-            {links.map((l, i) => (
-              <motion.a
-                key={l.href}
-                href={l.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + i * 0.07, duration: 0.5 }}
-                onClick={() => setMobileOpen(false)}
-                style={{
-                  fontFamily: '"Bodoni Moda", serif',
-                  fontWeight: 400,
-                  fontSize: 'clamp(2rem, 9vw, 3.5rem)',
-                  color: 'var(--muted-strong)',
-                  textDecoration: 'none',
-                  letterSpacing: '-0.02em',
-                  transition: 'color 0.2s',
-                  padding: '0.3rem 0',
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = 'var(--white)'}
-                onMouseLeave={e => e.currentTarget.style.color = 'var(--muted-strong)'}
-              >
-                {l.label}
-              </motion.a>
-            ))}
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.28 }}
-              className="btn-gold"
-              onClick={() => { setMobileOpen(false); onOpenModal() }}
-              style={{ marginTop: '2rem' }}
-            >
-              Free Mock-Up →
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <style>{`
-        @media (min-width: 768px) {
-          .nav-links    { display: flex !important; }
-          .nav-cta      { display: inline-block !important; }
-          .nav-hamburger{ display: none !important; }
+        @media (max-width: 1023px) {
+          .nav-desktop { display: none !important; }
+          .nav-mobile  { display: block !important; }
         }
       `}</style>
     </>
-  )
+  );
 }

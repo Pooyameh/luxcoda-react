@@ -1,191 +1,305 @@
-import { useRef, useLayoutEffect } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import AnimatedText from './AnimatedText'
+import { useState } from 'react';
+import { useInView } from '../hooks/useInView';
 
-const methods = [
-  { label: 'Phone',     value: '0414 758 891',          href: 'tel:0414758891'                },
-  { label: 'Email',     value: 'enquiries@luxcoda.com',  href: 'mailto:enquiries@luxcoda.com'  },
-  { label: 'Instagram', value: '@luxcoda',               href: 'https://instagram.com/luxcoda' },
-  { label: 'Facebook',  value: 'facebook.com/luxcoda',   href: 'https://facebook.com/luxcoda'  },
-]
+function PhoneIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.16 6.16l1.27-.45a2 2 0 012.11.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <polyline points="22,6 12,13 2,6"/>
+    </svg>
+  );
+}
+
+function ContactCard({ icon, label, value, href, sublabel, isVisible, delay }) {
+  return (
+    <div style={{
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border)',
+      borderRadius: 12,
+      padding: 32,
+      opacity: isVisible ? 1 : 0,
+      transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+      transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
+    }}>
+      <div style={{ marginBottom: 12 }}>{icon}</div>
+      <div style={{
+        fontFamily: 'Sora, sans-serif',
+        fontWeight: 600,
+        fontSize: 'var(--small)',
+        color: 'var(--text-muted)',
+        marginBottom: 6,
+      }}>
+        {label}
+      </div>
+      <a
+        href={href}
+        style={{
+          display: 'block',
+          fontFamily: 'Sora, sans-serif',
+          fontWeight: 700,
+          fontSize: 'var(--h3)',
+          color: 'var(--text-primary)',
+          textDecoration: 'none',
+          transition: 'color 0.25s ease',
+          lineHeight: 1.2,
+          wordBreak: 'break-all',
+        }}
+        onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
+        onMouseLeave={e => e.currentTarget.style.color = 'var(--text-primary)'}
+      >
+        {value}
+      </a>
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 'var(--small)',
+        color: 'var(--text-muted)',
+        marginTop: 8,
+      }}>
+        {sublabel}
+      </div>
+    </div>
+  );
+}
 
 export default function Contact() {
-  const rightRef = useRef(null)
+  const [ref, isVisible] = useInView({ threshold: 0.05 });
+  const [formRef, formVisible] = useInView({ threshold: 0.05 });
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const items = rightRef.current.querySelectorAll('.contact-method')
-      gsap.set(items, { opacity: 0, y: 20 })
-      ScrollTrigger.create({
-        trigger: rightRef.current,
-        start: 'top 80%',
-        once: true,
-        onEnter: () => {
-          gsap.to(items, {
-            opacity: 1, y: 0,
-            duration: 0.8, ease: 'power2.out',
-            stagger: 0.1,
-          })
-        },
-      })
-    }, rightRef)
-    return () => ctx.revert()
-  }, [])
+  const inputStyle = (focused) => ({
+    width: '100%',
+    border: `1px solid ${focused ? 'var(--accent)' : 'var(--border)'}`,
+    borderRadius: 8,
+    padding: '14px 16px',
+    fontFamily: 'DM Sans, sans-serif',
+    fontSize: '1rem',
+    color: 'var(--text-primary)',
+    background: '#fff',
+    outline: 'none',
+    boxShadow: focused ? '0 0 0 3px var(--accent-light)' : 'none',
+    transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+    boxSizing: 'border-box',
+  });
 
   return (
     <section
       id="contact"
       style={{
-        background: 'rgba(5,5,5,0.88)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        padding: 'min(18vh, 160px) clamp(1.5rem, 5vw, 4rem)',
+        background: 'var(--bg-primary)',
+        padding: 'var(--section-padding) var(--content-padding)',
       }}
     >
-      <div
-        className="contact-grid"
-        style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 'clamp(3rem, 8vw, 8rem)',
-          alignItems: 'start',
-        }}
-      >
-
-        {/* Left */}
-        <div>
-          <p style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontWeight: 500,
-            fontSize: 11,
-            letterSpacing: '0.25em',
-            textTransform: 'uppercase',
-            color: 'var(--accent)',
-            marginBottom: '1.5rem',
+      <div className="content-wrap">
+        {/* Heading */}
+        <div ref={ref}>
+          <h2 style={{
+            fontFamily: 'Sora, sans-serif',
+            fontWeight: 700,
+            fontSize: 'var(--h2)',
+            color: 'var(--text-primary)',
+            marginBottom: '1rem',
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.6s ease, transform 0.6s ease',
           }}>
-            Get in Touch
-          </p>
-
-          <AnimatedText
-            as="h2"
-            style={{
-              fontFamily: '"Bodoni Moda", serif',
-              fontWeight: 800,
-              fontSize: 'clamp(2.5rem, 6vw, 5.5rem)',
-              color: 'var(--white)',
-              lineHeight: 1.0,
-              marginBottom: '1.5rem',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Let&apos;s Build.
-          </AnimatedText>
-
+            Let's talk.
+          </h2>
           <p style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontWeight: 300,
-            fontSize: 15,
-            color: 'var(--muted-strong)',
-            lineHeight: 1.8,
-            maxWidth: 440,
-            marginBottom: '2rem',
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 'var(--body)',
+            color: 'var(--text-body)',
+            maxWidth: 500,
+            lineHeight: 1.6,
+            marginBottom: 'clamp(2rem, 5vw, 3.5rem)',
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s',
           }}>
-            Brisbane-based. Obsessively focused on craft. Whether you need a new site
-            from scratch or want to take your existing one from forgettable to remarkable
-            — reach out. We respond fast.
+            Give us a call or shoot us an email. No pressure, no jargon — just a straight conversation about what you need.
           </p>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span style={{
-              width: 6, height: 6,
-              borderRadius: '50%',
-              background: 'var(--accent)',
-              flexShrink: 0,
-            }} />
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontWeight: 400,
-              fontSize: 13,
-              color: 'var(--white)',
-              letterSpacing: '0.03em',
-            }}>
-              Brisbane, Queensland, Australia
-            </span>
-          </div>
         </div>
 
-        {/* Right — contact methods */}
-        <div ref={rightRef}>
-          {methods.map((m, i) => (
-            <a
-              key={m.label}
-              href={m.href}
-              target={m.href.startsWith('http') ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              className="contact-method"
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 'clamp(1rem, 2vh, 1.5rem) 0',
-                borderBottom: '1px solid rgba(232,237,242,0.06)',
-                textDecoration: 'none',
-                opacity: 0,
-                transition: 'opacity 0.2s',
-              }}
-              onMouseEnter={e => {
-                const arrow = e.currentTarget.querySelector('.c-arrow')
-                if (arrow) arrow.style.color = 'var(--accent)'
-              }}
-              onMouseLeave={e => {
-                const arrow = e.currentTarget.querySelector('.c-arrow')
-                if (arrow) arrow.style.color = 'var(--muted)'
-              }}
-            >
-              <div>
-                <p style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontWeight: 500,
-                  fontSize: 10,
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  color: 'var(--accent)',
-                  marginBottom: '0.3rem',
-                }}>
-                  {m.label}
-                </p>
-                <p style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontWeight: 400,
-                  fontSize: 16,
-                  color: 'var(--white)',
-                }}>
-                  {m.value}
-                </p>
-              </div>
-              <span
-                className="c-arrow"
+        {/* Contact cards */}
+        <div className="contact-cards" style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 'clamp(1rem, 2vw, 1.5rem)',
+          marginBottom: 'clamp(2rem, 5vw, 3.5rem)',
+        }}>
+          <ContactCard
+            icon={<PhoneIcon />}
+            label="Call us"
+            value="0414 758 891"
+            href="tel:0414758891"
+            sublabel="Mon–Fri, 8am–6pm"
+            isVisible={isVisible}
+            delay={0.15}
+          />
+          <ContactCard
+            icon={<MailIcon />}
+            label="Email us"
+            value="enquiries@luxcoda.com"
+            href="mailto:enquiries@luxcoda.com"
+            sublabel="We'll reply within 24 hours"
+            isVisible={isVisible}
+            delay={0.25}
+          />
+        </div>
+
+        {/* Form */}
+        <div
+          ref={formRef}
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: 12,
+            padding: 'clamp(1.5rem, 4vw, 3rem)',
+            opacity: formVisible ? 1 : 0,
+            transform: formVisible ? 'translateY(0)' : 'translateY(24px)',
+            transition: 'opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s',
+          }}
+        >
+          <p style={{
+            fontFamily: 'Sora, sans-serif',
+            fontWeight: 600,
+            fontSize: '1rem',
+            color: 'var(--text-primary)',
+            marginBottom: '1.5rem',
+          }}>
+            Or send us a message:
+          </p>
+
+          <form
+            onSubmit={e => e.preventDefault()}
+            style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+          >
+            <div>
+              <label style={{
+                display: 'block',
+                fontFamily: 'DM Sans, sans-serif',
+                fontWeight: 500,
+                fontSize: 'var(--small)',
+                color: 'var(--text-muted)',
+                marginBottom: 6,
+              }}>
+                Name
+              </label>
+              <input
+                type="text"
+                placeholder="Your name"
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                style={inputStyle(false)}
+                onFocus={e => Object.assign(e.target.style, { borderColor: 'var(--accent)', boxShadow: '0 0 0 3px var(--accent-light)' })}
+                onBlur={e => Object.assign(e.target.style, { borderColor: 'var(--border)', boxShadow: 'none' })}
+              />
+            </div>
+            <div>
+              <label style={{
+                display: 'block',
+                fontFamily: 'DM Sans, sans-serif',
+                fontWeight: 500,
+                fontSize: 'var(--small)',
+                color: 'var(--text-muted)',
+                marginBottom: 6,
+              }}>
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={form.email}
+                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                style={inputStyle(false)}
+                onFocus={e => Object.assign(e.target.style, { borderColor: 'var(--accent)', boxShadow: '0 0 0 3px var(--accent-light)' })}
+                onBlur={e => Object.assign(e.target.style, { borderColor: 'var(--border)', boxShadow: 'none' })}
+              />
+            </div>
+            <div>
+              <label style={{
+                display: 'block',
+                fontFamily: 'DM Sans, sans-serif',
+                fontWeight: 500,
+                fontSize: 'var(--small)',
+                color: 'var(--text-muted)',
+                marginBottom: 6,
+              }}>
+                Message
+              </label>
+              <textarea
+                rows={4}
+                placeholder="Tell us about your business and what you're after..."
+                value={form.message}
+                onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                style={{ ...inputStyle(false), resize: 'vertical', minHeight: 120 }}
+                onFocus={e => Object.assign(e.target.style, { borderColor: 'var(--accent)', boxShadow: '0 0 0 3px var(--accent-light)' })}
+                onBlur={e => Object.assign(e.target.style, { borderColor: 'var(--border)', boxShadow: 'none' })}
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <button
+                type="submit"
+                className="contact-submit-btn"
                 style={{
-                  color: 'var(--muted)',
-                  fontSize: 14,
-                  transition: 'color 0.2s',
+                  background: 'var(--accent)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '14px 32px',
+                  fontFamily: 'Sora, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  transition: 'background 0.25s ease, transform 0.25s ease',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'var(--accent-hover)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'var(--accent)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                →
-              </span>
+                Send Message
+              </button>
+            </div>
+          </form>
+
+          <p style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 'var(--small)',
+            color: 'var(--text-muted)',
+            marginTop: '1.25rem',
+          }}>
+            Or find us on Instagram{' '}
+            <a
+              href="https://instagram.com/luxcoda"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--accent)', fontWeight: 500 }}
+            >
+              @luxcoda
             </a>
-          ))}
+          </p>
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          .contact-grid { grid-template-columns: 1fr !important; }
+        @media (max-width: 767px) {
+          .contact-cards { grid-template-columns: 1fr !important; }
+          .contact-submit-btn { width: 100%; }
         }
       `}</style>
     </section>
-  )
+  );
 }
