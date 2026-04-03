@@ -3,20 +3,21 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const videos = [
-  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery',  type: 'landscape' },
-  { src: '/showcase/product.mp4',   label: '3D Product',         type: 'portrait'  },
-  { src: '/showcase/cards.mp4',     label: 'Expanding Cards',    type: 'portrait'  },
-  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth',     type: 'landscape' },
-  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor',    type: 'landscape' },
-  { src: '/showcase/compare.mp4',   label: 'Before / After',     type: 'landscape' },
-  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic',       type: 'portrait'  },
+  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery' },
+  { src: '/showcase/product.mp4',   label: '3D Product'        },
+  { src: '/showcase/cards.mp4',     label: 'Expanding Cards'   },
+  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth'    },
+  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor'   },
+  { src: '/showcase/compare.mp4',   label: 'Before / After'    },
+  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic'      },
 ];
 
-function VideoCard({ src, label, type }) {
+function VideoCard({ src, label }) {
   return (
     <div
-      className={`port-card port-card-${type}`}
+      className="port-card"
       style={{
+        aspectRatio: '16 / 10',
         borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.06)',
@@ -24,14 +25,9 @@ function VideoCard({ src, label, type }) {
         cursor: 'pointer',
         transition: 'border-color 0.3s ease',
         width: '100%',
-        minHeight: 0,
       }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
-      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
     >
       <video
         autoPlay
@@ -87,58 +83,53 @@ export default function Portfolio() {
   return (
     <section id="work" style={{
       background: 'var(--bg-surface)',
-      padding: 'var(--section-padding) clamp(20px, 3vw, 48px)',
+      padding: 'var(--section-padding) 0',
     }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 4rem)' }}>
-          <h2 style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
-            fontSize: 'var(--h2-size)',
-            color: 'var(--text-primary)',
-            letterSpacing: 'var(--h2-spacing)',
-            lineHeight: 'var(--h2-line-height)',
-            marginBottom: '0.75rem',
-          }}>
-            Built by Luxcoda.
-          </h2>
-          <p style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontSize: 'var(--body-size)',
-            color: 'var(--text-secondary)',
-            maxWidth: 440,
-            margin: '0 auto',
-            lineHeight: 1.65,
-          }}>
-            Interactive experiences designed for trades and local businesses.
-          </p>
-        </div>
+      <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 4rem)', padding: '0 var(--content-padding)' }}>
+        <h2 style={{
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: 'var(--h2-size)',
+          color: 'var(--text-primary)',
+          letterSpacing: 'var(--h2-spacing)',
+          lineHeight: 'var(--h2-line-height)',
+          marginBottom: '0.75rem',
+        }}>
+          Built by Luxcoda.
+        </h2>
+        <p style={{
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontSize: 'var(--body-size)',
+          color: 'var(--text-secondary)',
+          maxWidth: 440,
+          margin: '0 auto',
+          lineHeight: 1.65,
+        }}>
+          Interactive experiences designed for trades and local businesses.
+        </p>
+      </div>
 
-        <div ref={gridRef} className="port-grid">
-          {videos.map((v) => (
-            <VideoCard key={v.src} src={v.src} label={v.label} type={v.type} />
-          ))}
-        </div>
+      <div ref={gridRef} className="port-grid">
+        {videos.map((v) => (
+          <VideoCard key={v.src} src={v.src} label={v.label} />
+        ))}
       </div>
 
       <style>{`
         .port-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          grid-auto-rows: auto;
-          grid-auto-flow: dense;
-          gap: 14px;
-          align-items: start;
+          gap: 12px;
+          padding: 0 48px;
         }
-        .port-card-landscape { aspect-ratio: 16 / 10; }
-        .port-card-portrait  { aspect-ratio: 9 / 14; grid-row: span 2; }
-
-        @media (min-width: 641px) and (max-width: 1023px) {
-          .port-grid { grid-template-columns: repeat(3, 1fr); }
+        @media (min-width: 1601px) {
+          .port-grid { gap: 16px; padding: 0 64px; }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .port-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 32px; }
         }
         @media (max-width: 640px) {
-          .port-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-          .port-card-portrait { grid-row: span 2; }
+          .port-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 16px; }
         }
       `}</style>
     </section>

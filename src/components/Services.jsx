@@ -191,7 +191,7 @@ function LighthouseVisual() {
   ];
 
   return (
-    <div style={{ ...GLASS, padding: '24px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div className="lighthouse-card" style={{ ...GLASS, padding: '24px', fontFamily: "'Plus Jakarta Sans', sans-serif", maxWidth: '100%', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 22 }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" fill="#4285F4"/>
@@ -201,7 +201,7 @@ function LighthouseVisual() {
           Lighthouse Report
         </span>
       </div>
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'space-around', marginBottom: 22 }}>
+      <div className="lighthouse-scores" style={{ display: 'flex', gap: 12, justifyContent: 'space-around', marginBottom: 22 }}>
         {scores.map(({ label, value }) => {
           const offset = C - (value / 100) * C;
           return (
@@ -344,6 +344,14 @@ export default function Services() {
       <style>{`
         @media (max-width: 767px) {
           .feature-row { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .lighthouse-scores {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 16px !important;
+            justify-items: center;
+          }
         }
       `}</style>
     </section>
