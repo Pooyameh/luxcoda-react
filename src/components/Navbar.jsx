@@ -56,7 +56,7 @@ export default function Navbar() {
             textDecoration: 'none',
           }}>
             <img
-              src="/luxcoda-lc-sharp.png"
+              src="/luxcoda-lc-sharp-large_1.png"
               alt="LC"
               style={{ height: 28, width: 'auto', display: 'block' }}
             />

@@ -1,16 +1,17 @@
 const videos = [
   { src: '/showcase/accordion.mp4', label: 'Accordion Gallery' },
+  { src: '/showcase/reveal.mp4',    label: 'Mask Reveal' },
   { src: '/showcase/parallax.mp4',  label: 'Parallax Depth' },
-  { src: '/showcase/product.mp4',   label: '3D Product View' },
+  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor' },
+  { src: '/showcase/compare.mp4',   label: 'Before / After Slider' },
 ];
 
-// Duplicate for seamless loop
-const allVideos = [...videos, ...videos];
+const allVideos = [...videos, ...videos]; // duplicate for seamless loop
 
 function VideoCard({ src, label }) {
   return (
     <div style={{
-      width: 380,
+      width: 400,
       flexShrink: 0,
       borderRadius: 16,
       overflow: 'hidden',
@@ -30,14 +31,15 @@ function VideoCard({ src, label }) {
       <div style={{
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
-        padding: '24px 16px 14px',
-        background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)',
+        padding: '28px 16px 14px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)',
+        pointerEvents: 'none',
       }}>
         <span style={{
           fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 12,
           fontWeight: 500,
-          color: 'rgba(255,255,255,0.55)',
+          color: 'rgba(255,255,255,0.5)',
           letterSpacing: '0.04em',
         }}>
           {label}
@@ -55,10 +57,7 @@ export default function ShowcaseStrip() {
       maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
       WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
     }}>
-      <div
-        className="marquee-track"
-        style={{ gap: 20, paddingLeft: 20 }}
-      >
+      <div className="marquee-track" style={{ gap: 20, paddingLeft: 20 }}>
         {allVideos.map((v, i) => (
           <VideoCard key={i} src={v.src} label={v.label} />
         ))}

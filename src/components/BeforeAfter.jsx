@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const problemTags = [
+const problems = [
   'Slow loading',
   'Outdated design',
   'No clear CTA',
@@ -11,7 +11,7 @@ const problemTags = [
   'Not mobile friendly',
 ];
 
-const benefitTags = [
+const benefits = [
   'Clear CTA',
   'Captivating design',
   'Fast & responsive',
@@ -20,22 +20,28 @@ const benefitTags = [
   'Works on every device',
 ];
 
-function TagPill({ label, variant }) {
+function CheckRow({ label, variant }) {
   const isProblem = variant === 'problem';
   return (
-    <span style={{
-      display: 'inline-block',
-      padding: '6px 14px',
-      borderRadius: 999,
-      fontSize: 12,
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
-      fontWeight: 500,
-      background: isProblem ? 'rgba(255,255,255,0.04)' : 'rgba(74,144,184,0.08)',
-      border: isProblem ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(74,144,184,0.15)',
-      color: isProblem ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.58)',
-    }}>
-      {label}
-    </span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <span style={{
+        fontSize: 13,
+        fontWeight: 700,
+        color: isProblem ? 'rgba(255,100,100,0.45)' : 'rgba(74,184,140,0.65)',
+        flexShrink: 0,
+        lineHeight: 1,
+      }}>
+        {isProblem ? '✕' : '✓'}
+      </span>
+      <span style={{
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontSize: 13,
+        color: isProblem ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)',
+        lineHeight: 1.4,
+      }}>
+        {label}
+      </span>
+    </div>
   );
 }
 
@@ -115,21 +121,16 @@ export default function BeforeAfter() {
             </div>
             <p style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 400,
+              fontWeight: 500,
               fontSize: 'var(--small-size)',
               color: 'var(--text-muted)',
-              textAlign: 'center',
-              margin: '0.875rem 0 0.75rem',
+              textAlign: 'left',
+              margin: '1rem 0 0.75rem',
             }}>
               This is most websites.
             </p>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 8,
-              justifyContent: 'center',
-            }}>
-              {problemTags.map(t => <TagPill key={t} label={t} variant="problem" />)}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+              {problems.map(t => <CheckRow key={t} label={t} variant="problem" />)}
             </div>
           </div>
 
@@ -152,18 +153,13 @@ export default function BeforeAfter() {
               fontWeight: 600,
               fontSize: '1rem',
               color: 'var(--text-primary)',
-              textAlign: 'center',
-              margin: '0.875rem 0 0.75rem',
+              textAlign: 'left',
+              margin: '1rem 0 0.75rem',
             }}>
               This is a Luxcoda site.
             </p>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 8,
-              justifyContent: 'center',
-            }}>
-              {benefitTags.map(t => <TagPill key={t} label={t} variant="benefit" />)}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+              {benefits.map(t => <CheckRow key={t} label={t} variant="benefit" />)}
             </div>
           </div>
         </div>

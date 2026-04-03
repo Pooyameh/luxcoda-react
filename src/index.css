@@ -112,3 +112,21 @@ button { font-family: inherit; }
   from { stroke-dashoffset: var(--arc-total); }
   to   { stroke-dashoffset: var(--arc-offset); }
 }
+
+/* ─── Global responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  :root {
+    --section-padding: clamp(48px, 8vh, 72px);
+  }
+
+  /* Hero buttons full-width on very small screens */
+  .hero-cta { flex-direction: column; width: 100%; }
+  .hero-cta button { width: 100%; justify-content: center; }
+
+  /* Marquee card width tightened */
+  .marquee-track > div { width: 280px !important; }
+}
+
+/* Prevent horizontal overflow on all screen sizes */
+html, body { overflow-x: hidden; }
+

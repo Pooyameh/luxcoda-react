@@ -8,6 +8,7 @@ import ShowcaseStrip from './components/ShowcaseStrip';
 import Services from './components/Services';
 import Portfolio from './components/Portfolio';
 import Contact from './components/Contact';
+import LogoCard from './components/LogoCard';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
         <Services />
         <Portfolio />
         <Contact />
+        <LogoCard />
         <Footer />
       </div>
     </>

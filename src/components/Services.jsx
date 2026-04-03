@@ -2,20 +2,17 @@ import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ScreenCard from './ScreenCard';
-import SparksElectrical from './mini-sites/SparksElectrical';
-import ReliablePlumbing from './mini-sites/ReliablePlumbing';
-import ReliablePlumbingMobile from './mini-sites/ReliablePlumbingMobile';
 
-/* Visual side = 55% of 1200px ≈ 660px → scale = 660/1400 ≈ 0.47 */
-const SCALE_FULL = 0.47;
-const INNER_H    = Math.round(1400 * (10 / 16)); // 875
+const GLASS = {
+  background: 'rgba(255,255,255,0.03)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 16,
+  boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
+};
 
-/* Responsive pair */
-const SCALE_LAPTOP = 0.27;
-const SCALE_PHONE  = 0.39;
-const INNER_H_PHONE = Math.round(560 * (16 / 9)); // 996
-
-function FeatureRow({ textLeft, title, description, visual, index }) {
+function FeatureRow({ textLeft, title, description, visual }) {
   const rowRef  = useRef(null);
   const textRef = useRef(null);
   const visRef  = useRef(null);
@@ -82,32 +79,41 @@ function FeatureRow({ textLeft, title, description, visual, index }) {
 
 function CustomDesignVisual() {
   return (
-    <ScreenCard>
-      <div style={{ width: '1400px', height: `${INNER_H}px`, transform: `scale(${SCALE_FULL})`, transformOrigin: 'top left' }}>
-        <SparksElectrical />
-      </div>
-    </ScreenCard>
+    <div style={{
+      borderRadius: 12,
+      overflow: 'hidden',
+      border: '1px solid rgba(255,255,255,0.08)',
+      boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+    }}>
+      <img
+        src="/Custom.png"
+        alt="Custom website design"
+        style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+      />
+    </div>
   );
 }
 
 function ResponsiveVisual() {
   return (
     <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+      {/* Desktop video */}
       <div style={{ flex: 1 }}>
         <div style={{ marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Desktop</div>
-        <ScreenCard aspectRatio="16/10">
-          <div style={{ width: '1400px', height: `${INNER_H}px`, transform: `scale(${SCALE_LAPTOP})`, transformOrigin: 'top left' }}>
-            <ReliablePlumbing />
-          </div>
-        </ScreenCard>
+        <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', aspectRatio: '16/10' }}>
+          <video autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
+            <source src="/desktop.mp4" type="video/mp4" />
+          </video>
+        </div>
       </div>
-      <div style={{ width: 140 }}>
+      {/* Phone video */}
+      <div style={{ width: 120 }}>
         <div style={{ marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Mobile</div>
-        <ScreenCard aspectRatio="9/16">
-          <div style={{ width: '560px', height: `${INNER_H_PHONE}px`, transform: `scale(${SCALE_PHONE})`, transformOrigin: 'top left' }}>
-            <ReliablePlumbingMobile />
-          </div>
-        </ScreenCard>
+        <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', aspectRatio: '9/16' }}>
+          <video autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
+            <source src="/phone.mp4" type="video/mp4" />
+          </video>
+        </div>
       </div>
     </div>
   );
@@ -115,18 +121,12 @@ function ResponsiveVisual() {
 
 function GoogleResultVisual() {
   return (
-    <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border)',
-      borderRadius: 16,
-      padding: 28,
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
-    }}>
+    <div style={{ ...GLASS, padding: 28, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       {/* Search bar */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10,
-        background: 'var(--bg-elevated)',
-        border: '1px solid var(--border-hover)',
+        background: 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: 8, padding: '10px 14px', marginBottom: 20,
       }}>
         <svg width="16" height="16" fill="none" stroke="var(--text-muted)" strokeWidth="2" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@ function GoogleResultVisual() {
         <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>plumber brisbane</span>
       </div>
       {/* #1 — our client */}
-      <div style={{ padding: '14px 16px', background: 'var(--bg-elevated)', borderRadius: 8, marginBottom: 8, borderLeft: '3px solid rgba(74,144,184,0.5)' }}>
+      <div style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 8, marginBottom: 8, borderLeft: '3px solid rgba(74,144,184,0.5)' }}>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>davesplumbing.com.au</div>
         <div style={{ fontSize: 15, color: '#4a9eff', fontWeight: 600, marginBottom: 4 }}>Dave's Plumbing — Brisbane's Trusted Plumber</div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.45, marginBottom: 6 }}>
@@ -146,7 +146,6 @@ function GoogleResultVisual() {
           <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>4.9 · 127 reviews</span>
         </div>
       </div>
-      {/* #2, #3 greyed */}
       {['Competitor Plumbing Co.', 'Another Plumber Pty Ltd'].map(name => (
         <div key={name} style={{ padding: '10px 16px', borderRadius: 8, marginBottom: 6, opacity: 0.28 }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>competitor.com.au</div>
@@ -169,20 +168,13 @@ function LighthouseVisual() {
   const R = 34, C = 2 * Math.PI * R;
 
   const audits = [
-    { label: 'First Contentful Paint', value: '0.8s' },
-    { label: 'Speed Index',             value: '1.2s' },
-    { label: 'Largest Contentful Paint', value: '1.1s' },
+    { label: 'First Contentful Paint',   value: '0.8s' },
+    { label: 'Speed Index',               value: '1.2s' },
+    { label: 'Largest Contentful Paint',  value: '1.1s' },
   ];
 
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid var(--border)',
-      borderRadius: 12,
-      padding: '24px',
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
-    }}>
-      {/* Header */}
+    <div style={{ ...GLASS, padding: '24px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 22 }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" fill="#4285F4"/>
@@ -192,8 +184,6 @@ function LighthouseVisual() {
           Lighthouse Report
         </span>
       </div>
-
-      {/* Score circles */}
       <div style={{ display: 'flex', gap: 12, justifyContent: 'space-around', marginBottom: 22 }}>
         {scores.map(({ label, value }) => {
           const offset = C - (value / 100) * C;
@@ -213,9 +203,7 @@ function LighthouseVisual() {
           );
         })}
       </div>
-
-      {/* Audit rows */}
-      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {audits.map(a => (
           <div key={a.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: green, fontSize: 11, fontWeight: 700 }}>✓</span>
@@ -236,8 +224,8 @@ function ChatVisual() {
     { from: 'luxcoda', text: 'Done. ✓  Live by tomorrow morning.' },
   ];
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 28, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid var(--border)', paddingBottom: 16, marginBottom: 18 }}>
+    <div style={{ ...GLASS, padding: 28, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 16, marginBottom: 18 }}>
         <div style={{
           width: 32, height: 32, borderRadius: '50%',
           background: '#ffffff',
@@ -255,9 +243,9 @@ function ChatVisual() {
       {msgs.map((m, i) => (
         <div key={i} style={{ display: 'flex', justifyContent: m.from === 'client' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
           <div style={{
-            background: m.from === 'client' ? '#ffffff' : 'var(--bg-elevated)',
+            background: m.from === 'client' ? '#ffffff' : 'rgba(255,255,255,0.06)',
             color: m.from === 'client' ? '#0a0a0a' : 'var(--text-secondary)',
-            border: m.from === 'client' ? 'none' : '1px solid var(--border)',
+            border: m.from === 'client' ? 'none' : '1px solid rgba(255,255,255,0.08)',
             borderRadius: m.from === 'client' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
             padding: '10px 14px', fontSize: 13, lineHeight: 1.5, maxWidth: '80%',
           }}>

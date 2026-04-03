@@ -2,6 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+const GLASS = {
+  background: 'rgba(255,255,255,0.03)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 16,
+  boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
+};
+
 function PhoneIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -53,25 +62,34 @@ export default function Contact() {
 
   const inputStyle = {
     width: '100%',
-    background: 'var(--bg-elevated)',
-    border: '1px solid var(--border)',
-    borderRadius: 8,
-    padding: '14px 16px',
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: 12,
+    padding: '16px 18px',
     fontFamily: "'Plus Jakarta Sans', sans-serif",
     fontSize: '1rem',
-    color: 'var(--text-primary)',
+    color: '#ffffff',
     outline: 'none',
-    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+    transition: 'all 0.25s ease',
     boxSizing: 'border-box',
   };
 
   const handleFocus = (e) => {
-    e.target.style.borderColor = 'rgba(255,255,255,0.4)';
-    e.target.style.boxShadow = '0 0 0 2px rgba(74,144,184,0.15)';
+    e.target.style.borderColor = 'rgba(74,144,184,0.4)';
+    e.target.style.boxShadow = '0 0 0 3px rgba(74,144,184,0.1)';
   };
   const handleBlur = (e) => {
-    e.target.style.borderColor = 'var(--border)';
+    e.target.style.borderColor = 'rgba(255,255,255,0.08)';
     e.target.style.boxShadow = 'none';
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontWeight: 500,
+    fontSize: 'var(--small-size)',
+    color: 'rgba(255,255,255,0.6)',
+    marginBottom: 8,
   };
 
   return (
@@ -113,12 +131,7 @@ export default function Contact() {
           marginBottom: '1.5rem',
         }}>
           {/* Phone */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: 32,
-          }}>
+          <div style={{ ...GLASS, padding: 32 }}>
             <div style={{ marginBottom: 16 }}><PhoneIcon /></div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 'var(--small-size)', color: 'var(--text-muted)', marginBottom: 8 }}>Call us</div>
             <a href="tel:0414758891" style={{
@@ -141,12 +154,7 @@ export default function Contact() {
           </div>
 
           {/* Email */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: 32,
-          }}>
+          <div style={{ ...GLASS, padding: 32 }}>
             <div style={{ marginBottom: 16 }}><MailIcon /></div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 'var(--small-size)', color: 'var(--text-muted)', marginBottom: 8 }}>Email us</div>
             <a href="mailto:enquiries@luxcoda.com" style={{
@@ -171,61 +179,76 @@ export default function Contact() {
         </div>
 
         {/* Form */}
-        <div className="contact-anim" style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 16,
-          padding: 'clamp(24px, 5vw, 40px)',
-        }}>
+        <div className="contact-anim" style={{ ...GLASS, padding: 'clamp(28px, 5vw, 44px)' }}>
           <form onSubmit={e => e.preventDefault()} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {[
-              { key: 'name', label: 'Name', type: 'text', placeholder: 'Your name' },
-              { key: 'email', label: 'Email', type: 'email', placeholder: 'your@email.com' },
-            ].map(field => (
-              <div key={field.key}>
-                <label style={{
-                  display: 'block',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 500,
-                  fontSize: 'var(--small-size)',
-                  color: 'var(--text-muted)',
-                  marginBottom: 8,
-                }}>
-                  {field.label}
-                </label>
+            <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label style={labelStyle}>Name</label>
                 <input
-                  type={field.type}
-                  placeholder={field.placeholder}
-                  value={form[field.key]}
-                  onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
+                  type="text"
+                  placeholder="Your name"
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   style={inputStyle}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
                 />
               </div>
-            ))}
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  style={inputStyle}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+              </div>
+            </div>
             <div>
-              <label style={{
-                display: 'block',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 500,
-                fontSize: 'var(--small-size)',
-                color: 'var(--text-muted)',
-                marginBottom: 8,
-              }}>
-                Message
-              </label>
+              <label style={labelStyle}>Message</label>
               <textarea
-                rows={4}
+                rows={5}
                 placeholder="Tell us about your business and what you're after..."
                 value={form.message}
                 onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                style={{ ...inputStyle, resize: 'vertical', minHeight: 110 }}
+                style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
               />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              {/* Social links */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>
+                  Find us on
+                </span>
+                <a
+                  href="https://instagram.com/luxcoda"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.2s ease' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
+                  aria-label="Instagram"
+                >
+                  <InstagramIcon />
+                </a>
+                <a
+                  href="https://facebook.com/luxcoda"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.2s ease' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
+                  aria-label="Facebook"
+                >
+                  <FacebookIcon />
+                </a>
+              </div>
+
               <button
                 type="submit"
                 className="contact-btn"
@@ -234,7 +257,7 @@ export default function Contact() {
                   color: '#0a0a0a',
                   border: 'none',
                   borderRadius: 100,
-                  padding: '14px 36px',
+                  padding: '14px 32px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 500,
                   fontSize: '1rem',
@@ -254,49 +277,15 @@ export default function Contact() {
               </button>
             </div>
           </form>
-
-          {/* Social links */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 20,
-            marginTop: '1.5rem',
-          }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'var(--small-size)', color: 'var(--text-muted)' }}>
-              Or find us on
-            </span>
-            <a
-              href="https://instagram.com/luxcoda"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s ease' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
-              aria-label="Instagram"
-            >
-              <InstagramIcon />
-            </a>
-            <a
-              href="https://facebook.com/luxcoda"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s ease' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
-              aria-label="Facebook"
-            >
-              <FacebookIcon />
-            </a>
-          </div>
         </div>
       </div>
 
       <style>{`
-        input::placeholder, textarea::placeholder { color: var(--text-muted); opacity: 1; }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.25); opacity: 1; }
         @media (max-width: 640px) {
           .contact-cards { grid-template-columns: 1fr !important; }
-          .contact-btn { width: 100%; }
+          .form-row { grid-template-columns: 1fr !important; }
+          .contact-btn { width: 100%; text-align: center; }
         }
       `}</style>
     </section>
