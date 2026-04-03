@@ -22,16 +22,14 @@ function VideoCard({ src, label, type }) {
         border: '1px solid rgba(255,255,255,0.06)',
         position: 'relative',
         cursor: 'pointer',
-        transition: 'transform 0.3s ease, border-color 0.3s ease',
+        transition: 'border-color 0.3s ease',
         width: '100%',
         minHeight: 0,
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.transform = 'scale(1.02)';
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.transform = 'scale(1)';
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
       }}
     >
@@ -90,7 +88,6 @@ export default function Portfolio() {
     <section id="work" style={{
       background: 'var(--bg-surface)',
       padding: 'var(--section-padding) clamp(20px, 3vw, 48px)',
-      paddingBottom: 'calc(var(--section-padding) + 40px)',
     }}>
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 4rem)' }}>
@@ -129,6 +126,7 @@ export default function Portfolio() {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           grid-auto-rows: auto;
+          grid-auto-flow: dense;
           gap: 14px;
           align-items: start;
         }

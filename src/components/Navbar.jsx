@@ -132,15 +132,13 @@ export default function Navbar() {
                 fontWeight: 500,
                 fontSize: '13px',
                 cursor: 'pointer',
-                transition: 'background 0.25s ease, transform 0.25s ease',
+                transition: 'background 0.25s ease',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.85)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = '#ffffff';
-                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               Get a Free Mock-Up

@@ -98,15 +98,13 @@ export default function Hero() {
               fontWeight: 500,
               fontSize: '1rem',
               cursor: 'pointer',
-              transition: 'background 0.25s ease, transform 0.25s ease',
+              transition: 'background 0.25s ease',
             }}
             onMouseEnter={e => {
               e.currentTarget.style.background = 'rgba(255,255,255,0.85)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.background = '#ffffff';
-              e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
             Let's Talk

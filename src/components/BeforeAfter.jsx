@@ -20,43 +20,6 @@ const benefits = [
   'Works on every device',
 ];
 
-function CheckRow({ label, variant }) {
-  const isProblem = variant === 'problem';
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 12,
-      padding: '8px 16px',
-      background: isProblem
-        ? 'linear-gradient(135deg, rgba(255,60,60,0.06) 0%, rgba(255,60,60,0.02) 100%)'
-        : 'linear-gradient(135deg, rgba(74,144,184,0.06) 0%, rgba(74,144,184,0.02) 100%)',
-      border: isProblem ? '1px solid rgba(255,60,60,0.1)' : '1px solid rgba(74,144,184,0.1)',
-      borderLeft: isProblem ? '2px solid rgba(255,60,60,0.4)' : '2px solid rgba(74,144,184,0.4)',
-      borderRadius: 4,
-      backdropFilter: 'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-    }}>
-      <div style={{
-        width: 6,
-        height: 6,
-        background: isProblem ? 'rgba(255,80,80,0.6)' : 'rgba(74,144,184,0.7)',
-        borderRadius: 1,
-        flexShrink: 0,
-      }} />
-      <span style={{
-        fontSize: 11,
-        fontFamily: "'Plus Jakarta Sans', monospace",
-        letterSpacing: '0.05em',
-        color: isProblem ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.65)',
-        textTransform: 'uppercase',
-      }}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
 export default function BeforeAfter() {
   const headingRef = useRef(null);
   const leftRef    = useRef(null);
@@ -131,18 +94,46 @@ export default function BeforeAfter() {
                 style={{ width: '100%', display: 'block', objectFit: 'cover' }}
               />
             </div>
-            <p style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 500,
-              fontSize: 'var(--small-size)',
-              color: 'var(--text-muted)',
-              textAlign: 'left',
-              margin: '1rem 0 0.75rem',
+
+            {/* Problems card */}
+            <div style={{
+              background: 'rgba(255,255,255,0.02)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 12,
+              padding: '20px 24px',
+              marginTop: 16,
             }}>
-              This is most websites.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {problems.map(t => <CheckRow key={t} label={t} variant="problem" />)}
+              <div style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'rgba(255,255,255,0.5)',
+                marginBottom: 14,
+              }}>
+                This is most websites.
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {problems.map(item => (
+                  <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{
+                      width: 5, height: 5,
+                      background: 'rgba(255,80,80,0.5)',
+                      borderRadius: 1,
+                      flexShrink: 0,
+                    }} />
+                    <span style={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontSize: 13,
+                      color: 'rgba(255,255,255,0.4)',
+                      letterSpacing: '0.02em',
+                    }}>
+                      {item}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -160,18 +151,46 @@ export default function BeforeAfter() {
                 style={{ width: '100%', display: 'block', objectFit: 'cover' }}
               />
             </div>
-            <p style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600,
-              fontSize: '1rem',
-              color: 'var(--text-primary)',
-              textAlign: 'left',
-              margin: '1rem 0 0.75rem',
+
+            {/* Benefits card */}
+            <div style={{
+              background: 'rgba(74,144,184,0.03)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(74,144,184,0.08)',
+              borderRadius: 12,
+              padding: '20px 24px',
+              marginTop: 16,
             }}>
-              This is a Luxcoda site.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {benefits.map(t => <CheckRow key={t} label={t} variant="benefit" />)}
+              <div style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'rgba(255,255,255,0.7)',
+                marginBottom: 14,
+              }}>
+                This is a Luxcoda site.
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {benefits.map(item => (
+                  <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{
+                      width: 5, height: 5,
+                      background: 'rgba(74,144,184,0.6)',
+                      borderRadius: 1,
+                      flexShrink: 0,
+                    }} />
+                    <span style={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontSize: 13,
+                      color: 'rgba(255,255,255,0.6)',
+                      letterSpacing: '0.02em',
+                    }}>
+                      {item}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
