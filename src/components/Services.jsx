@@ -1,7 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import ScreenCard from './ScreenCard';
 
 const GLASS = {
   background: 'rgba(255,255,255,0.03)',

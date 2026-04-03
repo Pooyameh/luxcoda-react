@@ -46,9 +46,28 @@ function FacebookIcon() {
   );
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Contact() {
   const sectionRef = useRef(null);
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+
+  // Form fields
+  const [name, setName]       = useState('');
+  const [email, setEmail]     = useState('');
+  const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+
+  // Validation errors
+  const [errors, setErrors] = useState({});
+
+  // Submit state
+  const [submitStatus, setSubmitStatus]       = useState(null); // null | 'success' | 'error'
+  const [submitError, setSubmitError]         = useState('');
+
+  // Rate-limiting state
+  const [mountTime]                            = useState(Date.now);
+  const [submitCount, setSubmitCount]         = useState(0);
+  const [lastSubmitTime, setLastSubmitTime]   = useState(0);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -59,6 +78,65 @@ export default function Contact() {
     }, sectionRef);
     return () => ctx.revert();
   }, []);
+
+  function validate() {
+    const e = {};
+    if (!name.trim() || name.trim().length < 2)        e.name    = 'Name must be at least 2 characters.';
+    if (name.trim().length > 100)                       e.name    = 'Name is too long.';
+    if (!email.trim() || !EMAIL_RE.test(email.trim()))  e.email   = 'Please enter a valid email address.';
+    if (!message.trim() || message.trim().length < 10)  e.message = 'Message must be at least 10 characters.';
+    if (message.trim().length > 2000)                   e.message = 'Message is too long (max 2000 characters).';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  }
+
+  function fakeSuccess() {
+    setSubmitStatus('success');
+  }
+
+  function showError(msg) {
+    setSubmitError(msg);
+    setSubmitStatus('error');
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    // 1. Honeypot — silent fake success
+    if (honeypot) { fakeSuccess(); return; }
+
+    // 2. Timing — too fast = bot
+    if (Date.now() - mountTime < 3000) { fakeSuccess(); return; }
+
+    // 3. Rate limit — max 3 submissions per session
+    if (submitCount >= 3) {
+      showError("You've sent too many messages. Please try again later.");
+      return;
+    }
+
+    // 4. Cooldown — 30s between submissions
+    if (lastSubmitTime && Date.now() - lastSubmitTime < 30000) {
+      showError('Please wait a moment before sending another message.');
+      return;
+    }
+
+    // 5. Validate fields
+    if (!validate()) return;
+
+    // 6. Submit (no backend yet — show success)
+    setSubmitCount(prev => prev + 1);
+    setLastSubmitTime(Date.now());
+    setSubmitStatus('success');
+
+    setTimeout(() => {
+      setName('');
+      setEmail('');
+      setMessage('');
+      setErrors({});
+      setSubmitStatus(null);
+      setSubmitError('');
+    }, 4000);
+  }
 
   const inputStyle = {
     width: '100%',
@@ -92,12 +170,20 @@ export default function Contact() {
     marginBottom: 8,
   };
 
+  const fieldErrorStyle = {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 12,
+    color: 'rgba(255,100,100,0.75)',
+    marginTop: 6,
+  };
+
   return (
     <section id="contact" ref={sectionRef} style={{
       background: 'var(--bg-primary)',
       padding: 'var(--section-padding) var(--content-padding)',
     }}>
       <div className="content-wrap" style={{ maxWidth: 800 }}>
+
         {/* Heading */}
         <div className="contact-anim" style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 7vw, 5rem)' }}>
           <h2 style={{
@@ -130,7 +216,6 @@ export default function Contact() {
           gap: '1rem',
           marginBottom: '1.5rem',
         }}>
-          {/* Phone */}
           <div style={{ ...GLASS, padding: 32 }}>
             <div style={{ marginBottom: 16 }}><PhoneIcon /></div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 'var(--small-size)', color: 'var(--text-muted)', marginBottom: 8 }}>Call us</div>
@@ -153,7 +238,6 @@ export default function Contact() {
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'var(--small-size)', color: 'var(--text-muted)' }}>Mon–Fri, 8am–6pm</div>
           </div>
 
-          {/* Email */}
           <div style={{ ...GLASS, padding: 32 }}>
             <div style={{ marginBottom: 16 }}><MailIcon /></div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 'var(--small-size)', color: 'var(--text-muted)', marginBottom: 8 }}>Email us</div>
@@ -180,47 +264,77 @@ export default function Contact() {
 
         {/* Form */}
         <div className="contact-anim" style={{ ...GLASS, padding: 'clamp(28px, 5vw, 44px)' }}>
-          <form onSubmit={e => e.preventDefault()} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+            {/* Honeypot — hidden from humans, fills for bots */}
+            <input
+              type="text"
+              name="website"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              style={{
+                position: 'absolute',
+                left: '-9999px',
+                opacity: 0,
+                height: 0,
+                width: 0,
+                overflow: 'hidden',
+              }}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
+
             <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
                 <label style={labelStyle}>Name</label>
                 <input
                   type="text"
                   placeholder="Your name"
-                  value={form.name}
-                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  style={inputStyle}
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  style={{ ...inputStyle, borderColor: errors.name ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
                 />
+                {errors.name && <p style={fieldErrorStyle}>{errors.name}</p>}
               </div>
               <div>
                 <label style={labelStyle}>Email</label>
                 <input
                   type="email"
                   placeholder="your@email.com"
-                  value={form.email}
-                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                  style={inputStyle}
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  style={{ ...inputStyle, borderColor: errors.email ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
                 />
+                {errors.email && <p style={fieldErrorStyle}>{errors.email}</p>}
               </div>
             </div>
+
             <div>
               <label style={labelStyle}>Message</label>
               <textarea
                 rows={5}
                 placeholder="Tell us about your business and what you're after..."
-                value={form.message}
-                onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }}
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                style={{
+                  ...inputStyle,
+                  resize: 'vertical',
+                  minHeight: 120,
+                  borderColor: errors.message ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)',
+                }}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
               />
+              {errors.message && <p style={fieldErrorStyle}>{errors.message}</p>}
             </div>
+
+            {/* Submit row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-              {/* Social links */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>
                   Find us on
@@ -252,8 +366,9 @@ export default function Contact() {
               <button
                 type="submit"
                 className="contact-btn"
+                disabled={submitStatus === 'success'}
                 style={{
-                  background: '#ffffff',
+                  background: submitStatus === 'success' ? 'rgba(255,255,255,0.6)' : '#ffffff',
                   color: '#0a0a0a',
                   border: 'none',
                   borderRadius: 100,
@@ -261,21 +376,53 @@ export default function Contact() {
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 500,
                   fontSize: '1rem',
-                  cursor: 'pointer',
+                  cursor: submitStatus === 'success' ? 'default' : 'pointer',
                   transition: 'background 0.25s ease, transform 0.25s ease',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.85)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  if (submitStatus !== 'success') {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.85)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = '#ffffff';
+                  e.currentTarget.style.background = submitStatus === 'success' ? 'rgba(255,255,255,0.6)' : '#ffffff';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                Send Message
+                {submitStatus === 'success' ? 'Sent ✓' : 'Send Message'}
               </button>
             </div>
+
+            {/* Status messages */}
+            {submitStatus === 'success' && (
+              <div style={{
+                padding: '14px 20px',
+                background: 'rgba(74,184,140,0.08)',
+                border: '1px solid rgba(74,184,140,0.15)',
+                borderRadius: 12,
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 14,
+                color: 'rgba(100,220,160,0.9)',
+                textAlign: 'center',
+              }}>
+                Thanks! We'll be in touch within 24 hours.
+              </div>
+            )}
+            {submitStatus === 'error' && (
+              <div style={{
+                padding: '14px 20px',
+                background: 'rgba(255,80,80,0.06)',
+                border: '1px solid rgba(255,80,80,0.12)',
+                borderRadius: 12,
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 14,
+                color: 'rgba(255,120,120,0.85)',
+                textAlign: 'center',
+              }}>
+                {submitError}
+              </div>
+            )}
           </form>
         </div>
       </div>

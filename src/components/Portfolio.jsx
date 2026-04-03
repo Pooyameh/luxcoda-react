@@ -2,48 +2,36 @@ import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-/*
-  Grid: 3 columns on desktop, 2 on tablet, 1 on mobile.
-  Desktop-recorded videos → 16/10 (landscape).
-  Phone-recorded videos   → 4/5  (compromise so they don't tower).
-  One "hero" card (accordion) spans 2 columns.
-  Bottom card (parallax) spans all 3 columns at a cinematic 21/9.
-*/
-
-const items = [
-  // Row 1
-  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery', colSpan: 2, aspect: '16/10', phone: false },
-  { src: '/showcase/product.mp4',   label: '3D Product',        colSpan: 1, aspect: '4/5',   phone: true  },
-  // Row 2
-  { src: '/showcase/cards.mp4',     label: 'Expanding Cards',   colSpan: 1, aspect: '4/5',   phone: true  },
-  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor',   colSpan: 1, aspect: '16/10', phone: false },
-  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic',      colSpan: 1, aspect: '4/5',   phone: true  },
-  // Row 3
-  { src: '/showcase/compare.mp4',   label: 'Before / After',    colSpan: 2, aspect: '16/10', phone: false },
-  // Row 4 — full-width
-  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth',    colSpan: 3, aspect: '21/9',  phone: false },
+const videos = [
+  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery' },
+  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth' },
+  { src: '/showcase/product.mp4',   label: '3D Product' },
+  { src: '/showcase/cards.mp4',     label: 'Expanding Cards' },
+  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic' },
+  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor' },
+  { src: '/showcase/compare.mp4',   label: 'Before / After' },
 ];
 
-function PortfolioCard({ src, label, colSpan, aspect }) {
+function VideoCard({ src, label }) {
   return (
     <div
-      className={`p-card p-span-${colSpan}`}
+      className="port-card"
       style={{
-        gridColumn: `span ${colSpan}`,
-        aspectRatio: aspect,
+        aspectRatio: '16 / 10',
         borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.06)',
         position: 'relative',
-        transition: 'border-color 0.3s ease, transform 0.3s ease',
+        cursor: 'pointer',
+        transition: 'transform 0.3s ease, border-color 0.3s ease',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)';
         e.currentTarget.style.transform = 'scale(1.02)';
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
         e.currentTarget.style.transform = 'scale(1)';
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
       }}
     >
       <video
@@ -60,19 +48,15 @@ function PortfolioCard({ src, label, colSpan, aspect }) {
       <div style={{
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
-        padding: '28px 16px 12px',
-        background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)',
+        padding: '10px 14px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%)',
+        fontSize: 11,
+        color: 'rgba(255,255,255,0.6)',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontWeight: 500,
         pointerEvents: 'none',
       }}>
-        <span style={{
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontSize: 12,
-          fontWeight: 500,
-          color: 'rgba(255,255,255,0.55)',
-          letterSpacing: '0.04em',
-        }}>
-          {label}
-        </span>
+        {label}
       </div>
     </div>
   );
@@ -80,26 +64,27 @@ function PortfolioCard({ src, label, colSpan, aspect }) {
 
 export default function Portfolio() {
   const headRef = useRef(null);
-  const sectionRef = useRef(null);
+  const gridRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(headRef.current, {
         scrollTrigger: { trigger: headRef.current, start: 'top 85%', once: true },
-        opacity: 0, y: 22, duration: 0.8, ease: 'power3.out',
+        opacity: 0, y: 20, duration: 0.8, ease: 'power3.out',
       });
-      gsap.from(sectionRef.current.querySelectorAll('.p-card'), {
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true },
-        opacity: 0, y: 24, duration: 0.8, ease: 'power3.out', stagger: 0.07,
+      gsap.from(gridRef.current.querySelectorAll('.port-card'), {
+        scrollTrigger: { trigger: gridRef.current, start: 'top 82%', once: true },
+        opacity: 0, y: 20, duration: 0.7, ease: 'power3.out', stagger: 0.06,
       });
     });
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="work" ref={sectionRef} style={{
+    <section id="work" style={{
       background: 'var(--bg-surface)',
       padding: 'var(--section-padding) var(--content-padding)',
+      paddingBottom: 'calc(var(--section-padding) + 40px)',
     }}>
       <div className="content-wrap">
         <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 4rem)' }}>
@@ -126,33 +111,23 @@ export default function Portfolio() {
           </p>
         </div>
 
-        <div className="port-grid" style={{
+        <div ref={gridRef} className="port-grid" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 16,
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: 12,
         }}>
-          {items.map((item) => (
-            <PortfolioCard
-              key={item.src}
-              src={item.src}
-              label={item.label}
-              colSpan={item.colSpan}
-              aspect={item.aspect}
-            />
+          {videos.map((v) => (
+            <VideoCard key={v.src} src={v.src} label={v.label} />
           ))}
         </div>
       </div>
 
       <style>{`
-        /* Tablet */
         @media (min-width: 640px) and (max-width: 1023px) {
           .port-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .port-grid .p-card { grid-column: span 1 !important; }
         }
-        /* Mobile */
         @media (max-width: 639px) {
           .port-grid { grid-template-columns: 1fr !important; }
-          .port-grid .p-card { grid-column: span 1 !important; aspect-ratio: 16/9 !important; }
         }
       `}</style>
     </section>
