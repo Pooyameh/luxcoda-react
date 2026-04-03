@@ -77,6 +77,8 @@ export default function Scene3D() {
         camera={{ position: [0, 0, 12], fov: 60 }}
         gl={{ antialias: false, alpha: true }}
         dpr={[1, 1.5]}
+        style={{ pointerEvents: 'none' }}
+        events={undefined}
       >
         <Starfield />
       </Canvas>
