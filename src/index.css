@@ -16,19 +16,15 @@ html { scroll-behavior: auto; }
   --text-secondary: #999999;
   --text-muted:     #555555;
 
-  /* Accent */
-  --accent:          #c45a2d;
-  --accent-hover:    #d4683a;
-  --accent-glow:     rgba(196, 90, 45, 0.15);
-  --accent-subtle:   rgba(196, 90, 45, 0.08);
+  /* Accent — steel blue, used VERY sparingly (Lighthouse rings, decorative only) */
+  --accent:        #4A90B8;
+  --accent-hover:  #5aa0c8;
+  --accent-glow:   rgba(74, 144, 184, 0.15);
+  --accent-subtle: rgba(74, 144, 184, 0.08);
 
   /* Borders */
-  --border:          rgba(255, 255, 255, 0.06);
-  --border-hover:    rgba(255, 255, 255, 0.12);
-
-  /* Gradients */
-  --fade-to-black:    linear-gradient(180deg, transparent 0%, #000000 100%);
-  --accent-gradient:  linear-gradient(135deg, #c45a2d 0%, #d4683a 50%, #e07a4a 100%);
+  --border:        rgba(255, 255, 255, 0.06);
+  --border-hover:  rgba(255, 255, 255, 0.12);
 
   /* Typography */
   --h1-size:        clamp(3rem, 7vw, 5.5rem);
@@ -61,7 +57,7 @@ html { scroll-behavior: auto; }
 
   /* Layout */
   --max-width:       1200px;
-  --section-padding: clamp(80px, 10vh, 120px);
+  --section-padding: clamp(60px, 8vh, 100px);
   --content-padding: clamp(20px, 5vw, 48px);
 }
 
@@ -88,7 +84,7 @@ button { font-family: inherit; }
 ::-webkit-scrollbar-thumb { background: #222; border-radius: 1px; }
 
 /* ─── Selection ──────────────────────────────────────────────────────────────── */
-::selection { background: var(--accent-glow); color: var(--text-primary); }
+::selection { background: rgba(255,255,255,0.1); color: var(--text-primary); }
 
 /* ─── Layout utility ─────────────────────────────────────────────────────────── */
 .content-wrap {

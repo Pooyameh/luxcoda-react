@@ -134,54 +134,55 @@ export default function Hero() {
           flexWrap: 'wrap',
           justifyContent: 'center',
         }}>
+          {/* Primary: white pill */}
           <button
             onClick={() => scrollTo('contact')}
             style={{
-              background: 'var(--accent)',
-              color: '#fff',
+              background: '#ffffff',
+              color: '#0a0a0a',
               border: 'none',
               borderRadius: 100,
               padding: '14px 36px',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: '1rem',
               cursor: 'pointer',
-              transition: 'background 0.2s ease, box-shadow 0.2s ease',
+              transition: 'background 0.25s ease, transform 0.25s ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'var(--accent-hover)';
-              e.currentTarget.style.boxShadow = '0 0 30px var(--accent-glow)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.85)';
+              e.currentTarget.style.transform = 'translateY(-1px)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'var(--accent)';
-              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.background = '#ffffff';
+              e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
             Let's Talk
           </button>
+
+          {/* Ghost: transparent with white border */}
           <button
             onClick={() => scrollTo('work')}
             style={{
               background: 'transparent',
-              color: 'var(--text-secondary)',
-              border: '1px solid var(--border)',
+              color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.15)',
               borderRadius: 100,
               padding: '14px 36px',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: '1rem',
               cursor: 'pointer',
-              transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease',
+              transition: 'border-color 0.25s ease, background 0.25s ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-              e.currentTarget.style.borderColor = 'var(--border-hover)';
-              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
             }}
             onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
               e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.borderColor = 'var(--border)';
-              e.currentTarget.style.color = 'var(--text-secondary)';
             }}
           >
             See Our Work
@@ -213,7 +214,7 @@ export default function Hero() {
         gap: '0.5rem',
         flexWrap: 'wrap',
       }}>
-        {['Custom Design', 'Mobile First', 'SEO Ready', 'Fast Loading', 'Ongoing Support'].map((b, i, arr) => (
+        {['Custom Design', 'Mobile First', 'SEO Ready', 'Fast Loading', 'Ongoing Support'].map((b, i) => (
           <span key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {i > 0 && <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>·</span>}
             <span style={{

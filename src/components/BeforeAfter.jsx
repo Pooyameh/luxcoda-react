@@ -1,15 +1,43 @@
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import ScreenCard from './ScreenCard';
-import UglySite from './mini-sites/UglySite';
-import ReliablePlumbing from './mini-sites/ReliablePlumbing';
 
-/* Cards are roughly half content-width with gap.
-   Content-wrap = 1200px, 2 cols with ~48px gap → each ≈ 576px
-   Scale = 576 / 1400 ≈ 0.41 */
-const SCALE = 0.41;
-const INNER_H = Math.round(1400 * (10 / 16)); // 875
+const problemTags = [
+  'Slow loading',
+  'Outdated design',
+  'No clear CTA',
+  'No reviews on first page',
+  'Poor SEO',
+  'Not mobile friendly',
+];
+
+const benefitTags = [
+  'Clear CTA',
+  'Captivating design',
+  'Fast & responsive',
+  'Trust signals upfront',
+  'SEO optimized',
+  'Works on every device',
+];
+
+function TagPill({ label, variant }) {
+  const isProblem = variant === 'problem';
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '6px 14px',
+      borderRadius: 999,
+      fontSize: 12,
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontWeight: 500,
+      background: isProblem ? 'rgba(255,255,255,0.04)' : 'rgba(74,144,184,0.08)',
+      border: isProblem ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(74,144,184,0.15)',
+      color: isProblem ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.58)',
+    }}>
+      {label}
+    </span>
+  );
+}
 
 export default function BeforeAfter() {
   const headingRef = useRef(null);
@@ -73,40 +101,70 @@ export default function BeforeAfter() {
         }}>
           {/* Before */}
           <div ref={leftRef}>
-            <ScreenCard>
-              <div style={{ width: '1400px', height: `${INNER_H}px`, transform: `scale(${SCALE})`, transformOrigin: 'top left' }}>
-                <UglySite />
-              </div>
-            </ScreenCard>
+            <div style={{
+              borderRadius: 12,
+              overflow: 'hidden',
+              border: '1px solid rgba(255,255,255,0.06)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+            }}>
+              <img
+                src="/before-cardetailing.png"
+                alt="Before — typical outdated website"
+                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
             <p style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 400,
               fontSize: 'var(--small-size)',
               color: 'var(--text-muted)',
               textAlign: 'center',
-              marginTop: '0.875rem',
+              margin: '0.875rem 0 0.75rem',
             }}>
               This is most websites.
             </p>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 8,
+              justifyContent: 'center',
+            }}>
+              {problemTags.map(t => <TagPill key={t} label={t} variant="problem" />)}
+            </div>
           </div>
 
           {/* After */}
           <div ref={rightRef}>
-            <ScreenCard>
-              <div style={{ width: '1400px', height: `${INNER_H}px`, transform: `scale(${SCALE})`, transformOrigin: 'top left' }}>
-                <ReliablePlumbing />
-              </div>
-            </ScreenCard>
+            <div style={{
+              borderRadius: 12,
+              overflow: 'hidden',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 4px 32px rgba(0,0,0,0.5)',
+            }}>
+              <img
+                src="/after-cardetailing.png"
+                alt="After — Luxcoda premium website"
+                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
             <p style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 600,
               fontSize: '1rem',
-              color: 'var(--accent)',
+              color: 'var(--text-primary)',
               textAlign: 'center',
-              marginTop: '0.875rem',
+              margin: '0.875rem 0 0.75rem',
             }}>
               This is a Luxcoda site.
             </p>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 8,
+              justifyContent: 'center',
+            }}>
+              {benefitTags.map(t => <TagPill key={t} label={t} variant="benefit" />)}
+            </div>
           </div>
         </div>
       </div>

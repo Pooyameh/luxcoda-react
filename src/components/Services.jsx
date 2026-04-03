@@ -10,9 +10,7 @@ import ReliablePlumbingMobile from './mini-sites/ReliablePlumbingMobile';
 const SCALE_FULL = 0.47;
 const INNER_H    = Math.round(1400 * (10 / 16)); // 875
 
-/* For the responsive pair:
-   - laptop card ~380px wide → scale 380/1400 ≈ 0.27
-   - phone card  ~220px wide → 9/16 aspect, scale 220/560 ≈ 0.39 */
+/* Responsive pair */
 const SCALE_LAPTOP = 0.27;
 const SCALE_PHONE  = 0.39;
 const INNER_H_PHONE = Math.round(560 * (16 / 9)); // 996
@@ -95,7 +93,6 @@ function CustomDesignVisual() {
 function ResponsiveVisual() {
   return (
     <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-      {/* Laptop card */}
       <div style={{ flex: 1 }}>
         <div style={{ marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Desktop</div>
         <ScreenCard aspectRatio="16/10">
@@ -104,7 +101,6 @@ function ResponsiveVisual() {
           </div>
         </ScreenCard>
       </div>
-      {/* Phone card */}
       <div style={{ width: 140 }}>
         <div style={{ marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Mobile</div>
         <ScreenCard aspectRatio="9/16">
@@ -139,7 +135,7 @@ function GoogleResultVisual() {
         <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>plumber brisbane</span>
       </div>
       {/* #1 — our client */}
-      <div style={{ padding: '14px 16px', background: 'var(--bg-elevated)', borderRadius: 8, marginBottom: 8, borderLeft: '3px solid var(--accent)' }}>
+      <div style={{ padding: '14px 16px', background: 'var(--bg-elevated)', borderRadius: 8, marginBottom: 8, borderLeft: '3px solid rgba(74,144,184,0.5)' }}>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>davesplumbing.com.au</div>
         <div style={{ fontSize: 15, color: '#4a9eff', fontWeight: 600, marginBottom: 4 }}>Dave's Plumbing — Brisbane's Trusted Plumber</div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.45, marginBottom: 6 }}>
@@ -164,35 +160,69 @@ function GoogleResultVisual() {
 
 function LighthouseVisual() {
   const scores = [
-    { label: 'Performance', value: 99, color: '#22c55e' },
-    { label: 'Accessibility', value: 100, color: '#22c55e' },
-    { label: 'SEO', value: 98, color: '#22c55e' },
+    { label: 'Performance',    value: 99 },
+    { label: 'Accessibility',  value: 100 },
+    { label: 'Best Practices', value: 98 },
+    { label: 'SEO',            value: 100 },
   ];
-  const R = 38, C = 2 * Math.PI * R;
+  const green = '#0cce6b';
+  const R = 34, C = 2 * Math.PI * R;
+
+  const audits = [
+    { label: 'First Contentful Paint', value: '0.8s' },
+    { label: 'Speed Index',             value: '1.2s' },
+    { label: 'Largest Contentful Paint', value: '1.1s' },
+  ];
+
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px 24px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
-        <div style={{ width: 20, height: 20, background: '#f59e0b', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#000' }}>L</div>
-        <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>Google Lighthouse</span>
+    <div style={{
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid var(--border)',
+      borderRadius: 12,
+      padding: '24px',
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 22 }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#4285F4"/>
+          <text x="12" y="16" textAnchor="middle" fontSize="11" fontWeight="700" fill="white">G</text>
+        </svg>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '-0.01em' }}>
+          Lighthouse Report
+        </span>
       </div>
-      <div style={{ display: 'flex', gap: 20, justifyContent: 'center' }}>
-        {scores.map(({ label, value, color }) => {
+
+      {/* Score circles */}
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'space-around', marginBottom: 22 }}>
+        {scores.map(({ label, value }) => {
           const offset = C - (value / 100) * C;
           return (
             <div key={label} style={{ textAlign: 'center' }}>
-              <svg width="96" height="96" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-                <circle cx="50" cy="50" r={R} fill="none" stroke={color} strokeWidth="8"
+              <svg width="82" height="82" viewBox="0 0 84 84">
+                <circle cx="42" cy="42" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="7" />
+                <circle cx="42" cy="42" r={R} fill="none" stroke={green} strokeWidth="7"
                   strokeDasharray={C} strokeDashoffset={offset}
-                  strokeLinecap="round" transform="rotate(-90 50 50)"
+                  strokeLinecap="round" transform="rotate(-90 42 42)"
                   style={{ animation: 'arcDraw 1.2s ease-out forwards', '--arc-total': C, '--arc-offset': offset }}
                 />
-                <text x="50" y="50" textAnchor="middle" dominantBaseline="central" fill={color} fontSize="22" fontWeight="700" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{value}</text>
+                <text x="42" y="42" textAnchor="middle" dominantBaseline="central" fill={green} fontSize="19" fontWeight="700" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{value}</text>
               </svg>
-              <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', marginTop: 4, fontWeight: 500 }}>{label}</p>
+              <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4, fontWeight: 500, lineHeight: 1.3 }}>{label}</p>
             </div>
           );
         })}
+      </div>
+
+      {/* Audit rows */}
+      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {audits.map(a => (
+          <div key={a.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: green, fontSize: 11, fontWeight: 700 }}>✓</span>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', flex: 1 }}>{a.label}</span>
+            <span style={{ fontSize: 11, color: green, fontWeight: 600 }}>{a.value}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -208,7 +238,12 @@ function ChatVisual() {
   return (
     <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 28, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid var(--border)', paddingBottom: 16, marginBottom: 18 }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff' }}>L</div>
+        <div style={{
+          width: 32, height: 32, borderRadius: '50%',
+          background: '#ffffff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 13, fontWeight: 700, color: '#0a0a0a',
+        }}>L</div>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Luxcoda Support</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#22c55e', marginTop: 2 }}>
@@ -220,8 +255,8 @@ function ChatVisual() {
       {msgs.map((m, i) => (
         <div key={i} style={{ display: 'flex', justifyContent: m.from === 'client' ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
           <div style={{
-            background: m.from === 'client' ? 'var(--accent)' : 'var(--bg-elevated)',
-            color: m.from === 'client' ? '#fff' : 'var(--text-secondary)',
+            background: m.from === 'client' ? '#ffffff' : 'var(--bg-elevated)',
+            color: m.from === 'client' ? '#0a0a0a' : 'var(--text-secondary)',
             border: m.from === 'client' ? 'none' : '1px solid var(--border)',
             borderRadius: m.from === 'client' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
             padding: '10px 14px', fontSize: 13, lineHeight: 1.5, maxWidth: '80%',

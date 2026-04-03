@@ -4,6 +4,7 @@ import Scene3D from './components/Scene3D';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import BeforeAfter from './components/BeforeAfter';
+import ShowcaseStrip from './components/ShowcaseStrip';
 import Services from './components/Services';
 import Portfolio from './components/Portfolio';
 import Contact from './components/Contact';
@@ -33,6 +34,7 @@ export default function App() {
         <Navbar />
         <Hero />
         <BeforeAfter />
+        <ShowcaseStrip />
         <Services />
         <Portfolio />
         <Contact />
