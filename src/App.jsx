@@ -34,8 +34,8 @@ export default function App() {
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar />
         <Hero />
-        <BeforeAfter />
         <ShowcaseStrip />
+        <BeforeAfter />
         <Services />
         <Portfolio />
         <Contact />

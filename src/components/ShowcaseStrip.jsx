@@ -1,4 +1,4 @@
-const videos = [
+const desktopVideos = [
   { src: '/showcase/accordion.mp4', label: 'Accordion Gallery' },
   { src: '/showcase/reveal.mp4',    label: 'Mask Reveal' },
   { src: '/showcase/parallax.mp4',  label: 'Parallax Depth' },
@@ -6,7 +6,9 @@ const videos = [
   { src: '/showcase/compare.mp4',   label: 'Before / After Slider' },
 ];
 
-const allVideos = [...videos, ...videos]; // duplicate for seamless loop
+// Render the full set twice for a seamless CSS marquee loop.
+// Each video element is independent — no cloning of DOM nodes.
+const allCards = [...desktopVideos, ...desktopVideos];
 
 function VideoCard({ src, label }) {
   return (
@@ -24,6 +26,8 @@ function VideoCard({ src, label }) {
         loop
         muted
         playsInline
+        preload="auto"
+        ref={(el) => { if (el) el.play().catch(() => {}); }}
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       >
         <source src={src} type="video/mp4" />
@@ -58,7 +62,7 @@ export default function ShowcaseStrip() {
       WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
     }}>
       <div className="marquee-track" style={{ gap: 20, paddingLeft: 20 }}>
-        {allVideos.map((v, i) => (
+        {allCards.map((v, i) => (
           <VideoCard key={i} src={v.src} label={v.label} />
         ))}
       </div>

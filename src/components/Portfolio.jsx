@@ -1,32 +1,45 @@
-import { useRef, useEffect, createRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const gridItems = [
-  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery',  colSpan: 2, aspect: '16/9'  },
-  { src: '/showcase/product.mp4',   label: '3D Product',         colSpan: 1, aspect: '9/16'  },
-  { src: '/showcase/cards.mp4',     label: 'Expanding Cards',    colSpan: 1, aspect: '9/16'  },
-  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic',       colSpan: 1, aspect: '9/16'  },
-  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor',    colSpan: 1, aspect: '4/3'   },
-  { src: '/showcase/compare.mp4',   label: 'Before / After',     colSpan: 1, aspect: '4/3'   },
-  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth',     colSpan: 3, aspect: '21/9'  },
+/*
+  Grid: 3 columns on desktop, 2 on tablet, 1 on mobile.
+  Desktop-recorded videos → 16/10 (landscape).
+  Phone-recorded videos   → 4/5  (compromise so they don't tower).
+  One "hero" card (accordion) spans 2 columns.
+  Bottom card (parallax) spans all 3 columns at a cinematic 21/9.
+*/
+
+const items = [
+  // Row 1
+  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery', colSpan: 2, aspect: '16/10', phone: false },
+  { src: '/showcase/product.mp4',   label: '3D Product',        colSpan: 1, aspect: '4/5',   phone: true  },
+  // Row 2
+  { src: '/showcase/cards.mp4',     label: 'Expanding Cards',   colSpan: 1, aspect: '4/5',   phone: true  },
+  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor',   colSpan: 1, aspect: '16/10', phone: false },
+  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic',      colSpan: 1, aspect: '4/5',   phone: true  },
+  // Row 3
+  { src: '/showcase/compare.mp4',   label: 'Before / After',    colSpan: 2, aspect: '16/10', phone: false },
+  // Row 4 — full-width
+  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth',    colSpan: 3, aspect: '21/9',  phone: false },
 ];
 
-function VideoCard({ src, label, style = {} }) {
+function PortfolioCard({ src, label, colSpan, aspect }) {
   return (
     <div
+      className={`p-card p-span-${colSpan}`}
       style={{
+        gridColumn: `span ${colSpan}`,
+        aspectRatio: aspect,
         borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.06)',
         position: 'relative',
         transition: 'border-color 0.3s ease, transform 0.3s ease',
-        height: '100%',
-        ...style,
       }}
       onMouseEnter={e => {
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)';
-        e.currentTarget.style.transform = 'scale(1.015)';
+        e.currentTarget.style.transform = 'scale(1.02)';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
@@ -38,6 +51,8 @@ function VideoCard({ src, label, style = {} }) {
         loop
         muted
         playsInline
+        preload="auto"
+        ref={(el) => { if (el) el.play().catch(() => {}); }}
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       >
         <source src={src} type="video/mp4" />
@@ -45,7 +60,7 @@ function VideoCard({ src, label, style = {} }) {
       <div style={{
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
-        padding: '32px 16px 14px',
+        padding: '28px 16px 12px',
         background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)',
         pointerEvents: 'none',
       }}>
@@ -53,7 +68,7 @@ function VideoCard({ src, label, style = {} }) {
           fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 12,
           fontWeight: 500,
-          color: 'rgba(255,255,255,0.5)',
+          color: 'rgba(255,255,255,0.55)',
           letterSpacing: '0.04em',
         }}>
           {label}
@@ -65,7 +80,7 @@ function VideoCard({ src, label, style = {} }) {
 
 export default function Portfolio() {
   const headRef = useRef(null);
-  const itemRefs = useRef(gridItems.map(() => createRef()));
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -73,25 +88,21 @@ export default function Portfolio() {
         scrollTrigger: { trigger: headRef.current, start: 'top 85%', once: true },
         opacity: 0, y: 22, duration: 0.8, ease: 'power3.out',
       });
-      itemRefs.current.forEach((ref, i) => {
-        if (!ref.current) return;
-        gsap.from(ref.current, {
-          scrollTrigger: { trigger: ref.current, start: 'top 84%', once: true },
-          opacity: 0, y: 24, duration: 0.8, ease: 'power3.out',
-          delay: (i % 3) * 0.1,
-        });
+      gsap.from(sectionRef.current.querySelectorAll('.p-card'), {
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true },
+        opacity: 0, y: 24, duration: 0.8, ease: 'power3.out', stagger: 0.07,
       });
     });
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="work" style={{
+    <section id="work" ref={sectionRef} style={{
       background: 'var(--bg-surface)',
       padding: 'var(--section-padding) var(--content-padding)',
     }}>
       <div className="content-wrap">
-        <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 6vw, 4.5rem)' }}>
+        <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 4rem)' }}>
           <h2 style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 600,
@@ -111,46 +122,37 @@ export default function Portfolio() {
             margin: '0 auto',
             lineHeight: 1.65,
           }}>
-            Interactive experiences designed for local trades and businesses.
+            Interactive experiences designed for trades and local businesses.
           </p>
         </div>
 
-        {/* Desktop/Tablet grid */}
         <div className="port-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 'clamp(0.75rem, 1.5vw, 1.25rem)',
+          gap: 16,
         }}>
-          {gridItems.map((item, i) => (
-            <div
+          {items.map((item) => (
+            <PortfolioCard
               key={item.src}
-              ref={itemRefs.current[i]}
-              style={{
-                gridColumn: `span ${item.colSpan}`,
-                aspectRatio: item.aspect,
-              }}
-            >
-              <VideoCard src={item.src} label={item.label} />
-            </div>
+              src={item.src}
+              label={item.label}
+              colSpan={item.colSpan}
+              aspect={item.aspect}
+            />
           ))}
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 767px) {
-          .port-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .port-grid > div {
-            grid-column: span 1 !important;
-          }
-          .port-grid > div[style*="21/9"] {
-            aspect-ratio: 16/9 !important;
-          }
-        }
-        @media (min-width: 768px) and (max-width: 1023px) {
+        /* Tablet */
+        @media (min-width: 640px) and (max-width: 1023px) {
           .port-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .port-grid > div[style*="span 3"] { grid-column: span 2 !important; }
+          .port-grid .p-card { grid-column: span 1 !important; }
+        }
+        /* Mobile */
+        @media (max-width: 639px) {
+          .port-grid { grid-template-columns: 1fr !important; }
+          .port-grid .p-card { grid-column: span 1 !important; aspect-ratio: 16/9 !important; }
         }
       `}</style>
     </section>

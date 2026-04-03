@@ -23,20 +23,31 @@ const benefits = [
 function CheckRow({ label, variant }) {
   const isProblem = variant === 'problem';
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 12,
+      padding: '10px 16px',
+      background: isProblem ? 'rgba(255,50,50,0.04)' : 'rgba(74,144,184,0.04)',
+      border: isProblem ? '1px solid rgba(255,50,50,0.08)' : '1px solid rgba(74,144,184,0.08)',
+      borderRadius: 10,
+    }}>
       <span style={{
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: 700,
-        color: isProblem ? 'rgba(255,100,100,0.45)' : 'rgba(74,184,140,0.65)',
+        color: isProblem ? 'rgba(255,100,100,0.5)' : 'rgba(74,144,184,0.7)',
         flexShrink: 0,
         lineHeight: 1,
+        minWidth: 14,
+        textAlign: 'center',
       }}>
         {isProblem ? '✕' : '✓'}
       </span>
       <span style={{
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontSize: 13,
-        color: isProblem ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)',
+        fontWeight: 400,
+        color: isProblem ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.65)',
         lineHeight: 1.4,
       }}>
         {label}
@@ -70,7 +81,7 @@ export default function BeforeAfter() {
 
   return (
     <section style={{
-      background: 'var(--bg-surface)',
+      background: 'var(--bg-primary)',
       padding: 'var(--section-padding) var(--content-padding)',
     }}>
       <div className="content-wrap">
@@ -99,7 +110,7 @@ export default function BeforeAfter() {
           </p>
         </div>
 
-        {/* Side-by-side cards */}
+        {/* Side-by-side */}
         <div className="ba-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -129,7 +140,7 @@ export default function BeforeAfter() {
             }}>
               This is most websites.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {problems.map(t => <CheckRow key={t} label={t} variant="problem" />)}
             </div>
           </div>
@@ -158,7 +169,7 @@ export default function BeforeAfter() {
             }}>
               This is a Luxcoda site.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {benefits.map(t => <CheckRow key={t} label={t} variant="benefit" />)}
             </div>
           </div>
