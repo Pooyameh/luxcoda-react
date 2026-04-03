@@ -27,28 +27,29 @@ function CheckRow({ label, variant }) {
       display: 'flex',
       alignItems: 'center',
       gap: 12,
-      padding: '10px 16px',
-      background: isProblem ? 'rgba(255,50,50,0.04)' : 'rgba(74,144,184,0.04)',
-      border: isProblem ? '1px solid rgba(255,50,50,0.08)' : '1px solid rgba(74,144,184,0.08)',
-      borderRadius: 10,
+      padding: '8px 16px',
+      background: isProblem
+        ? 'linear-gradient(135deg, rgba(255,60,60,0.06) 0%, rgba(255,60,60,0.02) 100%)'
+        : 'linear-gradient(135deg, rgba(74,144,184,0.06) 0%, rgba(74,144,184,0.02) 100%)',
+      border: isProblem ? '1px solid rgba(255,60,60,0.1)' : '1px solid rgba(74,144,184,0.1)',
+      borderLeft: isProblem ? '2px solid rgba(255,60,60,0.4)' : '2px solid rgba(74,144,184,0.4)',
+      borderRadius: 4,
+      backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
     }}>
-      <span style={{
-        fontSize: 14,
-        fontWeight: 700,
-        color: isProblem ? 'rgba(255,100,100,0.5)' : 'rgba(74,144,184,0.7)',
+      <div style={{
+        width: 6,
+        height: 6,
+        background: isProblem ? 'rgba(255,80,80,0.6)' : 'rgba(74,144,184,0.7)',
+        borderRadius: 1,
         flexShrink: 0,
-        lineHeight: 1,
-        minWidth: 14,
-        textAlign: 'center',
-      }}>
-        {isProblem ? '✕' : '✓'}
-      </span>
+      }} />
       <span style={{
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-        fontSize: 13,
-        fontWeight: 400,
-        color: isProblem ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.65)',
-        lineHeight: 1.4,
+        fontSize: 11,
+        fontFamily: "'Plus Jakarta Sans', monospace",
+        letterSpacing: '0.05em',
+        color: isProblem ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.65)',
+        textTransform: 'uppercase',
       }}>
         {label}
       </span>

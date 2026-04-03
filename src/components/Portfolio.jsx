@@ -3,29 +3,28 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const videos = [
-  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery' },
-  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth' },
-  { src: '/showcase/product.mp4',   label: '3D Product' },
-  { src: '/showcase/cards.mp4',     label: 'Expanding Cards' },
-  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic' },
-  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor' },
-  { src: '/showcase/compare.mp4',   label: 'Before / After' },
+  { src: '/showcase/accordion.mp4', label: 'Accordion Gallery',  type: 'landscape' },
+  { src: '/showcase/product.mp4',   label: '3D Product',         type: 'portrait'  },
+  { src: '/showcase/cards.mp4',     label: 'Expanding Cards',    type: 'portrait'  },
+  { src: '/showcase/parallax.mp4',  label: 'Parallax Depth',     type: 'landscape' },
+  { src: '/showcase/magnetic.mp4',  label: 'Magnetic Cursor',    type: 'landscape' },
+  { src: '/showcase/compare.mp4',   label: 'Before / After',     type: 'landscape' },
+  { src: '/showcase/mosaic.mp4',    label: 'Photo Mosaic',       type: 'portrait'  },
 ];
 
-function VideoCard({ src, label }) {
+function VideoCard({ src, label, type }) {
   return (
     <div
-      className="port-card"
+      className={`port-card port-card-${type}`}
       style={{
-        aspectRatio: '16 / 10',
-        width: '100%',
-        minHeight: 0,
         borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.06)',
         position: 'relative',
         cursor: 'pointer',
         transition: 'transform 0.3s ease, border-color 0.3s ease',
+        width: '100%',
+        minHeight: 0,
       }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = 'scale(1.02)';
@@ -42,7 +41,12 @@ function VideoCard({ src, label }) {
         muted
         playsInline
         preload="auto"
-        ref={(el) => { if (el) el.play().catch(() => {}); }}
+        ref={(el) => {
+          if (el) {
+            el.play().catch(() => {});
+            el.addEventListener('ended', () => { el.currentTime = 0; el.play().catch(() => {}); });
+          }
+        }}
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       >
         <source src={src} type="video/mp4" />
@@ -113,24 +117,30 @@ export default function Portfolio() {
           </p>
         </div>
 
-        <div ref={gridRef} className="port-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 14,
-          alignItems: 'start',
-        }}>
+        <div ref={gridRef} className="port-grid">
           {videos.map((v) => (
-            <VideoCard key={v.src} src={v.src} label={v.label} />
+            <VideoCard key={v.src} src={v.src} label={v.label} type={v.type} />
           ))}
         </div>
       </div>
 
       <style>{`
-        @media (min-width: 640px) and (max-width: 1023px) {
-          .port-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        .port-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          grid-auto-rows: auto;
+          gap: 14px;
+          align-items: start;
         }
-        @media (max-width: 639px) {
-          .port-grid { grid-template-columns: 1fr !important; }
+        .port-card-landscape { aspect-ratio: 16 / 10; }
+        .port-card-portrait  { aspect-ratio: 9 / 14; grid-row: span 2; }
+
+        @media (min-width: 641px) and (max-width: 1023px) {
+          .port-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 640px) {
+          .port-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .port-card-portrait { grid-row: span 2; }
         }
       `}</style>
     </section>

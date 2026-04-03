@@ -99,11 +99,16 @@ function ResponsiveVisual() {
       {/* Desktop video */}
       <div style={{ flex: 1 }}>
         <div style={{ marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Desktop</div>
-        <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', aspectRatio: '16/10', background: '#0a0a0a' }}>
+        <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: '#0a0a0a', maxWidth: '100%' }}>
           <video
             autoPlay loop muted playsInline preload="auto"
-            ref={(el) => { if (el) el.play().catch(() => {}); }}
-            style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+            ref={(el) => {
+              if (el) {
+                el.play().catch(() => {});
+                el.addEventListener('ended', () => { el.currentTime = 0; el.play().catch(() => {}); });
+              }
+            }}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
           >
             <source src="/desktop.mp4" type="video/mp4" />
           </video>
@@ -115,7 +120,12 @@ function ResponsiveVisual() {
         <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', aspectRatio: '9/16', background: '#0a0a0a' }}>
           <video
             autoPlay loop muted playsInline preload="auto"
-            ref={(el) => { if (el) el.play().catch(() => {}); }}
+            ref={(el) => {
+              if (el) {
+                el.play().catch(() => {});
+                el.addEventListener('ended', () => { el.currentTime = 0; el.play().catch(() => {}); });
+              }
+            }}
             style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
           >
             <source src="/phone.mp4" type="video/mp4" />

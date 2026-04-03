@@ -27,7 +27,12 @@ function VideoCard({ src, label }) {
         muted
         playsInline
         preload="auto"
-        ref={(el) => { if (el) el.play().catch(() => {}); }}
+        ref={(el) => {
+          if (el) {
+            el.play().catch(() => {});
+            el.addEventListener('ended', () => { el.currentTime = 0; el.play().catch(() => {}); });
+          }
+        }}
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       >
         <source src={src} type="video/mp4" />

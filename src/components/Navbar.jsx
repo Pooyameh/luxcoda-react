@@ -1,11 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 
-function scrollTo(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+function scrollTo(id, closeMenu) {
+  closeMenu?.();
+  setTimeout(() => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  }, 50);
+}
+
+function HamburgerIcon() {
+  return (
+    <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+      <rect y="0"  width="22" height="2" rx="1" fill="white" />
+      <rect y="7"  width="22" height="2" rx="1" fill="white" />
+      <rect y="14" width="22" height="2" rx="1" fill="white" />
+    </svg>
+  );
 }
 
 export default function Navbar() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible]   = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   const lastY = useRef(0);
 
   useEffect(() => {
@@ -24,6 +38,19 @@ export default function Navbar() {
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
+  const close = () => setMenuOpen(false);
+
+  const navLinks = [
+    { label: 'Work',    id: 'work'    },
+    { label: 'Contact', id: 'contact' },
+  ];
 
   return (
     <>
@@ -49,12 +76,7 @@ export default function Navbar() {
           justifyContent: 'space-between',
         }}>
           {/* Logo + Wordmark */}
-          <a href="#" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 9,
-            textDecoration: 'none',
-          }}>
+          <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
             <img
               src="/luxcoda-lc-sharp-large_1.png"
               alt="LC"
@@ -73,18 +95,10 @@ export default function Navbar() {
 
           {/* Desktop: nav links + CTA */}
           <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {[
-              { label: 'Work', id: 'work' },
-              { label: 'Contact', id: 'contact' },
-            ].map((l, i) => (
+            {navLinks.map((l, i) => (
               <span key={l.id} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {i > 0 && (
-                  <span style={{
-                    color: 'var(--text-muted)',
-                    fontSize: '0.75rem',
-                    padding: '0 4px',
-                    userSelect: 'none',
-                  }}>·</span>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', padding: '0 4px', userSelect: 'none' }}>·</span>
                 )}
                 <button
                   onClick={() => scrollTo(l.id)}
@@ -105,7 +119,6 @@ export default function Navbar() {
               </span>
             ))}
 
-            {/* Desktop CTA */}
             <button
               onClick={() => scrollTo('contact')}
               style={{
@@ -134,41 +147,120 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Mobile CTA */}
+          {/* Mobile: hamburger */}
           <button
-            className="nav-mobile"
-            onClick={() => scrollTo('contact')}
+            className="nav-hamburger"
+            onClick={() => setMenuOpen(true)}
             style={{
               display: 'none',
-              background: 'transparent',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: 100,
-              padding: '8px 20px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 500,
-              fontSize: '0.8rem',
+              background: 'none',
+              border: 'none',
               cursor: 'pointer',
-              transition: 'border-color 0.2s ease, background 0.2s ease',
+              padding: '4px',
+              lineHeight: 0,
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
-              e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-              e.currentTarget.style.background = 'transparent';
-            }}
+            aria-label="Open menu"
           >
-            Get a Mock-Up
+            <HamburgerIcon />
           </button>
         </div>
       </nav>
 
+      {/* Mobile full-screen overlay */}
+      <div
+        className="mobile-menu"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.96)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          zIndex: 200,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 36,
+          opacity: menuOpen ? 1 : 0,
+          pointerEvents: menuOpen ? 'auto' : 'none',
+          transition: 'opacity 0.2s ease',
+        }}
+      >
+        {/* Close button */}
+        <button
+          onClick={close}
+          style={{
+            position: 'absolute',
+            top: 20,
+            right: 24,
+            background: 'none',
+            border: 'none',
+            color: '#ffffff',
+            fontSize: 28,
+            cursor: 'pointer',
+            lineHeight: 1,
+            padding: 4,
+            opacity: 0.7,
+            transition: 'opacity 0.2s ease',
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+
+        {/* Nav links */}
+        {navLinks.map((l) => (
+          <button
+            key={l.id}
+            onClick={() => scrollTo(l.id, close)}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 400,
+              fontSize: '1.75rem',
+              color: 'rgba(255,255,255,0.75)',
+              cursor: 'pointer',
+              letterSpacing: '0.02em',
+              transition: 'color 0.2s ease',
+              padding: '4px 0',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.75)'}
+          >
+            {l.label}
+          </button>
+        ))}
+
+        {/* CTA button */}
+        <button
+          onClick={() => scrollTo('contact', close)}
+          style={{
+            marginTop: 8,
+            background: '#ffffff',
+            color: '#0a0a0a',
+            border: 'none',
+            borderRadius: 100,
+            padding: '14px 36px',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 500,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'background 0.25s ease',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.85)'}
+          onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
+        >
+          Get a Free Mock-Up
+        </button>
+      </div>
+
       <style>{`
-        @media (max-width: 1023px) {
-          .nav-desktop { display: none !important; }
-          .nav-mobile  { display: block !important; }
+        @media (max-width: 767px) {
+          .nav-desktop   { display: none !important; }
+          .nav-hamburger { display: block !important; }
         }
       `}</style>
     </>

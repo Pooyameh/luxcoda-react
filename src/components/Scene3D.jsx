@@ -59,7 +59,7 @@ function Starfield() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.018}
+        size={0.045}
         color="#ffffff"
         transparent
         opacity={0.18}
