@@ -26,7 +26,7 @@ export default function Hero() {
 
   return (
     <section style={{
-      minHeight: '100svh',
+      minHeight: 'calc(100svh - 120px)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -35,7 +35,7 @@ export default function Hero() {
     }}>
       <div style={{
         textAlign: 'center',
-        padding: 'clamp(60px, 10vh, 120px) var(--content-padding) clamp(60px, 10vh, 120px)',
+        padding: 'clamp(60px, 10vh, 120px) var(--content-padding) clamp(24px, 4vh, 48px)',
         maxWidth: 900,
         width: '100%',
         margin: '0 auto',

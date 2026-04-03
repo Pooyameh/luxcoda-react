@@ -18,6 +18,8 @@ function VideoCard({ src, label }) {
       className="port-card"
       style={{
         aspectRatio: '16 / 10',
+        width: '100%',
+        minHeight: 0,
         borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.06)',
@@ -83,10 +85,10 @@ export default function Portfolio() {
   return (
     <section id="work" style={{
       background: 'var(--bg-surface)',
-      padding: 'var(--section-padding) var(--content-padding)',
+      padding: 'var(--section-padding) clamp(20px, 3vw, 48px)',
       paddingBottom: 'calc(var(--section-padding) + 40px)',
     }}>
-      <div className="content-wrap">
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 4rem)' }}>
           <h2 style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -114,7 +116,8 @@ export default function Portfolio() {
         <div ref={gridRef} className="port-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 12,
+          gap: 14,
+          alignItems: 'start',
         }}>
           {videos.map((v) => (
             <VideoCard key={v.src} src={v.src} label={v.label} />

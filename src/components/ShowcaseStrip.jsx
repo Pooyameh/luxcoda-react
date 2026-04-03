@@ -56,7 +56,7 @@ function VideoCard({ src, label }) {
 export default function ShowcaseStrip() {
   return (
     <section style={{
-      padding: 'clamp(40px, 6vh, 60px) 0',
+      padding: '0 0 clamp(40px, 6vh, 60px)',
       overflow: 'hidden',
       maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
       WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
