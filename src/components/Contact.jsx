@@ -47,27 +47,28 @@ function FacebookIcon() {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SESSION_KEY = 'luxcoda_submitted';
 
 export default function Contact() {
   const sectionRef = useRef(null);
 
   // Form fields
   const [name, setName]       = useState('');
+  const [phone, setPhone]     = useState('');
   const [email, setEmail]     = useState('');
   const [message, setMessage] = useState('');
-  const [honeypot, setHoneypot] = useState(''); // React-side honeypot (name="website")
+  const [honeypot, setHoneypot] = useState(''); // React-side honeypot
 
   // Validation errors
   const [errors, setErrors] = useState({});
 
-  // Submission state
-  const [submitted, setSubmitted]     = useState(false); // true = show thank-you panel
+  // Submission state — initialise from sessionStorage so refresh doesn't re-enable form
+  const [submitted, setSubmitted]     = useState(() => !!sessionStorage.getItem(SESSION_KEY));
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting]   = useState(false);
 
-  // Rate-limiting state
+  // In-memory rate limiting (belt-and-suspenders on top of sessionStorage)
   const [mountTime]                          = useState(Date.now);
-  const [submitCount, setSubmitCount]       = useState(0);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
   useEffect(() => {
@@ -82,11 +83,27 @@ export default function Contact() {
 
   function validate() {
     const e = {};
-    if (!name.trim() || name.trim().length < 2)        e.name    = 'Name must be at least 2 characters.';
-    if (name.trim().length > 100)                       e.name    = 'Name is too long.';
-    if (!email.trim() || !EMAIL_RE.test(email.trim()))  e.email   = 'Please enter a valid email address.';
-    if (!message.trim() || message.trim().length < 10)  e.message = 'Message must be at least 10 characters.';
-    if (message.trim().length > 2000)                   e.message = 'Message is too long (max 2000 characters).';
+
+    // Name — required, 2–100 chars
+    const n = name.trim();
+    if (!n || n.length < 2)  e.name = 'Please enter your name (at least 2 characters).';
+    else if (n.length > 100) e.name = 'Name is too long.';
+
+    // Phone — required, digits only, at least 8 digits
+    const digits = phone.replace(/\D/g, '');
+    if (!phone.trim())         e.phone = 'Please enter your phone number.';
+    else if (digits.length < 8) e.phone = 'Phone number must be at least 8 digits.';
+
+    // Email — optional, but must be valid if provided
+    if (email.trim() && !EMAIL_RE.test(email.trim())) {
+      e.email = 'Please enter a valid email address.';
+    }
+
+    // Message — required, 10–2000 chars
+    const m = message.trim();
+    if (!m || m.length < 10)    e.message = 'Message must be at least 10 characters.';
+    else if (m.length > 2000)   e.message = 'Message is too long (max 2000 characters).';
+
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -94,36 +111,31 @@ export default function Contact() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    // 1. React honeypot — silent fake success (don't actually submit)
-    if (honeypot) { setSubmitted(true); return; }
+    // 1. React honeypot — silent fake success
+    if (honeypot) { markSubmitted(); return; }
 
-    // 2. Timing — too fast = bot
-    if (Date.now() - mountTime < 3000) { setSubmitted(true); return; }
+    // 2. Timing check — submitted too fast for a human
+    if (Date.now() - mountTime < 3000) { markSubmitted(); return; }
 
-    // 3. Rate limit — max 3 submissions per session
-    if (submitCount >= 3) {
-      setSubmitError("You've sent too many messages. Please try again later.");
-      return;
-    }
-
-    // 4. Cooldown — 30s between submissions
-    if (lastSubmitTime && Date.now() - lastSubmitTime < 30000) {
+    // 3. Cooldown — 60s between submissions
+    if (lastSubmitTime && Date.now() - lastSubmitTime < 60000) {
       setSubmitError('Please wait a moment before sending another message.');
       return;
     }
 
-    // 5. Validate fields
+    // 4. Client-side validation
     if (!validate()) return;
 
-    // 6. Submit to Netlify
+    // 5. Submit to Netlify
     setSubmitting(true);
     setSubmitError('');
 
     try {
       const body = new URLSearchParams({
         'form-name': 'contact',
-        'bot-field': '',  // Netlify honeypot — always empty for real users
+        'bot-field': '',
         name: name.trim(),
+        phone: phone.trim(),
         email: email.trim(),
         message: message.trim(),
       });
@@ -136,14 +148,18 @@ export default function Contact() {
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      setSubmitCount(prev => prev + 1);
       setLastSubmitTime(Date.now());
-      setSubmitted(true);
+      markSubmitted();
     } catch {
       setSubmitError('Something went wrong. Please try again or email us directly.');
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function markSubmitted() {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    setSubmitted(true);
   }
 
   const inputStyle = {
@@ -160,13 +176,13 @@ export default function Contact() {
     boxSizing: 'border-box',
   };
 
-  const handleFocus = (e) => {
-    e.target.style.borderColor = 'rgba(74,144,184,0.4)';
-    e.target.style.boxShadow = '0 0 0 3px rgba(74,144,184,0.1)';
+  const handleFocus = (ev) => {
+    ev.target.style.borderColor = 'rgba(74,144,184,0.4)';
+    ev.target.style.boxShadow = '0 0 0 3px rgba(74,144,184,0.1)';
   };
-  const handleBlur = (e) => {
-    e.target.style.borderColor = 'rgba(255,255,255,0.08)';
-    e.target.style.boxShadow = 'none';
+  const handleBlur = (ev) => {
+    ev.target.style.borderColor = 'rgba(255,255,255,0.08)';
+    ev.target.style.boxShadow = 'none';
   };
 
   const labelStyle = {
@@ -273,7 +289,7 @@ export default function Contact() {
         {/* Form card */}
         <div className="contact-anim" style={{ ...GLASS, padding: 'clamp(28px, 5vw, 44px)' }}>
           {submitted ? (
-            /* Thank-you panel — replaces the form after submission */
+            /* Thank-you panel */
             <div style={{
               display: 'flex',
               flexDirection: 'column',
@@ -320,29 +336,31 @@ export default function Contact() {
               method="POST"
               data-netlify="true"
               data-netlify-honeypot="bot-field"
+              data-netlify-recaptcha="true"
               onSubmit={handleSubmit}
               noValidate
               style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
             >
-              {/* Netlify required hidden fields */}
+              {/* Netlify hidden fields */}
               <input type="hidden" name="form-name" value="contact" />
               <input type="hidden" name="bot-field" />
 
-              {/* React-side honeypot — catches fast bots before the fetch */}
+              {/* React-side honeypot */}
               <input
                 type="text"
                 name="website"
                 value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
+                onChange={e => setHoneypot(e.target.value)}
                 style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, overflow: 'hidden' }}
                 tabIndex={-1}
                 autoComplete="off"
                 aria-hidden="true"
               />
 
+              {/* Row 1: Name + Phone */}
               <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={labelStyle}>Name</label>
+                  <label style={labelStyle}>Name <span style={{ color: 'rgba(255,100,100,0.6)' }}>*</span></label>
                   <input
                     type="text"
                     name="name"
@@ -356,23 +374,40 @@ export default function Contact() {
                   {errors.name && <p style={fieldErrorStyle}>{errors.name}</p>}
                 </div>
                 <div>
-                  <label style={labelStyle}>Email</label>
+                  <label style={labelStyle}>Phone <span style={{ color: 'rgba(255,100,100,0.6)' }}>*</span></label>
                   <input
-                    type="email"
-                    name="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    style={{ ...inputStyle, borderColor: errors.email ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
+                    type="tel"
+                    name="phone"
+                    placeholder="04xx xxx xxx"
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    style={{ ...inputStyle, borderColor: errors.phone ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                   />
-                  {errors.email && <p style={fieldErrorStyle}>{errors.email}</p>}
+                  {errors.phone && <p style={fieldErrorStyle}>{errors.phone}</p>}
                 </div>
               </div>
 
+              {/* Row 2: Email (optional) */}
               <div>
-                <label style={labelStyle}>Message</label>
+                <label style={labelStyle}>Email <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11 }}>optional</span></label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  style={{ ...inputStyle, borderColor: errors.email ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+                {errors.email && <p style={fieldErrorStyle}>{errors.email}</p>}
+              </div>
+
+              {/* Row 3: Message */}
+              <div>
+                <label style={labelStyle}>Message <span style={{ color: 'rgba(255,100,100,0.6)' }}>*</span></label>
                 <textarea
                   rows={5}
                   name="message"
