@@ -55,19 +55,20 @@ export default function Contact() {
   const [name, setName]       = useState('');
   const [email, setEmail]     = useState('');
   const [message, setMessage] = useState('');
-  const [honeypot, setHoneypot] = useState('');
+  const [honeypot, setHoneypot] = useState(''); // React-side honeypot (name="website")
 
   // Validation errors
   const [errors, setErrors] = useState({});
 
-  // Submit state
-  const [submitStatus, setSubmitStatus]       = useState(null); // null | 'success' | 'error'
-  const [submitError, setSubmitError]         = useState('');
+  // Submission state
+  const [submitted, setSubmitted]     = useState(false); // true = show thank-you panel
+  const [submitError, setSubmitError] = useState('');
+  const [submitting, setSubmitting]   = useState(false);
 
   // Rate-limiting state
-  const [mountTime]                            = useState(Date.now);
-  const [submitCount, setSubmitCount]         = useState(0);
-  const [lastSubmitTime, setLastSubmitTime]   = useState(0);
+  const [mountTime]                          = useState(Date.now);
+  const [submitCount, setSubmitCount]       = useState(0);
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -90,52 +91,59 @@ export default function Contact() {
     return Object.keys(e).length === 0;
   }
 
-  function fakeSuccess() {
-    setSubmitStatus('success');
-  }
-
-  function showError(msg) {
-    setSubmitError(msg);
-    setSubmitStatus('error');
-  }
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    // 1. Honeypot — silent fake success
-    if (honeypot) { fakeSuccess(); return; }
+    // 1. React honeypot — silent fake success (don't actually submit)
+    if (honeypot) { setSubmitted(true); return; }
 
     // 2. Timing — too fast = bot
-    if (Date.now() - mountTime < 3000) { fakeSuccess(); return; }
+    if (Date.now() - mountTime < 3000) { setSubmitted(true); return; }
 
     // 3. Rate limit — max 3 submissions per session
     if (submitCount >= 3) {
-      showError("You've sent too many messages. Please try again later.");
+      setSubmitError("You've sent too many messages. Please try again later.");
       return;
     }
 
     // 4. Cooldown — 30s between submissions
     if (lastSubmitTime && Date.now() - lastSubmitTime < 30000) {
-      showError('Please wait a moment before sending another message.');
+      setSubmitError('Please wait a moment before sending another message.');
       return;
     }
 
     // 5. Validate fields
     if (!validate()) return;
 
-    // 6. Submit (no backend yet — show success)
-    setSubmitCount(prev => prev + 1);
-    setLastSubmitTime(Date.now());
-    setSubmitStatus('success');
+    // 6. Submit to Netlify
+    setSubmitting(true);
+    setSubmitError('');
 
-    setTimeout(() => {
-      setName('');
-      setEmail('');
-      setMessage('');
-      setErrors({});
-      setSubmitStatus(null);
-      setSubmitError('');
-    }, 4000);
+    try {
+      const body = new URLSearchParams({
+        'form-name': 'contact',
+        'bot-field': '',  // Netlify honeypot — always empty for real users
+        name: name.trim(),
+        email: email.trim(),
+        message: message.trim(),
+      });
+
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      setSubmitCount(prev => prev + 1);
+      setLastSubmitTime(Date.now());
+      setSubmitted(true);
+    } catch {
+      setSubmitError('Something went wrong. Please try again or email us directly.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const inputStyle = {
@@ -262,166 +270,197 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Form */}
+        {/* Form card */}
         <div className="contact-anim" style={{ ...GLASS, padding: 'clamp(28px, 5vw, 44px)' }}>
-          <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-            {/* Honeypot — hidden from humans, fills for bots */}
-            <input
-              type="text"
-              name="website"
-              value={honeypot}
-              onChange={(e) => setHoneypot(e.target.value)}
-              style={{
-                position: 'absolute',
-                left: '-9999px',
-                opacity: 0,
-                height: 0,
-                width: 0,
-                overflow: 'hidden',
-              }}
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden="true"
-            />
-
-            <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div>
-                <label style={labelStyle}>Name</label>
-                <input
-                  type="text"
-                  placeholder="Your name"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  style={{ ...inputStyle, borderColor: errors.name ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
-                />
-                {errors.name && <p style={fieldErrorStyle}>{errors.name}</p>}
+          {submitted ? (
+            /* Thank-you panel — replaces the form after submission */
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: 'clamp(32px, 6vw, 56px) 24px',
+              gap: 16,
+            }}>
+              <div style={{
+                width: 48, height: 48,
+                borderRadius: '50%',
+                background: 'rgba(74,184,140,0.12)',
+                border: '1px solid rgba(74,184,140,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 22,
+                marginBottom: 8,
+              }}>
+                ✓
               </div>
-              <div>
-                <label style={labelStyle}>Email</label>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  style={{ ...inputStyle, borderColor: errors.email ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
-                />
-                {errors.email && <p style={fieldErrorStyle}>{errors.email}</p>}
-              </div>
+              <h3 style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.25rem, 2vw, 1.5rem)',
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.02em',
+              }}>
+                Message received.
+              </h3>
+              <p style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 'var(--body-size)',
+                color: 'var(--text-secondary)',
+                maxWidth: 380,
+                lineHeight: 1.6,
+              }}>
+                Thanks, we'll be in touch within 24 hours.
+              </p>
             </div>
+          ) : (
+            /* The form */
+            <form
+              name="contact"
+              method="POST"
+              data-netlify="true"
+              data-netlify-honeypot="bot-field"
+              onSubmit={handleSubmit}
+              noValidate
+              style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+            >
+              {/* Netlify required hidden fields */}
+              <input type="hidden" name="form-name" value="contact" />
+              <input type="hidden" name="bot-field" />
 
-            <div>
-              <label style={labelStyle}>Message</label>
-              <textarea
-                rows={5}
-                placeholder="Tell us about your business and what you're after..."
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-                style={{
-                  ...inputStyle,
-                  resize: 'vertical',
-                  minHeight: 120,
-                  borderColor: errors.message ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)',
-                }}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
+              {/* React-side honeypot — catches fast bots before the fetch */}
+              <input
+                type="text"
+                name="website"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, overflow: 'hidden' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
               />
-              {errors.message && <p style={fieldErrorStyle}>{errors.message}</p>}
-            </div>
 
-            {/* Submit row */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>
-                  Find us on
-                </span>
-                <a
-                  href="https://instagram.com/luxcoda"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.2s ease' }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
-                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
-                  aria-label="Instagram"
-                >
-                  <InstagramIcon />
-                </a>
-                <a
-                  href="https://facebook.com/luxcoda"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.2s ease' }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
-                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
-                  aria-label="Facebook"
-                >
-                  <FacebookIcon />
-                </a>
+              <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={labelStyle}>Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    style={{ ...inputStyle, borderColor: errors.name ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
+                  {errors.name && <p style={fieldErrorStyle}>{errors.name}</p>}
+                </div>
+                <div>
+                  <label style={labelStyle}>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    style={{ ...inputStyle, borderColor: errors.email ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
+                  {errors.email && <p style={fieldErrorStyle}>{errors.email}</p>}
+                </div>
               </div>
 
-              <button
-                type="submit"
-                className="contact-btn"
-                disabled={submitStatus === 'success'}
-                style={{
-                  background: submitStatus === 'success' ? 'rgba(255,255,255,0.6)' : '#ffffff',
-                  color: '#0a0a0a',
-                  border: 'none',
-                  borderRadius: 100,
-                  padding: '14px 32px',
+              <div>
+                <label style={labelStyle}>Message</label>
+                <textarea
+                  rows={5}
+                  name="message"
+                  placeholder="Tell us about your business and what you're after..."
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                  style={{
+                    ...inputStyle,
+                    resize: 'vertical',
+                    minHeight: 120,
+                    borderColor: errors.message ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)',
+                  }}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                />
+                {errors.message && <p style={fieldErrorStyle}>{errors.message}</p>}
+              </div>
+
+              {/* Submit row */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>
+                    Find us on
+                  </span>
+                  <a
+                    href="https://instagram.com/luxcoda"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.2s ease' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
+                    aria-label="Instagram"
+                  >
+                    <InstagramIcon />
+                  </a>
+                  <a
+                    href="https://facebook.com/luxcoda"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.2s ease' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
+                    aria-label="Facebook"
+                  >
+                    <FacebookIcon />
+                  </a>
+                </div>
+
+                <button
+                  type="submit"
+                  className="contact-btn"
+                  disabled={submitting}
+                  style={{
+                    background: submitting ? 'rgba(255,255,255,0.6)' : '#ffffff',
+                    color: '#0a0a0a',
+                    border: 'none',
+                    borderRadius: 100,
+                    padding: '14px 32px',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 500,
+                    fontSize: '1rem',
+                    cursor: submitting ? 'default' : 'pointer',
+                    transition: 'background 0.25s ease',
+                  }}
+                  onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = 'rgba(255,255,255,0.85)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = submitting ? 'rgba(255,255,255,0.6)' : '#ffffff'; }}
+                >
+                  {submitting ? 'Sending…' : 'Send Message'}
+                </button>
+              </div>
+
+              {/* Network / rate-limit error */}
+              {submitError && (
+                <div style={{
+                  padding: '14px 20px',
+                  background: 'rgba(255,80,80,0.06)',
+                  border: '1px solid rgba(255,80,80,0.12)',
+                  borderRadius: 12,
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 500,
-                  fontSize: '1rem',
-                  cursor: submitStatus === 'success' ? 'default' : 'pointer',
-                  transition: 'background 0.25s ease',
-                }}
-                onMouseEnter={e => {
-                  if (submitStatus !== 'success') {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.85)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = submitStatus === 'success' ? 'rgba(255,255,255,0.6)' : '#ffffff';
-                }}
-              >
-                {submitStatus === 'success' ? 'Sent ✓' : 'Send Message'}
-              </button>
-            </div>
-
-            {/* Status messages */}
-            {submitStatus === 'success' && (
-              <div style={{
-                padding: '14px 20px',
-                background: 'rgba(74,184,140,0.08)',
-                border: '1px solid rgba(74,184,140,0.15)',
-                borderRadius: 12,
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 14,
-                color: 'rgba(100,220,160,0.9)',
-                textAlign: 'center',
-              }}>
-                Thanks! We'll be in touch within 24 hours.
-              </div>
-            )}
-            {submitStatus === 'error' && (
-              <div style={{
-                padding: '14px 20px',
-                background: 'rgba(255,80,80,0.06)',
-                border: '1px solid rgba(255,80,80,0.12)',
-                borderRadius: 12,
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 14,
-                color: 'rgba(255,120,120,0.85)',
-                textAlign: 'center',
-              }}>
-                {submitError}
-              </div>
-            )}
-          </form>
+                  fontSize: 14,
+                  color: 'rgba(255,120,120,0.85)',
+                  textAlign: 'center',
+                }}>
+                  {submitError}
+                </div>
+              )}
+            </form>
+          )}
         </div>
       </div>
 
