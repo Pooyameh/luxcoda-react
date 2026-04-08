@@ -131,19 +131,11 @@ export default function Contact() {
     setSubmitError('');
 
     try {
-      const body = new URLSearchParams({
-        'form-name': 'contact',
-        'bot-field': '',
-        name: name.trim(),
-        phone: phone.trim(),
-        email: email.trim(),
-        message: message.trim(),
-      });
-
+      // Use FormData from the form element so all hidden/injected fields are included
       const res = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString(),
+        body: new URLSearchParams(new FormData(e.target)).toString(),
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -336,7 +328,6 @@ export default function Contact() {
               method="POST"
               data-netlify="true"
               data-netlify-honeypot="bot-field"
-              data-netlify-recaptcha="true"
               onSubmit={handleSubmit}
               noValidate
               style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
