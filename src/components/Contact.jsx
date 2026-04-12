@@ -211,7 +211,7 @@ export default function Contact() {
             lineHeight: 'var(--h2-line-height)',
             marginBottom: '0.75rem',
           }}>
-            Let's build.
+            Let's talk.
           </h2>
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",

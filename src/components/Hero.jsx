@@ -49,7 +49,7 @@ export default function Hero() {
           textTransform: 'uppercase',
           marginBottom: '1.5rem',
         }}>
-          Web Design — Est. 2026 · Brisbane
+          Web Design for Tradies — Brisbane
         </p>
 
         <h1 ref={h1Ref} style={{
@@ -76,7 +76,7 @@ export default function Hero() {
           margin: '1.75rem auto 0',
           letterSpacing: '-0.01em',
         }}>
-          We build websites for Brisbane tradies and local businesses that actually get you more work.
+          Your customers Google you before they call. We make sure you show up — and look like the best option.
         </p>
 
         <div ref={ctaRef} className="hero-cta" style={{

@@ -278,31 +278,31 @@ const features = [
   {
     textLeft: true,
     title: 'Custom Design',
-    description: 'No templates. Every site is designed from scratch to match your business, your customers, and your trade.',
+    description: 'No cookie-cutter templates. A site that matches your trade, your area, and the quality of your work. First impressions win jobs.',
     visual: <CustomDesignVisual />,
   },
   {
     textLeft: false,
     title: 'Works on Every Device',
-    description: "Same site. Perfect on a laptop, tablet, or phone. Because 80% of your customers are searching on mobile.",
+    description: "80% of your customers are searching on their phone. Your site needs to look perfect on every screen — or they bounce and call someone else.",
     visual: <ResponsiveVisual />,
   },
   {
     textLeft: true,
     title: 'Shows Up on Google',
-    description: 'SEO done right from day one. Your site is built to rank so customers find you when they search.',
+    description: "What's the point of a website nobody can find? We build your site to rank — so when someone searches your trade in your area, you're the one they see.",
     visual: <GoogleResultVisual />,
   },
   {
     textLeft: false,
     title: 'Fast & Reliable',
-    description: 'No slow loading, no downtime. A fast site means more customers stay on the page — and more calls.',
+    description: 'Slow sites lose customers. Every second your page takes to load, people leave. Our sites load in under 2 seconds — so they stay and call.',
     visual: <LighthouseVisual />,
   },
   {
     textLeft: true,
     title: 'Ongoing Support',
-    description: "We don't disappear after launch. Need a change? Got a question? We respond fast — like a teammate, not a vendor.",
+    description: "We don't build and disappear. Need an update? Got a question? Just send a text. We're a teammate, not a vendor.",
     visual: <ChatVisual />,
   },
 ];
@@ -324,7 +324,7 @@ export default function Services() {
             lineHeight: 'var(--h2-line-height)',
             marginBottom: '0.75rem',
           }}>
-            Everything your business needs online.
+            Everything that gets you more calls.
           </h2>
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -334,7 +334,7 @@ export default function Services() {
             margin: '0 auto',
             lineHeight: 1.65,
           }}>
-            No templates. No jargon. Just a website that works as hard as you do.
+            No templates. No jargon. Just a site built to make your phone ring.
           </p>
         </div>
 

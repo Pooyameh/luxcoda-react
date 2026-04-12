@@ -60,7 +60,7 @@ export default function BeforeAfter() {
             lineHeight: 'var(--h2-line-height)',
             marginBottom: '0.75rem',
           }}>
-            First impressions win jobs.
+            Your website is losing you jobs.
           </h2>
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -70,7 +70,7 @@ export default function BeforeAfter() {
             margin: '0 auto',
             lineHeight: 1.6,
           }}>
-            Your customers check your site before they call. What are they seeing?
+            Right now, someone in your area just Googled what you do. They found 3 businesses. The one with the best site gets the call.
           </p>
         </div>
 
