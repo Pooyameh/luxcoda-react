@@ -45,7 +45,6 @@ export default function BeforeAfter() {
 
   return (
     <section style={{
-      background: 'var(--bg-primary)',
       padding: 'var(--section-padding) var(--content-padding)',
     }}>
       <div className="content-wrap">

@@ -23,7 +23,6 @@ function FacebookIcon() {
 export default function Footer() {
   return (
     <footer style={{
-      background: 'var(--bg-primary)',
       borderTop: '1px solid var(--border)',
       padding: '32px var(--content-padding)',
     }}>

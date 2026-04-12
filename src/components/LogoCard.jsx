@@ -15,7 +15,6 @@ export default function LogoCard() {
       }
     `}</style>
     <section style={{
-      background: 'var(--bg-primary)',
       padding: 'clamp(40px, 8vh, 80px) var(--content-padding)',
       display: 'flex',
       justifyContent: 'center',

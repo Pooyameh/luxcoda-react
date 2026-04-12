@@ -195,7 +195,6 @@ export default function Contact() {
 
   return (
     <section id="contact" ref={sectionRef} style={{
-      background: 'var(--bg-primary)',
       padding: 'var(--section-padding) var(--content-padding)',
     }}>
       <div className="content-wrap" style={{ maxWidth: 800 }}>

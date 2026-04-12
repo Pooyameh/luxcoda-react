@@ -16,9 +16,25 @@ const steps = [
   {
     number: '03',
     title: 'You get calls',
-    description: 'Customers in your area find you, see your work, and pick up the phone. That\'s it.',
+    description: "Customers in your area find you, see your work, and pick up the phone. That's it.",
   },
 ];
+
+function ChevronArrow() {
+  return (
+    <div className="hiw-arrow" style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0,
+      alignSelf: 'center',
+    }}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M9 6l6 6-6 6" stroke="#c8a052" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.35" />
+      </svg>
+    </div>
+  );
+}
 
 export default function Portfolio() {
   const headRef  = useRef(null);
@@ -32,7 +48,7 @@ export default function Portfolio() {
       });
       gsap.from(cardsRef.current.querySelectorAll('.hiw-card'), {
         scrollTrigger: { trigger: cardsRef.current, start: 'top 82%', once: true },
-        opacity: 0, y: 24, duration: 0.7, ease: 'power3.out', stagger: 0.12,
+        opacity: 0, y: 24, duration: 0.7, ease: 'power3.out', stagger: 0.14,
       });
     });
     return () => ctx.revert();
@@ -40,11 +56,10 @@ export default function Portfolio() {
 
   return (
     <section id="work" style={{
-      background: 'var(--bg-surface)',
-      padding: 'var(--section-padding) var(--content-padding)',
+      padding: 'clamp(100px, 12vh, 140px) var(--content-padding)',
     }}>
       <div className="content-wrap">
-        <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 4rem)' }}>
+        <div ref={headRef} style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 6vw, 5rem)' }}>
           <h2 style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 600,
@@ -68,45 +83,61 @@ export default function Portfolio() {
           </p>
         </div>
 
+        {/* Cards + arrows wrapper */}
         <div ref={cardsRef} className="hiw-grid">
-          {steps.map(step => (
-            <div key={step.number} className="hiw-card" style={{
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 12,
-              padding: 32,
-            }}>
-              <div style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 700,
-                fontSize: 'clamp(2.75rem, 5vw, 3.5rem)',
-                color: '#c8a052',
-                lineHeight: 1,
-                marginBottom: '1rem',
-                letterSpacing: '-0.03em',
+          {steps.map((step, i) => (
+            <>
+              <div key={step.number} className="hiw-card" style={{
+                position: 'relative',
+                borderLeft: '3px solid #c8a052',
+                borderRadius: 12,
+                padding: 40,
+                overflow: 'hidden',
+                transition: 'background 0.3s ease',
               }}>
-                {step.number}
+                {/* Watermark number */}
+                <div aria-hidden="true" style={{
+                  position: 'absolute',
+                  top: 12,
+                  right: 20,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 800,
+                  fontSize: 'clamp(64px, 8vw, 96px)',
+                  color: '#c8a052',
+                  opacity: 0.12,
+                  lineHeight: 1,
+                  letterSpacing: '-0.05em',
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                }}>
+                  {step.number}
+                </div>
+
+                <h3 style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 600,
+                  fontSize: 'clamp(1.4rem, 2vw, 1.65rem)',
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2,
+                  marginBottom: '0.85rem',
+                }}>
+                  {step.title}
+                </h3>
+                <p style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 'var(--body-size)',
+                  color: 'rgba(255,255,255,0.6)',
+                  lineHeight: 1.65,
+                  margin: 0,
+                }}>
+                  {step.description}
+                </p>
               </div>
-              <h3 style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: 'var(--h3-size)',
-                color: 'var(--text-primary)',
-                letterSpacing: 'var(--h3-spacing)',
-                lineHeight: 'var(--h3-line-height)',
-                marginBottom: '0.75rem',
-              }}>
-                {step.title}
-              </h3>
-              <p style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 'var(--body-size)',
-                color: 'rgba(255,255,255,0.6)',
-                lineHeight: 1.65,
-                margin: 0,
-              }}>
-                {step.description}
-              </p>
-            </div>
+
+              {/* Chevron between cards (desktop only) */}
+              {i < steps.length - 1 && <ChevronArrow key={`arrow-${i}`} />}
+            </>
           ))}
         </div>
       </div>
@@ -114,11 +145,20 @@ export default function Portfolio() {
       <style>{`
         .hiw-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
+          grid-template-columns: 1fr auto 1fr auto 1fr;
+          gap: 0 8px;
+          align-items: stretch;
+        }
+        .hiw-card:hover {
+          background: rgba(255,255,255,0.03);
         }
         @media (max-width: 767px) {
-          .hiw-grid { grid-template-columns: 1fr; }
+          .hiw-grid {
+            grid-template-columns: 1fr;
+            gap: 20px 0;
+          }
+          .hiw-arrow { display: none; }
+          .hiw-card { padding: 32px 28px; }
         }
       `}</style>
     </section>
