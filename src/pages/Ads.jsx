@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -1014,6 +1014,29 @@ function CTAFooter() {
 
 /* ── Page ── */
 export default function Ads() {
+  useEffect(() => {
+    document.title = 'Luxcoda — Get More Jobs Through Our Marketing System';
+
+    const setMeta = (attr, key, value) => {
+      let el = document.querySelector(`meta[${attr}="${key}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', value);
+    };
+
+    setMeta('name', 'description', 'Google and Facebook ad management for Brisbane tradies. We set up, run, and optimise your campaigns. First month half price. No lock-in contracts.');
+    setMeta('property', 'og:title', 'Luxcoda — Get More Jobs Through Our Marketing System');
+    setMeta('property', 'og:description', 'Ad campaign management for Brisbane tradies. First month half price.');
+    setMeta('property', 'og:url', 'https://luxcoda.com/ads');
+
+    return () => {
+      document.title = 'Luxcoda — Websites That Get Brisbane Tradies More Jobs';
+    };
+  }, []);
+
   return (
     <>
       <Scene3D />
