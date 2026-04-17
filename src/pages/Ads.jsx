@@ -20,6 +20,11 @@ const fadeUp = {
   transition: { duration: 0.6 },
 };
 
+function scrollToContact(e) {
+  e.preventDefault();
+  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+}
+
 /* ── Section heading ── */
 function SectionHead({ eyebrow, h2, sub, maxWidth = 560 }) {
   return (
@@ -129,7 +134,8 @@ function AdsHero() {
           style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}
         >
           <a
-            href="tel:0414758891"
+            href="#contact"
+            onClick={scrollToContact}
             style={{
               display: 'inline-block',
               background: 'var(--text-primary)',
@@ -145,10 +151,11 @@ function AdsHero() {
             onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
             onMouseLeave={e => e.currentTarget.style.opacity = '1'}
           >
-            Call 0414 758 891
+            Book a Free Consultation
           </a>
           <a
-            href="tel:0414758891"
+            href="#contact"
+            onClick={scrollToContact}
             style={{
               display: 'inline-block',
               background: 'transparent',
@@ -165,7 +172,7 @@ function AdsHero() {
             onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'}
           >
-            Book a Free Consultation
+            See how it works
           </a>
         </motion.div>
 
@@ -223,7 +230,6 @@ function HowItWorks() {
                 overflow: 'hidden',
               }}
             >
-              {/* Watermark number */}
               <div aria-hidden="true" style={{
                 position: 'absolute',
                 top: 8,
@@ -239,7 +245,6 @@ function HowItWorks() {
               }}>
                 {step.number}
               </div>
-              {/* Step label */}
               <div style={{
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontSize: '0.75rem',
@@ -411,7 +416,6 @@ function Pricing() {
             textAlign: 'center',
           }}
         >
-          {/* Struck-out original price */}
           <div style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 500,
@@ -426,7 +430,6 @@ function Pricing() {
             $500/month
           </div>
 
-          {/* First-month offer price */}
           <div style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 600,
@@ -479,7 +482,8 @@ function Pricing() {
           </p>
 
           <a
-            href="https://luxcoda.com/#contact"
+            href="#contact"
+            onClick={scrollToContact}
             style={{
               display: 'block',
               background: 'transparent',
@@ -570,14 +574,8 @@ function FAQItem({ q, a }) {
           {q}
         </span>
         <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           style={{
             color: 'var(--text-muted)',
             flexShrink: 0,
@@ -609,10 +607,7 @@ function FAQ() {
     <section style={{ padding: 'clamp(56px, 10vh, 120px) var(--content-padding)' }}>
       <div className="content-wrap">
         <SectionHead h2="Common questions" />
-        <motion.div
-          {...fadeUp}
-          style={{ maxWidth: 680, margin: '0 auto' }}
-        >
+        <motion.div {...fadeUp} style={{ maxWidth: 680, margin: '0 auto' }}>
           {faqs.map((item) => (
             <FAQItem key={item.q} {...item} />
           ))}
@@ -622,13 +617,337 @@ function FAQ() {
   );
 }
 
-/* ── Section 7 — CTA Footer ── */
+/* ── Section 7 — Contact Form ── */
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ADS_SESSION_KEY = 'luxcoda_ads_submitted';
+
+function AdsContact() {
+  const [name, setName]       = useState('');
+  const [phone, setPhone]     = useState('');
+  const [email, setEmail]     = useState('');
+  const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+
+  const [errors, setErrors]       = useState({});
+  const [submitted, setSubmitted] = useState(() => !!sessionStorage.getItem(ADS_SESSION_KEY));
+  const [submitError, setSubmitError] = useState('');
+  const [submitting, setSubmitting]   = useState(false);
+  const [mountTime]                   = useState(Date.now);
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
+
+  function validate() {
+    const e = {};
+    const n = name.trim();
+    if (!n || n.length < 2)  e.name = 'Please enter your name (at least 2 characters).';
+    else if (n.length > 100) e.name = 'Name is too long.';
+
+    const digits = phone.replace(/\D/g, '');
+    if (!phone.trim())          e.phone = 'Please enter your phone number.';
+    else if (digits.length < 8) e.phone = 'Phone number must be at least 8 digits.';
+
+    if (email.trim() && !EMAIL_RE.test(email.trim()))
+      e.email = 'Please enter a valid email address.';
+
+    const m = message.trim();
+    if (!m || m.length < 10)   e.message = 'Message must be at least 10 characters.';
+    else if (m.length > 2000)  e.message = 'Message is too long (max 2000 characters).';
+
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (honeypot) { markSubmitted(); return; }
+    if (Date.now() - mountTime < 3000) { markSubmitted(); return; }
+    if (lastSubmitTime && Date.now() - lastSubmitTime < 60000) {
+      setSubmitError('Please wait a moment before sending another message.');
+      return;
+    }
+    if (!validate()) return;
+
+    setSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(e.target)).toString(),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setLastSubmitTime(Date.now());
+      markSubmitted();
+    } catch {
+      setSubmitError('Something went wrong. Please try again or call us directly.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function markSubmitted() {
+    sessionStorage.setItem(ADS_SESSION_KEY, '1');
+    setSubmitted(true);
+  }
+
+  const inputStyle = {
+    width: '100%',
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: 12,
+    padding: '16px 18px',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: '1rem',
+    color: '#ffffff',
+    outline: 'none',
+    transition: 'all 0.25s ease',
+    boxSizing: 'border-box',
+  };
+
+  const handleFocus = (ev) => {
+    ev.target.style.borderColor = 'rgba(74,144,184,0.4)';
+    ev.target.style.boxShadow = '0 0 0 3px rgba(74,144,184,0.1)';
+  };
+  const handleBlur = (ev) => {
+    ev.target.style.borderColor = 'rgba(255,255,255,0.08)';
+    ev.target.style.boxShadow = 'none';
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontWeight: 500,
+    fontSize: 'var(--small-size)',
+    color: 'rgba(255,255,255,0.6)',
+    marginBottom: 8,
+  };
+
+  const fieldErrorStyle = {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 12,
+    color: 'rgba(255,100,100,0.75)',
+    marginTop: 6,
+  };
+
+  return (
+    <section id="contact" style={{ padding: 'var(--section-padding) var(--content-padding)' }}>
+      <div className="content-wrap" style={{ maxWidth: 800 }}>
+
+        <motion.div {...fadeUp} style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 7vw, 5rem)' }}>
+          <h2 style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: 'var(--h2-size)',
+            color: 'var(--text-primary)',
+            letterSpacing: 'var(--h2-spacing)',
+            lineHeight: 'var(--h2-line-height)',
+            marginBottom: '0.75rem',
+          }}>
+            Book your free consultation.
+          </h2>
+          <p style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontSize: 'var(--body-size)',
+            color: 'var(--text-secondary)',
+            maxWidth: 480,
+            margin: '0 auto',
+            lineHeight: 1.65,
+          }}>
+            Tell us about your trade and we will map out a full campaign strategy. No cost, no obligation.
+          </p>
+        </motion.div>
+
+        <motion.div {...fadeUp} style={{ ...GLASS, padding: 'clamp(28px, 5vw, 44px)' }}>
+          {submitted ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: 'clamp(32px, 6vw, 56px) 24px',
+              gap: 16,
+            }}>
+              <div style={{
+                width: 48, height: 48,
+                borderRadius: '50%',
+                background: 'rgba(74,184,140,0.12)',
+                border: '1px solid rgba(74,184,140,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 22,
+                marginBottom: 8,
+              }}>
+                ✓
+              </div>
+              <h3 style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.25rem, 2vw, 1.5rem)',
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.02em',
+              }}>
+                Message received.
+              </h3>
+              <p style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 'var(--body-size)',
+                color: 'var(--text-secondary)',
+                maxWidth: 380,
+                lineHeight: 1.6,
+              }}>
+                Thanks, we'll be in touch within 24 hours.
+              </p>
+            </div>
+          ) : (
+            <form
+              name="ads-contact"
+              method="POST"
+              data-netlify="true"
+              data-netlify-honeypot="bot-field"
+              onSubmit={handleSubmit}
+              noValidate
+              style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+            >
+              <input type="hidden" name="form-name" value="ads-contact" />
+              <input type="hidden" name="bot-field" />
+
+              {/* React-side honeypot */}
+              <input
+                type="text"
+                name="website"
+                value={honeypot}
+                onChange={e => setHoneypot(e.target.value)}
+                style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, overflow: 'hidden' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+
+              <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={labelStyle}>Name <span style={{ color: 'rgba(255,100,100,0.6)' }}>*</span></label>
+                  <input
+                    type="text" name="name" placeholder="Your name"
+                    value={name} onChange={e => setName(e.target.value)}
+                    style={{ ...inputStyle, borderColor: errors.name ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
+                    onFocus={handleFocus} onBlur={handleBlur}
+                  />
+                  {errors.name && <p style={fieldErrorStyle}>{errors.name}</p>}
+                </div>
+                <div>
+                  <label style={labelStyle}>Phone <span style={{ color: 'rgba(255,100,100,0.6)' }}>*</span></label>
+                  <input
+                    type="tel" name="phone" placeholder="04xx xxx xxx"
+                    value={phone} onChange={e => setPhone(e.target.value)}
+                    style={{ ...inputStyle, borderColor: errors.phone ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
+                    onFocus={handleFocus} onBlur={handleBlur}
+                  />
+                  {errors.phone && <p style={fieldErrorStyle}>{errors.phone}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label style={labelStyle}>Email <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11 }}>optional</span></label>
+                <input
+                  type="email" name="email" placeholder="your@email.com"
+                  value={email} onChange={e => setEmail(e.target.value)}
+                  style={{ ...inputStyle, borderColor: errors.email ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)' }}
+                  onFocus={handleFocus} onBlur={handleBlur}
+                />
+                {errors.email && <p style={fieldErrorStyle}>{errors.email}</p>}
+              </div>
+
+              <div>
+                <label style={labelStyle}>Message <span style={{ color: 'rgba(255,100,100,0.6)' }}>*</span></label>
+                <textarea
+                  rows={5} name="message"
+                  placeholder="Tell us about your trade and what you're after..."
+                  value={message} onChange={e => setMessage(e.target.value)}
+                  style={{
+                    ...inputStyle,
+                    resize: 'vertical',
+                    minHeight: 120,
+                    borderColor: errors.message ? 'rgba(255,80,80,0.4)' : 'rgba(255,255,255,0.08)',
+                  }}
+                  onFocus={handleFocus} onBlur={handleBlur}
+                />
+                {errors.message && <p style={fieldErrorStyle}>{errors.message}</p>}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                <button
+                  type="submit"
+                  className="ads-contact-btn"
+                  disabled={submitting}
+                  style={{
+                    background: submitting ? 'rgba(255,255,255,0.6)' : '#ffffff',
+                    color: '#0a0a0a',
+                    border: 'none',
+                    borderRadius: 100,
+                    padding: '14px 40px',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 500,
+                    fontSize: '1rem',
+                    cursor: submitting ? 'default' : 'pointer',
+                    transition: 'background 0.25s ease',
+                  }}
+                  onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = 'rgba(255,255,255,0.85)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = submitting ? 'rgba(255,255,255,0.6)' : '#ffffff'; }}
+                >
+                  {submitting ? 'Sending…' : 'Book Free Consultation'}
+                </button>
+
+                {/* Phone number as plain text below submit */}
+                <p style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 'var(--small-size)',
+                  color: 'var(--text-muted)',
+                  margin: 0,
+                }}>
+                  Prefer to call?{' '}
+                  <a
+                    href="tel:0414758891"
+                    style={{
+                      color: 'var(--text-secondary)',
+                      textDecoration: 'none',
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+                  >
+                    0414 758 891
+                  </a>
+                </p>
+              </div>
+
+              {submitError && (
+                <div style={{
+                  padding: '14px 20px',
+                  background: 'rgba(255,80,80,0.06)',
+                  border: '1px solid rgba(255,80,80,0.12)',
+                  borderRadius: 12,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 14,
+                  color: 'rgba(255,120,120,0.85)',
+                  textAlign: 'center',
+                }}>
+                  {submitError}
+                </div>
+              )}
+            </form>
+          )}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Section 8 — CTA Footer ── */
 function CTAFooter() {
   return (
-    <section style={{
-      padding: 'clamp(64px, 10vh, 120px) var(--content-padding)',
-      textAlign: 'center',
-    }}>
+    <section style={{ padding: 'clamp(64px, 10vh, 120px) var(--content-padding)', textAlign: 'center' }}>
       <div className="content-wrap">
         <motion.div {...fadeUp}>
           <h2 style={{
@@ -653,7 +972,8 @@ function CTAFooter() {
             Book a free consultation. We will review your current presence and show you exactly where you are losing leads.
           </p>
           <a
-            href="tel:0414758891"
+            href="#contact"
+            onClick={scrollToContact}
             style={{
               display: 'inline-block',
               background: 'transparent',
@@ -676,7 +996,7 @@ function CTAFooter() {
               e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
             }}
           >
-            Call 0414 758 891
+            Book Your Spot
           </a>
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -705,6 +1025,7 @@ export default function Ads() {
         <WhatYouGet />
         <Pricing />
         <FAQ />
+        <AdsContact />
         <CTAFooter />
         <Footer />
       </div>
@@ -721,9 +1042,14 @@ export default function Ads() {
           gap: clamp(16px, 3vw, 32px);
           margin-top: clamp(2rem, 4vw, 3rem);
         }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.25); opacity: 1; }
         @media (max-width: 767px) {
           .ads-steps-grid { grid-template-columns: 1fr; }
           .ads-images-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+          .form-row { grid-template-columns: 1fr !important; }
+          .ads-contact-btn { width: 100%; }
         }
       `}</style>
     </>
