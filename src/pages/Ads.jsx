@@ -411,49 +411,60 @@ function Pricing() {
             textAlign: 'center',
           }}
         >
+          {/* Struck-out original price */}
+          <div style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontWeight: 500,
+            fontSize: 22,
+            color: 'var(--text-muted)',
+            letterSpacing: '-0.02em',
+            lineHeight: 1,
+            marginBottom: '0.35rem',
+            textDecoration: 'line-through',
+            opacity: 0.5,
+          }}>
+            $500/month
+          </div>
+
+          {/* First-month offer price */}
           <div style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 600,
-            fontSize: 48,
+            fontSize: 52,
             color: 'var(--text-primary)',
             letterSpacing: '-0.04em',
             lineHeight: 1,
-            marginBottom: '0.5rem',
+            marginBottom: '0.4rem',
           }}>
             $250<span style={{ fontSize: 20, fontWeight: 400, color: 'var(--text-muted)', letterSpacing: 0 }}>/month</span>
           </div>
 
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontSize: 'var(--body-size)',
+            fontSize: 'var(--small-size)',
             color: 'var(--text-secondary)',
             marginBottom: '1.25rem',
             lineHeight: 1.5,
           }}>
-            Get more jobs through our marketing system
+            First month only — then $500/month. Cancel anytime.
           </p>
 
-          <div style={{
-            display: 'inline-block',
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.14)',
-            borderRadius: 6,
-            padding: '8px 16px',
+          <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
             fontSize: 'var(--body-size)',
-            color: 'var(--text-primary)',
-            marginBottom: '1.5rem',
+            color: 'var(--text-secondary)',
+            marginBottom: '0.75rem',
+            lineHeight: 1.5,
           }}>
-            First month half price — $125
-          </div>
+            Get more jobs through our marketing system
+          </p>
 
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontSize: 'var(--small-size)',
             color: 'var(--text-muted)',
             lineHeight: 1.65,
-            marginBottom: '0.75rem',
+            marginBottom: '0.5rem',
           }}>
             You pay ad spend direct to the platforms. We never touch your ad money.
           </p>
@@ -464,11 +475,11 @@ function Pricing() {
             color: 'var(--text-muted)',
             marginBottom: '2rem',
           }}>
-            No lock-in contracts. Cancel anytime.
+            No lock-in contracts.
           </p>
 
           <a
-            href="tel:0414758891"
+            href="https://luxcoda.com/#contact"
             style={{
               display: 'block',
               background: 'transparent',
@@ -480,6 +491,7 @@ function Pricing() {
               borderRadius: 8,
               textDecoration: 'none',
               border: '1px solid rgba(255,255,255,0.25)',
+              textAlign: 'center',
               transition: 'border-color 0.2s ease, background 0.2s ease',
             }}
             onMouseEnter={e => {
@@ -614,7 +626,6 @@ function FAQ() {
 function CTAFooter() {
   return (
     <section style={{
-      background: '#1f1d1a',
       padding: 'clamp(64px, 10vh, 120px) var(--content-padding)',
       textAlign: 'center',
     }}>
@@ -624,7 +635,7 @@ function CTAFooter() {
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 600,
             fontSize: 'var(--h2-size)',
-            color: '#f5f0e8',
+            color: 'var(--text-primary)',
             letterSpacing: 'var(--h2-spacing)',
             lineHeight: 'var(--h2-line-height)',
             marginBottom: '1rem',
@@ -634,7 +645,7 @@ function CTAFooter() {
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontSize: 'var(--body-size)',
-            color: 'rgba(245,240,232,0.7)',
+            color: 'var(--text-secondary)',
             maxWidth: 520,
             margin: '0 auto 2.5rem',
             lineHeight: 1.65,
@@ -645,24 +656,24 @@ function CTAFooter() {
             href="tel:0414758891"
             style={{
               display: 'inline-block',
-              background: 'rgba(245,240,232,0.1)',
-              color: '#f5f0e8',
+              background: 'transparent',
+              color: 'var(--text-primary)',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 600,
               fontSize: 'var(--body-size)',
               padding: '15px 36px',
               borderRadius: 8,
               textDecoration: 'none',
-              border: '1px solid rgba(245,240,232,0.25)',
+              border: '1px solid rgba(255,255,255,0.25)',
               transition: 'background 0.2s ease, border-color 0.2s ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(245,240,232,0.16)';
-              e.currentTarget.style.borderColor = 'rgba(245,240,232,0.4)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.45)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(245,240,232,0.1)';
-              e.currentTarget.style.borderColor = 'rgba(245,240,232,0.25)';
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
             }}
           >
             Call 0414 758 891
@@ -670,7 +681,7 @@ function CTAFooter() {
           <p style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontSize: 'var(--small-size)',
-            color: 'rgba(245,240,232,0.5)',
+            color: 'var(--text-muted)',
             marginTop: '1.25rem',
           }}>
             Or text us. We reply fast.
