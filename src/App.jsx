@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { useScrollProgress } from './hooks/useScrollProgress';
 import Scene3D from './components/Scene3D';
 import Navbar from './components/Navbar';
@@ -10,8 +11,9 @@ import Portfolio from './components/Portfolio';
 import Contact from './components/Contact';
 import LogoCard from './components/LogoCard';
 import Footer from './components/Footer';
+import Ads from './pages/Ads';
 
-export default function App() {
+function HomePage() {
   const setScroll = useScrollProgress((s) => s.setScroll);
 
   useEffect(() => {
@@ -43,5 +45,14 @@ export default function App() {
         <Footer />
       </div>
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/ads" element={<Ads />} />
+    </Routes>
   );
 }
