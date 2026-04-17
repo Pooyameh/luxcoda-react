@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-
-const TERRACOTTA = '#c2603e';
+import Scene3D from '../components/Scene3D';
 
 const GLASS = {
   background: 'rgba(255,255,255,0.03)',
@@ -31,7 +30,7 @@ function SectionHead({ eyebrow, h2, sub, maxWidth = 560 }) {
           fontSize: '0.75rem',
           fontWeight: 600,
           letterSpacing: '0.1em',
-          color: TERRACOTTA,
+          color: 'var(--text-muted)',
           textTransform: 'uppercase',
           marginBottom: '0.75rem',
         }}>
@@ -80,12 +79,12 @@ function AdsHero() {
             fontSize: '0.75rem',
             fontWeight: 600,
             letterSpacing: '0.1em',
-            color: TERRACOTTA,
+            color: 'var(--text-muted)',
             textTransform: 'uppercase',
             marginBottom: '1.25rem',
           }}
         >
-          Google Ads + Facebook Ads
+          Get more jobs through our marketing system
         </motion.p>
 
         <motion.h1
@@ -120,7 +119,7 @@ function AdsHero() {
             lineHeight: 1.65,
           }}
         >
-          We set up and manage your ad campaigns so your phone rings with real customers. You focus on the tools, we handle the marketing.
+          We set up and manage your campaigns so your phone rings with real customers. You focus on the tools, we handle the marketing.
         </motion.p>
 
         <motion.div
@@ -133,8 +132,8 @@ function AdsHero() {
             href="tel:0414758891"
             style={{
               display: 'inline-block',
-              background: TERRACOTTA,
-              color: '#fff',
+              background: 'var(--text-primary)',
+              color: '#0a0a0a',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 600,
               fontSize: 'var(--body-size)',
@@ -143,7 +142,7 @@ function AdsHero() {
               textDecoration: 'none',
               transition: 'opacity 0.2s ease',
             }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
+            onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
             onMouseLeave={e => e.currentTarget.style.opacity = '1'}
           >
             Call 0414 758 891
@@ -198,7 +197,7 @@ const steps = [
   {
     number: '02',
     title: 'We build your campaigns',
-    description: 'Google Search ads to catch homeowners actively looking. Facebook ads to reach the ones who haven\'t searched yet. Retargeting to close the ones who visited but didn\'t call.',
+    description: 'Search ads to catch homeowners actively looking. Social ads to reach the ones who haven\'t searched yet. Retargeting to close the ones who visited but didn\'t call.',
   },
   {
     number: '03',
@@ -224,6 +223,7 @@ function HowItWorks() {
                 overflow: 'hidden',
               }}
             >
+              {/* Watermark number */}
               <div aria-hidden="true" style={{
                 position: 'absolute',
                 top: 8,
@@ -231,8 +231,7 @@ function HowItWorks() {
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 800,
                 fontSize: 'clamp(64px, 8vw, 88px)',
-                color: TERRACOTTA,
-                opacity: 0.08,
+                color: 'rgba(255,255,255,0.04)',
                 lineHeight: 1,
                 letterSpacing: '-0.05em',
                 userSelect: 'none',
@@ -240,11 +239,12 @@ function HowItWorks() {
               }}>
                 {step.number}
               </div>
+              {/* Step label */}
               <div style={{
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontSize: '0.75rem',
                 fontWeight: 600,
-                color: TERRACOTTA,
+                color: 'var(--text-muted)',
                 letterSpacing: '0.08em',
                 marginBottom: '0.75rem',
               }}>
@@ -329,8 +329,8 @@ function CampaignShowcase() {
 
 /* ── Section 4 — What's Included ── */
 const inclusions = [
-  'Google Ads setup and management',
-  'Facebook Ads setup and management',
+  'Search campaign setup and management',
+  'Social media campaign setup and management',
   'Custom ad copy generated for your trade',
   'Audience targeting and retargeting',
   'Weekly optimisation and A/B testing',
@@ -367,15 +367,15 @@ function WhatYouGet() {
                 width: 22,
                 height: 22,
                 borderRadius: '50%',
-                background: `rgba(${parseInt(TERRACOTTA.slice(1,3),16)},${parseInt(TERRACOTTA.slice(3,5),16)},${parseInt(TERRACOTTA.slice(5,7),16)},0.12)`,
-                border: `1px solid ${TERRACOTTA}44`,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
               }}>
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                  <path d="M2 6l3 3 5-5" stroke={TERRACOTTA} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2 6l3 3 5-5" stroke="rgba(255,255,255,0.7)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <span style={{
@@ -430,19 +430,19 @@ function Pricing() {
             marginBottom: '1.25rem',
             lineHeight: 1.5,
           }}>
-            Ad management — Google + Facebook
+            Get more jobs through our marketing system
           </p>
 
           <div style={{
             display: 'inline-block',
-            background: `rgba(${parseInt(TERRACOTTA.slice(1,3),16)},${parseInt(TERRACOTTA.slice(3,5),16)},${parseInt(TERRACOTTA.slice(5,7),16)},0.1)`,
-            border: `1px solid ${TERRACOTTA}44`,
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.14)',
             borderRadius: 6,
             padding: '8px 16px',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontWeight: 600,
             fontSize: 'var(--body-size)',
-            color: TERRACOTTA,
+            color: 'var(--text-primary)',
             marginBottom: '1.5rem',
           }}>
             First month half price — $125
@@ -455,7 +455,7 @@ function Pricing() {
             lineHeight: 1.65,
             marginBottom: '0.75rem',
           }}>
-            You pay ad spend direct to Google/Facebook. We never touch your ad money.
+            You pay ad spend direct to the platforms. We never touch your ad money.
           </p>
 
           <p style={{
@@ -471,18 +471,25 @@ function Pricing() {
             href="tel:0414758891"
             style={{
               display: 'block',
-              background: TERRACOTTA,
-              color: '#fff',
+              background: 'transparent',
+              color: 'var(--text-primary)',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 600,
               fontSize: 'var(--body-size)',
-              padding: '14px 0',
+              padding: '13px 0',
               borderRadius: 8,
               textDecoration: 'none',
-              transition: 'opacity 0.2s ease',
+              border: '1px solid rgba(255,255,255,0.25)',
+              transition: 'border-color 0.2s ease, background 0.2s ease',
             }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
+              e.currentTarget.style.background = 'transparent';
+            }}
           >
             Get Started
           </a>
@@ -517,7 +524,7 @@ const faqs = [
     a: 'Yes, ads need somewhere to send traffic. We build websites too — ask about our website + ads bundle.',
   },
   {
-    q: 'What if it doesn\'t work?',
+    q: "What if it doesn't work?",
     a: 'No lock-in contracts. If you are not happy after the first month, you walk away. But with proper setup and a reasonable budget, paid ads work for every trade.',
   },
 ];
@@ -525,9 +532,7 @@ const faqs = [
 function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{
-      borderBottom: '1px solid rgba(255,255,255,0.07)',
-    }}>
+    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
       <button
         onClick={() => setOpen(o => !o)}
         style={{
@@ -640,7 +645,7 @@ function CTAFooter() {
             href="tel:0414758891"
             style={{
               display: 'inline-block',
-              background: TERRACOTTA,
+              background: 'rgba(245,240,232,0.1)',
               color: '#f5f0e8',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 600,
@@ -648,10 +653,17 @@ function CTAFooter() {
               padding: '15px 36px',
               borderRadius: 8,
               textDecoration: 'none',
-              transition: 'opacity 0.2s ease',
+              border: '1px solid rgba(245,240,232,0.25)',
+              transition: 'background 0.2s ease, border-color 0.2s ease',
             }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(245,240,232,0.16)';
+              e.currentTarget.style.borderColor = 'rgba(245,240,232,0.4)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(245,240,232,0.1)';
+              e.currentTarget.style.borderColor = 'rgba(245,240,232,0.25)';
+            }}
           >
             Call 0414 758 891
           </a>
@@ -673,6 +685,7 @@ function CTAFooter() {
 export default function Ads() {
   return (
     <>
+      <Scene3D />
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar />
         <AdsHero />
